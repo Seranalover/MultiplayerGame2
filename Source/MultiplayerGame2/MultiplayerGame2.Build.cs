@@ -12,8 +12,8 @@ public class MultiplayerGame2 : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
-			"EnhancedInput", "GameplayAbilities", "GameplayTasks", "GameplayTags"
-			
+			"EnhancedInput", "GameplayAbilities", "GameplayTasks", "GameplayTags",
+			"UMG",  "Slate", "SlateCore"
 		});
 
 		// Uncomment if you are using Slate UI
