@@ -8,7 +8,7 @@
 #include "CPlayerCharacter.generated.h"
 
 /**
- * 
+ * 玩家基类
  */
 UCLASS()
 class ACPlayerCharacter : public ACCharacter

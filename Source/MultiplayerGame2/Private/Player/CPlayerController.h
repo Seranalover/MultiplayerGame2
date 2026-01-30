@@ -7,7 +7,7 @@
 #include "CPlayerController.generated.h"
 
 /**
- * 
+ * 玩家控制器基类
  */
 UCLASS()
 class ACPlayerController : public APlayerController
