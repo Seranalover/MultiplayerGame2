@@ -14,4 +14,9 @@ class UCAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
 	
+public:
+	void ApplyInitialEffects(); //初始化所有数值
+	
+private:
+	TArray<TSubclassOf<UGameplayEffect>> InitialEffects;
 };
