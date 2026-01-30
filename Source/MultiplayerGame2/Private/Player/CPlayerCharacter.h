@@ -14,4 +14,15 @@ class ACPlayerCharacter : public ACCharacter
 {
 	GENERATED_BODY()
 	
+public:
+	ACPlayerCharacter();
+	
+	
+private:
+	UPROPERTY(VisibleDefaultsOnly, Category="View")
+	class USpringArmComponent* CameraBoom; //弹簧臂组件
+	
+	UPROPERTY(VisibleDefaultsOnly, Category="View")
+	class UCameraComponent* ViewCamera; //相机组件
+	
 };
