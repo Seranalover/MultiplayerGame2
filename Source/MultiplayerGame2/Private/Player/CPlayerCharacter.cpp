@@ -10,11 +10,16 @@
 
 ACPlayerCharacter::ACPlayerCharacter()
 {
+	//添加弹簧臂组件
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
-	CameraBoom->SetupAttachment(GetRootComponent());
+	CameraBoom->SetupAttachment(GetRootComponent()); 
+	CameraBoom->bUsePawnControlRotation = true; //弹簧臂使用pawn的控制旋转
 	
+	//添加相机组件
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
 	ViewCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); 
+	
+	bUseControllerRotationYaw = false; //禁用控制器yaw旋转
 }
 
 void ACPlayerCharacter::PawnClientRestart()
@@ -39,6 +44,15 @@ void ACPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	if (EnhancedInputComponent)
 	{
-		EnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Triggered, this, &ACPlayerCharacter::Jump); //绑定跳跃方法到跳跃IA
+		EnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Triggered, this, &ACPlayerCharacter::Jump); //绑定跳跃方法到跳跃IA，跳跃方法UE已实现
+		EnhancedInputComponent->BindAction(LookInputAction, ETriggerEvent::Triggered, this, &ACPlayerCharacter::HandleLookInput); //绑定转动视角方法到视角IA
 	}
+}
+
+//旋转视角方法实现
+void ACPlayerCharacter::HandleLookInput(const FInputActionValue& InputActionValue)
+{
+	FVector2D InputVector2D = InputActionValue.Get<FVector2D>(); //获得2d输入
+	AddControllerPitchInput(-InputVector2D.Y);
+	AddControllerYawInput(InputVector2D.X);
 }

@@ -36,4 +36,9 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	class UInputAction* JumpInputAction; //跳跃
+	
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	class UInputAction* LookInputAction; //视角旋转
+	
+	void HandleLookInput(const FInputActionValue& InputActionValue); //视角旋转实现
 };
