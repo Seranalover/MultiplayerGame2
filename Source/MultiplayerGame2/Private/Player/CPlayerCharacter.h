@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputAction.h"
 #include "Character/CCharacter.h"
 #include "CPlayerCharacter.generated.h"
 
@@ -16,7 +17,9 @@ class ACPlayerCharacter : public ACCharacter
 	
 public:
 	ACPlayerCharacter();
-	
+	virtual void PawnClientRestart() override; //客户端生成pawn时调用
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 	
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category="View")
@@ -25,4 +28,12 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, Category="View")
 	class UCameraComponent* ViewCamera; //相机组件
 	
+	/*****************************************************************/
+	/*                             Input                             */
+	/*****************************************************************/
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	class UInputMappingContext* GameplayInputMappingContext; //IM上下文
+	
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	class UInputAction* JumpInputAction; //跳跃
 };
