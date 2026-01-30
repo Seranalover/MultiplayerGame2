@@ -40,5 +40,13 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	class UInputAction* LookInputAction; //视角旋转
 	
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	class UInputAction* MoveInputAction; //移动
+	
 	void HandleLookInput(const FInputActionValue& InputActionValue); //视角旋转实现
+	void HandleMoveInput(const FInputActionValue& InputActionValue); //移动功能实现
+	
+	FVector GetLookRightDirection() const; //向前视角方向，包含向前上下看
+	FVector GetLookForwardDirection() const; //向右视角方向
+	FVector GetMoveForwardDirection() const; //向前移动方向
 };

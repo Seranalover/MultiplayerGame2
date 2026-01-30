@@ -7,6 +7,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ACPlayerCharacter::ACPlayerCharacter()
 {
@@ -20,6 +21,8 @@ ACPlayerCharacter::ACPlayerCharacter()
 	ViewCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); 
 	
 	bUseControllerRotationYaw = false; //禁用控制器yaw旋转
+	GetCharacterMovement()->bOrientRotationToMovement = true; //角色面朝移动方向
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f); //旋转速率
 }
 
 void ACPlayerCharacter::PawnClientRestart()
@@ -46,6 +49,7 @@ void ACPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	{
 		EnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Triggered, this, &ACPlayerCharacter::Jump); //绑定跳跃方法到跳跃IA，跳跃方法UE已实现
 		EnhancedInputComponent->BindAction(LookInputAction, ETriggerEvent::Triggered, this, &ACPlayerCharacter::HandleLookInput); //绑定转动视角方法到视角IA
+		EnhancedInputComponent->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &ACPlayerCharacter::HandleMoveInput); //移动IA
 	}
 }
 
@@ -55,4 +59,28 @@ void ACPlayerCharacter::HandleLookInput(const FInputActionValue& InputActionValu
 	FVector2D InputVector2D = InputActionValue.Get<FVector2D>(); //获得2d输入
 	AddControllerPitchInput(-InputVector2D.Y);
 	AddControllerYawInput(InputVector2D.X);
+}
+
+void ACPlayerCharacter::HandleMoveInput(const FInputActionValue& InputActionValue)
+{
+	FVector2D InputVector2D = InputActionValue.Get<FVector2D>(); //获得2d输入
+	InputVector2D.Normalize();
+	
+	AddMovementInput(GetMoveForwardDirection()*InputVector2D.Y + GetLookRightDirection()*InputVector2D.X);
+}
+
+FVector ACPlayerCharacter::GetLookRightDirection() const
+{
+	return ViewCamera->GetRightVector();
+}
+
+FVector ACPlayerCharacter::GetLookForwardDirection() const
+{
+	return ViewCamera->GetForwardVector();
+}
+
+FVector ACPlayerCharacter::GetMoveForwardDirection() const
+{
+	//通过向右视角方向，和向上向量，计算叉乘，得到向前移动向量，开销大，但是过渡平滑
+	return FVector::CrossProduct(GetLookRightDirection(), FVector::UpVector);
 }
