@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
-#include "CGameModeBase.generated.h"
+#include "AttributeSet.h"
+#include "CAttributeSet.generated.h"
 
 /**
- * 游戏模式基类
+ * 属性集
  */
 UCLASS()
-class ACGameModeBase : public AGameModeBase
+class UCAttributeSet : public UAttributeSet
 {
 	GENERATED_BODY()
 	

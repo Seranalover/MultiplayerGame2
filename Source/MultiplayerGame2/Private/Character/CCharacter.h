@@ -3,11 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "CCharacter.generated.h"
 
+/**
+ * 角色基类
+ */
 UCLASS()
-class ACCharacter : public ACharacter
+class ACCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -26,4 +30,14 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	/****************************************************************************/
+	/*                            Gameplay Ability                              */
+	/****************************************************************************/
+public:	
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+private:
+	UPROPERTY()
+	class UCAbilitySystemComponent* CAbilitySystemComponent;
+	UPROPERTY()
+	class UCAttributeSet* CAttributeSet;
 };

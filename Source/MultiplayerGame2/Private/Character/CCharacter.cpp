@@ -2,6 +2,8 @@
 
 
 #include "Character/CCharacter.h"
+#include "GAS/CAbilitySystemComponent.h"
+#include "GAS/CAttributeSet.h"
 
 // Sets default values
 ACCharacter::ACCharacter()
@@ -9,6 +11,9 @@ ACCharacter::ACCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision); //关闭自身碰撞
+	
+	CAbilitySystemComponent = CreateDefaultSubobject<UCAbilitySystemComponent>("CAbility System Component"); //加载GAS组件
+	CAttributeSet = CreateDefaultSubobject<UCAttributeSet>("CAttribute Set"); //加载AS组件
 }
 
 // Called when the game starts or when spawned
@@ -30,5 +35,10 @@ void ACCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+UAbilitySystemComponent* ACCharacter::GetAbilitySystemComponent() const
+{ 
+	return CAbilitySystemComponent;
 }
 
