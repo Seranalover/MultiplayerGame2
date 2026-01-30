@@ -1,21 +1,4 @@
-﻿# Default ignored files
-/shelf/
-/workspace.xml
-# Rider ignored files
-/modules.xml
-/.idea.MultiplayerGame2.iml
-/contentModel.xml
-/projectSettingsUpdater.xml
-# Ignored default folder with query files
-/queries/
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
-# Editor-based HTTP Client requests
-/httpRequests/
-
-
-# Visual Studio user-specific files
+﻿# Visual Studio user-specific files
 vs/
 # Compiled Object files
 *.slo
