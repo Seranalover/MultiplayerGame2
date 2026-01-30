@@ -3,6 +3,7 @@
 
 #include "Animations/CAnimInstance.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 void UCAnimInstance::NativeInitializeAnimation()
@@ -26,6 +27,11 @@ void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		YawSpeed = BodyRotationDelta.Yaw / DeltaSeconds; //偏转速率
 		SmoothedYawSpeed = UKismetMathLibrary::FInterpTo(SmoothedYawSpeed, YawSpeed, DeltaSeconds, YawSpeedSmoothLerp);
 		
+	}
+	
+	if (OwnerMovementComponent)
+	{
+		bIsJumping = OwnerMovementComponent->IsFalling();
 	}
 }
 

@@ -41,6 +41,12 @@ public:
 	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
 	FORCEINLINE float GetSmoothedYawSpeed() const { return SmoothedYawSpeed; }
 	
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE bool GetIsJumping() const { return bIsJumping; }
+	
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE bool GetIsOnGround() const { return !bIsJumping; }
+	
 private:
 	UPROPERTY()
 	class ACharacter* OwnerCharacter; 
@@ -51,6 +57,7 @@ private:
 	float Speed; 
 	float YawSpeed;
 	float SmoothedYawSpeed; //平滑量
+	bool bIsJumping; //是否跳跃？
 	UPROPERTY(EditAnywhere, Category="Animation")
 	float YawSpeedSmoothLerp = 1.0f; //平滑量插值
 	FRotator BodyPrevRotation; //上一帧身体旋转量
