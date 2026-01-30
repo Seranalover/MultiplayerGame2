@@ -21,4 +21,12 @@ public:
 private:
 	UPROPERTY()
 	class ACPlayerCharacter* CPlayerCharacter;
+	
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	TSubclassOf<class UGameplayWidget> GameplayWidgetClass; //控件基类
+	
+	UPROPERTY()
+	class UGameplayWidget* GameplayWidget; //控件实例
+	
+	void SpawnGameplayWidget(); //生成GUI
 };
