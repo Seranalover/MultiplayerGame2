@@ -16,6 +16,19 @@ ACCharacter::ACCharacter()
 	CAttributeSet = CreateDefaultSubobject<UCAttributeSet>("CAttribute Set"); //加载AS组件
 }
 
+//服务端初始化
+void ACCharacter::ServerSideInit()
+{
+	CAbilitySystemComponent->InitAbilityActorInfo(this, this);
+	CAbilitySystemComponent->ApplyInitialEffects(); //初始化属性值
+}
+
+//客户端初始化
+void ACCharacter::ClientSideInit()
+{
+	CAbilitySystemComponent->InitAbilityActorInfo(this, this);
+}
+
 // Called when the game starts or when spawned
 void ACCharacter::BeginPlay()
 {

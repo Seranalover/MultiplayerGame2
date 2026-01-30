@@ -18,6 +18,8 @@ class ACCharacter : public ACharacter, public IAbilitySystemInterface
 public:
 	// Sets default values for this character's properties
 	ACCharacter();
+	void ServerSideInit(); //服务端初始化
+	void ClientSideInit(); //客户端初始化
 
 protected:
 	// Called when the game starts or when spawned
@@ -36,8 +38,8 @@ public:
 public:	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 private:
-	UPROPERTY()
+	UPROPERTY(VisibleDefaultsOnly, Category="Gameplay Ability")
 	class UCAbilitySystemComponent* CAbilitySystemComponent;
-	UPROPERTY()
+	UPROPERTY(VisibleDefaultsOnly, Category="Gameplay Ability")
 	class UCAttributeSet* CAttributeSet;
 };

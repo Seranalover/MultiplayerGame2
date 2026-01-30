@@ -18,5 +18,6 @@ public:
 	void ApplyInitialEffects(); //初始化所有数值
 	
 private:
+	UPROPERTY(EditDefaultsOnly, Category="Gameplay Effects")
 	TArray<TSubclassOf<UGameplayEffect>> InitialEffects;
 };
