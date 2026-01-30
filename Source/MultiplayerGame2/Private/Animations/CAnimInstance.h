@@ -47,6 +47,12 @@ public:
 	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
 	FORCEINLINE bool GetIsOnGround() const { return !bIsJumping; }
 	
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE float GetLookAtYawOffset() const { return LookAtRotationOffset.Yaw; }
+	
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE float GetLookAtPitchOffset() const { return LookAtRotationOffset.Pitch; }
+	
 private:
 	UPROPERTY()
 	class ACharacter* OwnerCharacter; 
@@ -61,5 +67,6 @@ private:
 	UPROPERTY(EditAnywhere, Category="Animation")
 	float YawSpeedSmoothLerp = 1.0f; //平滑量插值
 	FRotator BodyPrevRotation; //上一帧身体旋转量
+	FRotator LookAtRotationOffset; //瞄准偏移旋转
 	
 };
