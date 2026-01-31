@@ -20,6 +20,8 @@ public:
 	ACCharacter();
 	void ServerSideInit(); //服务端初始化
 	void ClientSideInit(); //客户端初始化
+	bool IsLocallyControlledByPlayer() const; //是否由本地玩家控制器操控
+	virtual void PossessedBy(AController* NewController) override; //only called on the Server
 
 protected:
 	// Called when the game starts or when spawned
