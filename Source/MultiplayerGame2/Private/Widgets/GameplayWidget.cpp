@@ -2,4 +2,17 @@
 
 
 #include "Widgets/GameplayWidget.h"
+#include "AbilitySystemBlueprintLibrary.h"
+#include "ValueGauge.h"
 
+void UGameplayWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	
+	OwnerAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwningPlayerPawn()); //从player pawn获取GAS组件
+	if (OwnerAbilitySystemComponent)
+	{
+		HealthBar->SetAndBoundToGameplayAttribute(OwnerAbilitySystemComponent, UCAttributeSet::GetHealthAttribute(), UCAttributeSet::GetMaxHealthAttribute());
+		ManaBar->SetAndBoundToGameplayAttribute(OwnerAbilitySystemComponent, UCAttributeSet::GetManaAttribute(), UCAttributeSet::GetMaxManaAttribute());
+	}
+}
