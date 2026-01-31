@@ -3,6 +3,7 @@
 
 #include "Player/CPlayerCharacter.h"
 
+#include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -50,6 +51,13 @@ void ACPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 		EnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Triggered, this, &ACPlayerCharacter::Jump); //绑定跳跃方法到跳跃IA，跳跃方法UE已实现
 		EnhancedInputComponent->BindAction(LookInputAction, ETriggerEvent::Triggered, this, &ACPlayerCharacter::HandleLookInput); //绑定转动视角方法到视角IA
 		EnhancedInputComponent->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &ACPlayerCharacter::HandleMoveInput); //移动IA
+		
+		for (const TPair<ECAbilityInputID, UInputAction*>& InputActionPair : GameplayAbilityInputActions)
+		{
+			EnhancedInputComponent->BindAction(InputActionPair.Value, ETriggerEvent::Triggered, 
+				this, &ACPlayerCharacter::HandleAbilityInput, InputActionPair.Key); //绑定所有技能到IA
+
+		}
 	}
 }
 
@@ -83,4 +91,17 @@ FVector ACPlayerCharacter::GetMoveForwardDirection() const
 {
 	//通过向右视角方向，和向上向量，计算叉乘，得到向前移动向量，开销大，但是过渡平滑
 	return FVector::CrossProduct(GetLookRightDirection(), FVector::UpVector);
+}
+
+void ACPlayerCharacter::HandleAbilityInput(const FInputActionValue& InputActionValue, ECAbilityInputID AbilityInputID)
+{
+	bool bPressed = InputActionValue.Get<bool>(); //是否按下？
+	if (bPressed)
+	{
+		GetAbilitySystemComponent()->AbilityLocalInputPressed((int32)AbilityInputID);
+	}
+	else
+	{
+		GetAbilitySystemComponent()->AbilityLocalInputReleased((int32)AbilityInputID);
+	}
 }

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "InputAction.h"
 #include "Character/CCharacter.h"
+#include "GAS/CGameplayAbilityTypes.h"
 #include "CPlayerCharacter.generated.h"
 
 /**
@@ -49,4 +50,8 @@ private:
 	FVector GetLookRightDirection() const; //向前视角方向，包含向前上下看
 	FVector GetLookForwardDirection() const; //向右视角方向
 	FVector GetMoveForwardDirection() const; //向前移动方向
+	
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TMap<ECAbilityInputID, class UInputAction*> GameplayAbilityInputActions; //所有技能id与IA的map集合
+	void HandleAbilityInput(const FInputActionValue& InputActionValue, ECAbilityInputID AbilityInputID); //施放技能实现
 };
