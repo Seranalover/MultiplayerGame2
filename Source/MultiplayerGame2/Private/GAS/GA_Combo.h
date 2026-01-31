@@ -18,5 +18,9 @@ public:
 	//重要函数ActivateAbility，激活并执行技能
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData);
 
+private:
+	UPROPERTY(EditDefaultsOnly, Category="Animation")
+	UAnimMontage* ComboMontage;
+	
 	
 };
