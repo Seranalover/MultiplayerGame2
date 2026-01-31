@@ -92,7 +92,21 @@ void ACCharacter::ConfigureOverheadWidget()
 	if (OverheadStatsGauge)
 	{
 		OverheadStatsGauge->ConfigureWithASC(GetAbilitySystemComponent()); //设置控件属性值
-		OverheadWidgetComponent->SetHiddenInGame(false);
+		OverheadWidgetComponent->SetHiddenInGame(false); 
+		
+		GetWorldTimerManager().ClearTimer(OverheadWidgetVisibilityTimerHandle); //清除计时器
+		GetWorldTimerManager().SetTimer(OverheadWidgetVisibilityTimerHandle, this, &ACCharacter::UpdateOverheadWidgetVisibility, 
+			OverheadWidgetVisibilityCheckGap, true); //设置计时器
+	}
+}
+
+void ACCharacter::UpdateOverheadWidgetVisibility()
+{
+	APawn* LocalPlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn(); //获取local player pawn
+	if (LocalPlayerPawn)
+	{
+		float DistanceSquared = FVector::DistSquared(LocalPlayerPawn->GetActorLocation(), GetActorLocation()); //距离平方
+		OverheadWidgetComponent->SetHiddenInGame(DistanceSquared > OverheadWidgetVisibilityRangeSquared); //距离过远隐藏头顶状态栏
 	}
 }
 

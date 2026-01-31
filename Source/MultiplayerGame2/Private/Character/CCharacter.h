@@ -49,8 +49,14 @@ private:
 	/*                                    UI                                    */
 	/****************************************************************************/
 private:
-	UPROPERTY(VisibleDefaultsOnly, Category="Gameplay Ability")
+	UPROPERTY(VisibleDefaultsOnly, Category="UI")
 	class UWidgetComponent* OverheadWidgetComponent;
-	
 	void ConfigureOverheadWidget(); //设置属性值
+	
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	float OverheadWidgetVisibilityCheckGap = 1.f; //检测时间间隔，计时器执行周期
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	float OverheadWidgetVisibilityRangeSquared = 10000000.f; //检测距离的平方
+	FTimerHandle OverheadWidgetVisibilityTimerHandle; //头顶状态条可视计时器
+	void UpdateOverheadWidgetVisibility(); //设置可视性，被计时器周期性调用
 };
