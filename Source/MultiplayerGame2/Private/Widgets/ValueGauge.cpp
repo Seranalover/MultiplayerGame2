@@ -50,7 +50,7 @@ void UValueGauge::SetValue(float NewValue, float NewMaxValue)
 	
 	if (NewMaxValue == 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("MultiplyerGame2 Error: Value Gauge: %s, NewMaxValue can't be 0"), *GetName());
+		UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: Value Gauge: %s, NewMaxValue can't be 0"), *GetName());
 		return;
 	}
 	

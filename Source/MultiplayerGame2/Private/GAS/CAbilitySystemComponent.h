@@ -16,8 +16,15 @@ class UCAbilitySystemComponent : public UAbilitySystemComponent
 	
 public:
 	void ApplyInitialEffects(); //初始化所有数值
+	void GiveInitialAbilities(); //赋予技能
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay Effects")
 	TArray<TSubclassOf<UGameplayEffect>> InitialEffects;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Gameplay Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> Abilities; //附加技能
+	
+	UPROPERTY(EditDefaultsOnly, Category="Gameplay Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> BasicAbilities; //基础技能
 };
