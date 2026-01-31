@@ -42,4 +42,13 @@ private:
 	class UCAbilitySystemComponent* CAbilitySystemComponent;
 	UPROPERTY(VisibleDefaultsOnly, Category="Gameplay Ability")
 	class UCAttributeSet* CAttributeSet;
+	
+	/****************************************************************************/
+	/*                                    UI                                    */
+	/****************************************************************************/
+private:
+	UPROPERTY(VisibleDefaultsOnly, Category="Gameplay Ability")
+	class UWidgetComponent* OverheadWidgetComponent;
+	
+	void ConfigureOverheadWidget(); //设置属性值
 };
