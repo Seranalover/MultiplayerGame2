@@ -17,6 +17,7 @@ TArray<FHitResult> UCGameplayAbility::GetHitResultsFromSweepLocationTargetData(
 	bool bIgnoreSelf) const
 {
 	TArray<FHitResult> OutResults;
+	TSet<AActor*> HitActors; //已命中过的actor，避免重复命中同一个actor
 	
 	for (const TSharedPtr<FGameplayAbilityTargetData> TargetData : TargetDataHandle.Data)
 	{
@@ -33,8 +34,18 @@ TArray<FHitResult> UCGameplayAbility::GetHitResultsFromSweepLocationTargetData(
 		
 		TArray<FHitResult> HitResults; //命中结果数组
 		
+		//执行球体检测
 		UKismetSystemLibrary::SphereTraceMultiForObjects(this, SourceLocation, TargetLocation, 
 			SphereSweepRadius, ObjectTypes, false, ActorsToIgnore, DrawDebugTrace, HitResults, false);
+		
+		for (const FHitResult& HitResult : HitResults)
+		{
+			if (HitActors.Contains(HitResult.GetActor())) 
+				continue; //已命中过actor，跳过
+			
+			HitActors.Add(HitResult.GetActor()); 
+			OutResults.Add(HitResult);
+		}
 	}
 	
 	return OutResults;

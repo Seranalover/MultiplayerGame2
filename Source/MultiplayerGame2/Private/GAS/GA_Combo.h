@@ -37,4 +37,12 @@ private:
 	
 	UFUNCTION()
 	void DoDamage(FGameplayEventData Data); //combo攻击实现
+	
+	UPROPERTY(EditDefaultsOnly, Category="Gameplay Effect")
+	TMap<FName, TSubclassOf<UGameplayEffect>> DamageEffectMap; //攻击效果映射集
+	
+	UPROPERTY(EditDefaultsOnly, Category="Gameplay Effect")
+	TSubclassOf<UGameplayEffect> DefaultDamageEffect; //默认攻击效果
+	
+	TSubclassOf<UGameplayEffect> GetDamageEffectForCurrentCombo() const; //当前连段的攻击效果
 };

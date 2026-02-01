@@ -3,6 +3,7 @@
 
 #include "GAS/GA_Combo.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "CAbilitySystemStatics.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
@@ -113,13 +114,6 @@ void UGA_Combo::HandleInputPress(float TimeWaited)
 	TryCommitCombo();
 }
 
-void UGA_Combo::DoDamage(FGameplayEventData Data)
-{
-	//扫描结果
-	TArray<FHitResult> HitResults = 
-		GetHitResultsFromSweepLocationTargetData(Data.TargetData, 30.0f, true, true);
-}
-
 void UGA_Combo::TryCommitCombo()
 {
 	if (NextComboName == NAME_None) return;;
@@ -129,4 +123,35 @@ void UGA_Combo::TryCommitCombo()
 	
 	//设置连招下一段蒙太奇
 	OwnerAnimInstance->Montage_SetNextSection(OwnerAnimInstance->Montage_GetCurrentSection(ComboMontage), NextComboName, ComboMontage);
+}
+
+void UGA_Combo::DoDamage(FGameplayEventData Data)
+{
+	//扫描结果
+	TArray<FHitResult> HitResults = 
+		GetHitResultsFromSweepLocationTargetData(Data.TargetData, 30.0f, true, true);
+	
+	for (const FHitResult& HitResult : HitResults)
+	{
+		TSubclassOf<UGameplayEffect> GameplayEffect = GetDamageEffectForCurrentCombo(); //获得当前连段攻击效果
+		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(
+			GameplayEffect, GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo())); //设置当前技能等级的effect spec handle
+		
+		//使用handle应用攻击效果
+		ApplyGameplayEffectSpecToTarget(GetCurrentAbilitySpecHandle(), CurrentActorInfo, CurrentActivationInfo,
+			EffectSpecHandle, UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(HitResult.GetActor()));
+	}
+}
+
+TSubclassOf<UGameplayEffect> UGA_Combo::GetDamageEffectForCurrentCombo() const
+{
+	UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance(); //获得动画啊实例
+	if (OwnerAnimInstance)
+	{
+		FName CurrentComboSectionName = OwnerAnimInstance->Montage_GetCurrentSection(ComboMontage); //获得当前连段名
+		const TSubclassOf<UGameplayEffect>* FoundEffectPtr = DamageEffectMap.Find(CurrentComboSectionName); //按连段名查找效果集
+		if (FoundEffectPtr) return *FoundEffectPtr;
+	}
+	
+	return DefaultDamageEffect;
 }
