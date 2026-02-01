@@ -44,12 +44,20 @@ void UGA_Combo::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 		//task等待执行，必须调用，否则task不会执行！
 		PlayMontageAndWaitTask->ReadyForActivation();
 		
-		//创建监听Gameplay Event的task
+		//创建监听Gameplay Event的task，监听连招变化
 		UAbilityTask_WaitGameplayEvent* WaitGameplayEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
 			this, GetComboChangedEventTag(), nullptr, false, false);
 		//接收事件，绑定到GetComboChangedEventReceived()方法
 		WaitGameplayEventTask->EventReceived.AddDynamic(this, &UGA_Combo::GetComboChangedEventReceived);
 		WaitGameplayEventTask->ReadyForActivation(); //task等待执行
+	}
+	
+	if (K2_HasAuthority()) //服务端？
+	{
+		UAbilityTask_WaitGameplayEvent* WaitTargetingEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+			this, GetComboTargetEventTag()); //监听连击扫描事件动画通知
+		WaitTargetingEventTask->EventReceived.AddDynamic(this, &UGA_Combo::DoDamage); //绑定到DoDamage()方法
+		WaitTargetingEventTask->ReadyForActivation();
 	}
 	
 	SetupWaitComboInputPress(); //尝试切换到下一段连招
@@ -63,6 +71,11 @@ FGameplayTag UGA_Combo::GetComboChangedEventTag()
 FGameplayTag UGA_Combo::GetComboChangedEventEndTag()
 {
 	return FGameplayTag::RequestGameplayTag("ability.combo.change.end");
+}
+
+FGameplayTag UGA_Combo::GetComboTargetEventTag()
+{
+	return FGameplayTag::RequestGameplayTag("ability.combo.damage");
 }
 
 void UGA_Combo::GetComboChangedEventReceived(FGameplayEventData Data)
@@ -98,6 +111,13 @@ void UGA_Combo::HandleInputPress(float TimeWaited)
 {
 	SetupWaitComboInputPress(); //持续监听按下事件
 	TryCommitCombo();
+}
+
+void UGA_Combo::DoDamage(FGameplayEventData Data)
+{
+	//扫描结果
+	TArray<FHitResult> HitResults = 
+		GetHitResultsFromSweepLocationTargetData(Data.TargetData, 30.0f, true, true);
 }
 
 void UGA_Combo::TryCommitCombo()

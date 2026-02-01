@@ -20,6 +20,7 @@ public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData);
 	static FGameplayTag GetComboChangedEventTag(); //获得切换连招的事件tag
 	static FGameplayTag GetComboChangedEventEndTag(); //获得结束连招的事件tag
+	static FGameplayTag GetComboTargetEventTag(); //combo扫描事件tag
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Animation")
@@ -33,4 +34,7 @@ private:
 	void TryCommitCombo(); //尝试切换到下一段连招
 	UFUNCTION()
 	void HandleInputPress(float TimeWaited); //按下输入处理实现
+	
+	UFUNCTION()
+	void DoDamage(FGameplayEventData Data); //combo攻击实现
 };
