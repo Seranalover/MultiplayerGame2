@@ -23,10 +23,14 @@ public:
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Animation")
-	UAnimMontage* ComboMontage;
+	UAnimMontage* ComboMontage; //连招蒙太奇
 	
 	UFUNCTION()
-	void GetComboChangedEventReceived(FGameplayEventData Data);
-	
+	void GetComboChangedEventReceived(FGameplayEventData Data); //接收重置连招事件
 	FName NextComboName; //下一段连招名
+	
+	void SetupWaitComboInputPress();
+	void TryCommitCombo(); //尝试切换到下一段连招
+	UFUNCTION()
+	void HandleInputPress(float TimeWaited); //按下输入处理实现
 };

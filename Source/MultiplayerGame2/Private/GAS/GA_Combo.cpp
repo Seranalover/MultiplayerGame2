@@ -6,6 +6,7 @@
 #include "CAbilitySystemStatics.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "Abilities/Tasks/AbilityTask_WaitInputPress.h"
 #include "GameplayTagsManager.h"
 
 UGA_Combo::UGA_Combo()
@@ -50,6 +51,8 @@ void UGA_Combo::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 		WaitGameplayEventTask->EventReceived.AddDynamic(this, &UGA_Combo::GetComboChangedEventReceived);
 		WaitGameplayEventTask->ReadyForActivation(); //task等待执行
 	}
+	
+	SetupWaitComboInputPress(); //尝试切换到下一段连招
 }
 
 FGameplayTag UGA_Combo::GetComboChangedEventTag()
@@ -81,4 +84,29 @@ void UGA_Combo::GetComboChangedEventReceived(FGameplayEventData Data)
 	UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: next combo is now: %s"), *NextComboName.ToString());
 	// return TagNames.Last(); //返回tag的最后一个节点文本
 		
+}
+
+void UGA_Combo::SetupWaitComboInputPress()
+{
+	UAbilityTask_WaitInputPress* WaitInputPressTask = UAbilityTask_WaitInputPress::WaitInputPress(this); //创建等待按下输入task
+	WaitInputPressTask->OnPress.AddDynamic(this, &UGA_Combo::HandleInputPress); //绑定到HandleInputPress()
+	WaitInputPressTask->ReadyForActivation();
+	
+}
+
+void UGA_Combo::HandleInputPress(float TimeWaited)
+{
+	SetupWaitComboInputPress(); //持续监听按下事件
+	TryCommitCombo();
+}
+
+void UGA_Combo::TryCommitCombo()
+{
+	if (NextComboName == NAME_None) return;;
+	
+	UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance(); //获得蒙太奇实例
+	if (!OwnerAnimInstance) return;
+	
+	//设置连招下一段蒙太奇
+	OwnerAnimInstance->Montage_SetNextSection(OwnerAnimInstance->Montage_GetCurrentSection(ComboMontage), NextComboName, ComboMontage);
 }
