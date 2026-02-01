@@ -5,6 +5,8 @@
 
 #include "CAbilitySystemStatics.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "GameplayTagsManager.h"
 
 UGA_Combo::UGA_Combo()
 {
@@ -40,5 +42,43 @@ void UGA_Combo::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 		PlayMontageAndWaitTask->OnInterrupted.AddDynamic(this, &UGA_Combo::K2_EndAbility);
 		//task等待执行，必须调用，否则task不会执行！
 		PlayMontageAndWaitTask->ReadyForActivation();
+		
+		//创建监听Gameplay Event的task
+		UAbilityTask_WaitGameplayEvent* WaitGameplayEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+			this, GetComboChangedEventTag(), nullptr, false, false);
+		//接收事件，绑定到GetComboChangedEventReceived()方法
+		WaitGameplayEventTask->EventReceived.AddDynamic(this, &UGA_Combo::GetComboChangedEventReceived);
+		WaitGameplayEventTask->ReadyForActivation(); //task等待执行
 	}
+}
+
+FGameplayTag UGA_Combo::GetComboChangedEventTag()
+{
+	return FGameplayTag::RequestGameplayTag("ability.combo.change");
+}
+
+FGameplayTag UGA_Combo::GetComboChangedEventEndTag()
+{
+	return FGameplayTag::RequestGameplayTag("ability.combo.change.end");
+}
+
+void UGA_Combo::GetComboChangedEventReceived(FGameplayEventData Data)
+{
+	FGameplayTag EventTag = Data.EventTag;
+	
+	//重置连招
+	if (EventTag == GetComboChangedEventEndTag()) 
+	{
+		NextComboName = NAME_None;
+		UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: next combo is cleared"));
+		return;
+	}
+	
+	TArray<FName> TagNames;
+	UGameplayTagsManager::Get().SplitGameplayTagFName(EventTag, TagNames); //将tag拆分成数组
+	NextComboName = TagNames.Last(); //设置下一段连招名
+	
+	UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: next combo is now: %s"), *NextComboName.ToString());
+	// return TagNames.Last(); //返回tag的最后一个节点文本
+		
 }
