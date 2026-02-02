@@ -3,6 +3,7 @@
 
 #include "GAS/CAttributeSet.h"
 #include "Net/UnrealNetwork.h"
+#include "GameplayEffectExtension.h"
 
 void UCAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -12,6 +13,22 @@ void UCAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 	DOREPLIFETIME_CONDITION_NOTIFY(UCAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UCAttributeSet, Mana, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UCAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
+}
+
+void UCAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	if (Attribute == GetHealthAttribute())
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth()); //限制health最大值和最小值
+	if (Attribute == GetManaAttribute())
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana()); //限制mana最大值和最小值
+}
+
+void UCAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
+{
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth())); //限制health最大值和最小值
+	if (Data.EvaluatedData.Attribute == GetManaAttribute())
+		SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana())); //限制mana最大值和最小值
 }
 
 void UCAttributeSet::OnRep_Health(const FGameplayAttributeData& OldValue)
