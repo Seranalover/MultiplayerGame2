@@ -1,4 +1,7 @@
-﻿# Visual Studio user-specific files
+﻿# Crunch
+Content/ParagonCrunch
+
+# Visual Studio user-specific files
 vs/
 # Compiled Object files
 *.slo
