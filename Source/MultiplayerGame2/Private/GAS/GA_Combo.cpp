@@ -87,7 +87,7 @@ void UGA_Combo::GetComboChangedEventReceived(FGameplayEventData Data)
 	if (EventTag == GetComboChangedEventEndTag()) 
 	{
 		NextComboName = NAME_None;
-		UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: next combo is cleared"));
+		// UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: next combo is cleared"));
 		return;
 	}
 	
@@ -95,7 +95,7 @@ void UGA_Combo::GetComboChangedEventReceived(FGameplayEventData Data)
 	UGameplayTagsManager::Get().SplitGameplayTagFName(EventTag, TagNames); //将tag拆分成数组
 	NextComboName = TagNames.Last(); //设置下一段连招名
 	
-	UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: next combo is now: %s"), *NextComboName.ToString());
+	// UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: next combo is now: %s"), *NextComboName.ToString());
 	// return TagNames.Last(); //返回tag的最后一个节点文本
 		
 }

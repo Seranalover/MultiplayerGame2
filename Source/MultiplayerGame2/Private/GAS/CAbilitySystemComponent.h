@@ -16,6 +16,7 @@ class UCAbilitySystemComponent : public UAbilitySystemComponent
 	GENERATED_BODY()
 	
 public:
+	UCAbilitySystemComponent();
 	void ApplyInitialEffects(); //初始化所有数值
 	void GiveInitialAbilities(); //赋予技能
 	
@@ -28,4 +29,9 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay Abilities")
 	TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>> BasicAbilities; //基础技能
+	
+	void HealthUpdated(const FOnAttributeChangeData& ChangeData); //生命值变更
+	
+	UPROPERTY(EditDefaultsOnly, Category="Gameplay Abilities")
+	TSubclassOf<UGameplayEffect> DeathEffect; //死亡GE
 };

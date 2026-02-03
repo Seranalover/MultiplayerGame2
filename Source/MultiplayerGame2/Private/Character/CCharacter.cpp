@@ -5,6 +5,7 @@
 
 #include "Components/WidgetComponent.h"
 #include "GAS/CAbilitySystemComponent.h"
+#include "GAS/CAbilitySystemStatics.h"
 #include "GAS/CAttributeSet.h"
 #include "Widgets/OverheadStatsGauge.h"
 
@@ -20,6 +21,8 @@ ACCharacter::ACCharacter()
 	
 	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("Overhead Widget Component"); //创建头顶状态栏
 	OverheadWidgetComponent->SetupAttachment(GetRootComponent()); //添加状态栏到根组件
+	
+	BindGASChangeDelegates();
 }
 
 //服务端初始化
@@ -76,6 +79,38 @@ void ACCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 UAbilitySystemComponent* ACCharacter::GetAbilitySystemComponent() const
 { 
 	return CAbilitySystemComponent;
+}
+
+void ACCharacter::BindGASChangeDelegates()
+{
+	if (CAbilitySystemComponent)
+	{
+		//监听Dead Tag，绑定DeathTagUpdated()
+		CAbilitySystemComponent->RegisterGameplayTagEvent(
+			UCAbilitySystemStatics::GetDeadStatTag()).AddUObject(this, &ACCharacter::DeathTagUpdated);
+	}
+}
+
+void ACCharacter::DeathTagUpdated(const FGameplayTag Tag, int32 NewCount)
+{
+	if (NewCount != 0)
+	{
+		StartDeathSequence();
+	}
+	else
+	{
+		Respawn();
+	}
+}
+
+void ACCharacter::StartDeathSequence()
+{
+	UE_LOG(LogTemp, Warning, TEXT("StartDeathSequence"));
+}
+
+void ACCharacter::Respawn()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Respawn"));
 }
 
 void ACCharacter::ConfigureOverheadWidget()

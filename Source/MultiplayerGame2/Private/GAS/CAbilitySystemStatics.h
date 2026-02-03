@@ -14,5 +14,7 @@ class UCAbilitySystemStatics : public UObject
 {
 	GENERATED_BODY()
 public:
-	static FGameplayTag GetBasicAttackAbilityTag();
+	static FGameplayTag GetBasicAttackAbilityTag(); //基础攻击tag
+	static FGameplayTag GetDeadStatTag(); //死亡状态tag
+	
 };

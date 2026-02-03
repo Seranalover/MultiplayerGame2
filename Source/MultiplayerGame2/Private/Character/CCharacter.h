@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/Character.h"
 #include "CCharacter.generated.h"
 
@@ -45,6 +46,8 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, Category="Gameplay Ability")
 	class UCAttributeSet* CAttributeSet;
 	
+	void BindGASChangeDelegates(); //绑定所有从GAS监听到的变更
+	
 	/****************************************************************************/
 	/*                                    UI                                    */
 	/****************************************************************************/
@@ -59,4 +62,12 @@ private:
 	float OverheadWidgetVisibilityRangeSquared = 10000000.f; //检测距离的平方
 	FTimerHandle OverheadWidgetVisibilityTimerHandle; //头顶状态条可视计时器
 	void UpdateOverheadWidgetVisibility(); //设置可视性，被计时器周期性调用
+	
+	/****************************************************************************/
+	/*                             Death and Respawn                            */
+	/****************************************************************************/
+private:
+	void DeathTagUpdated(const FGameplayTag Tag, int32 NewCount); //死亡tag变更
+	void StartDeathSequence(); //开始执行死亡任务序列
+	void Respawn(); //重生
 };
