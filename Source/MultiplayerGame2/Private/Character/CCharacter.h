@@ -70,4 +70,12 @@ private:
 	void DeathTagUpdated(const FGameplayTag Tag, int32 NewCount); //死亡tag变更
 	void StartDeathSequence(); //开始执行死亡任务序列
 	void Respawn(); //重生
+	void PlayDeathAnimation(); //播放死亡动画
+	void SetStatsGaugeEnabled(bool bIsEnable); //显示血条
+	virtual void OnDead();
+	virtual void OnRespawn();
+	
+	UPROPERTY(EditDefaultsOnly, Category="Death")
+	UAnimMontage* DeathAnimMontage;
+	
 };

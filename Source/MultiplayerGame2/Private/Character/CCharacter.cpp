@@ -3,7 +3,9 @@
 
 #include "Character/CCharacter.h"
 
+#include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/CAbilitySystemComponent.h"
 #include "GAS/CAbilitySystemStatics.h"
 #include "GAS/CAttributeSet.h"
@@ -105,12 +107,44 @@ void ACCharacter::DeathTagUpdated(const FGameplayTag Tag, int32 NewCount)
 
 void ACCharacter::StartDeathSequence()
 {
-	UE_LOG(LogTemp, Warning, TEXT("StartDeathSequence"));
+	UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: StartDeathSequence"));
+	OnDead(); //因当前类可能是AI，所以在子类关闭控制器输入
+	PlayDeathAnimation(); //播放死亡蒙太奇
+	// SetStatsGaugeEnabled(false); //关闭血条显示
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None); //禁用移动
+	// GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision); //禁用碰撞
 }
 
 void ACCharacter::Respawn()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Respawn"));
+	UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: Respawn"));
+	OnRespawn();
+}
+
+void ACCharacter::PlayDeathAnimation()
+{
+	if (DeathAnimMontage)
+	{
+		PlayAnimMontage(DeathAnimMontage);
+	}
+		
+}
+
+void ACCharacter::SetStatsGaugeEnabled(bool bIsEnable)
+{
+	GetWorldTimerManager().ClearTimer(OverheadWidgetVisibilityTimerHandle); //清除计时器
+	if (bIsEnable)
+		ConfigureOverheadWidget();
+	else
+		OverheadWidgetComponent->SetHiddenInGame(true);
+}
+
+void ACCharacter::OnDead()
+{
+}
+
+void ACCharacter::OnRespawn()
+{
 }
 
 void ACCharacter::ConfigureOverheadWidget()

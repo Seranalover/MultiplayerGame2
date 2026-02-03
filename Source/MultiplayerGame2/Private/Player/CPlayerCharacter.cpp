@@ -105,3 +105,23 @@ void ACPlayerCharacter::HandleAbilityInput(const FInputActionValue& InputActionV
 		GetAbilitySystemComponent()->AbilityLocalInputReleased((int32)AbilityInputID);
 	}
 }
+
+void ACPlayerCharacter::OnDead()
+{
+	APlayerController* PlayerController = GetController<APlayerController>();
+	if (PlayerController)
+	{
+		DisableInput(PlayerController);
+		UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: MultiOnDead"));
+	}
+}
+
+void ACPlayerCharacter::OnRespawn()
+{
+	APlayerController* PlayerController = GetController<APlayerController>();
+	if (PlayerController)
+	{
+		EnableInput(PlayerController);
+		UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: OnRespawn"));
+	}
+}

@@ -54,4 +54,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TMap<ECAbilityInputID, class UInputAction*> GameplayAbilityInputActions; //所有技能id与IA的map集合
 	void HandleAbilityInput(const FInputActionValue& InputActionValue, ECAbilityInputID AbilityInputID); //施放技能实现
+	
+	/*****************************************************************/
+	/*                        Death and Respawn                      */
+	/*****************************************************************/
+	virtual void OnDead() override;
+	virtual void OnRespawn() override;
 };
