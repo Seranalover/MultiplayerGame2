@@ -112,7 +112,6 @@ void ACPlayerCharacter::OnDead()
 	if (PlayerController)
 	{
 		DisableInput(PlayerController);
-		UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: MultiOnDead"));
 	}
 }
 
@@ -122,6 +121,5 @@ void ACPlayerCharacter::OnRespawn()
 	if (PlayerController)
 	{
 		EnableInput(PlayerController);
-		UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: OnRespawn"));
 	}
 }

@@ -16,7 +16,8 @@ ACCharacter::ACCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision); //关闭自身碰撞
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision); //关闭骨骼碰撞
+	// GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); //开启胶囊体碰撞
 	
 	CAbilitySystemComponent = CreateDefaultSubobject<UCAbilitySystemComponent>("CAbility System Component"); //创建GAS组件
 	CAttributeSet = CreateDefaultSubobject<UCAttributeSet>("CAttribute Set"); //创建AS组件
@@ -24,7 +25,6 @@ ACCharacter::ACCharacter()
 	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("Overhead Widget Component"); //创建头顶状态栏
 	OverheadWidgetComponent->SetupAttachment(GetRootComponent()); //添加状态栏到根组件
 	
-	BindGASChangeDelegates();
 }
 
 //服务端初始化
@@ -62,6 +62,7 @@ void ACCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	ConfigureOverheadWidget();
+	BindGASChangeDelegates();
 }
 
 // Called every frame
@@ -107,18 +108,34 @@ void ACCharacter::DeathTagUpdated(const FGameplayTag Tag, int32 NewCount)
 
 void ACCharacter::StartDeathSequence()
 {
-	UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: StartDeathSequence"));
+	// 关键检查：确保不是CDO
+	if (HasAnyFlags(RF_ClassDefaultObject | RF_ArchetypeObject))
+	{
+		UE_LOG(LogTemp, Fatal, TEXT("FATAL: Modifying CDO! Actor: %s"), *GetName());
+		return;
+	}
+	
+	// UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: StartDeathSequence"));
 	OnDead(); //因当前类可能是AI，所以在子类关闭控制器输入
 	PlayDeathAnimation(); //播放死亡蒙太奇
-	// SetStatsGaugeEnabled(false); //关闭血条显示
+	SetStatsGaugeEnabled(false); //关闭血条显示
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None); //禁用移动
-	// GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision); //禁用碰撞
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision); //禁用碰撞
 }
 
 void ACCharacter::Respawn()
 {
-	UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: Respawn"));
+	// UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: Respawn"));
 	OnRespawn();
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); //恢复碰撞
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); //恢复移动
+	GetMesh()->GetAnimInstance()->StopAllMontages(0.f); //关闭所有动画
+	SetStatsGaugeEnabled(true); //恢复血条显示
+	
+	if (CAbilitySystemComponent)
+	{
+		CAbilitySystemComponent->ApplyFullStatEffect();
+	}
 }
 
 void ACCharacter::PlayDeathAnimation()
