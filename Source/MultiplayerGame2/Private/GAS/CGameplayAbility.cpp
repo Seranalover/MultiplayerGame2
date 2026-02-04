@@ -13,11 +13,13 @@ class UAnimInstance* UCGameplayAbility::GetOwnerAnimInstance() const
 }
 
 TArray<FHitResult> UCGameplayAbility::GetHitResultsFromSweepLocationTargetData(
-	const FGameplayAbilityTargetDataHandle& TargetDataHandle, float SphereSweepRadius, bool bDrawDebug,
-	bool bIgnoreSelf) const
+	const FGameplayAbilityTargetDataHandle& TargetDataHandle, float SphereSweepRadius, ETeamAttitude::Type TargetTeam,
+	bool bDrawDebug, bool bIgnoreSelf) const
 {
-	TArray<FHitResult> OutResults;
+	TArray<FHitResult> OutResults; //返回的命中结果
 	TSet<AActor*> HitActors; //已命中过的actor，避免重复命中同一个actor
+	
+	IGenericTeamAgentInterface* OwnerTeamInterface = Cast<IGenericTeamAgentInterface>(GetAvatarActorFromActorInfo());
 	
 	for (const TSharedPtr<FGameplayAbilityTargetData> TargetData : TargetDataHandle.Data)
 	{
@@ -42,6 +44,13 @@ TArray<FHitResult> UCGameplayAbility::GetHitResultsFromSweepLocationTargetData(
 		{
 			if (HitActors.Contains(HitResult.GetActor())) 
 				continue; //已命中过actor，跳过
+			
+			if (OwnerTeamInterface)
+			{
+				ETeamAttitude::Type OtherActorTeamAttitude = OwnerTeamInterface->GetTeamAttitudeTowards(*HitResult.GetActor());
+				if (OtherActorTeamAttitude != TargetTeam)
+					continue; //命中非敌方，跳过
+			}
 			
 			HitActors.Add(HitResult.GetActor()); 
 			OutResults.Add(HitResult);

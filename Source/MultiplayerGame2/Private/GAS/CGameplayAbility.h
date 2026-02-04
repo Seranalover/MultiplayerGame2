@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "Abilities/GameplayAbility.h"
 #include "CGameplayAbility.generated.h"
 
@@ -17,5 +18,6 @@ class UCGameplayAbility : public UGameplayAbility
 protected:
 	class UAnimInstance* GetOwnerAnimInstance() const; //动画实例
 	TArray<FHitResult> GetHitResultsFromSweepLocationTargetData(const FGameplayAbilityTargetDataHandle& TargetDataHandle, 
-		float SphereSweepRadius = 30.0f, bool bDrawDebug = false, bool bIgnoreSelf = true) const; //Target插槽扫描结果
+		float SphereSweepRadius = 30.0f, ETeamAttitude::Type TargetTeam = ETeamAttitude::Hostile, bool bDrawDebug = false, 
+		bool bIgnoreSelf = true) const; //Target插槽扫描结果
 };

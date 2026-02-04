@@ -129,7 +129,7 @@ void UGA_Combo::DoDamage(FGameplayEventData Data)
 {
 	//扫描结果
 	TArray<FHitResult> HitResults = 
-		GetHitResultsFromSweepLocationTargetData(Data.TargetData, TargetSweepSphereRadius, false, true);
+		GetHitResultsFromSweepLocationTargetData(Data.TargetData, TargetSweepSphereRadius);
 	
 	for (const FHitResult& HitResult : HitResults)
 	{
