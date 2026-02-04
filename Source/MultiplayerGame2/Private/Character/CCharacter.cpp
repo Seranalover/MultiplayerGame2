@@ -61,6 +61,7 @@ void ACCharacter::PossessedBy(AController* NewController)
 void ACCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	MeshRelativeTransform = GetMesh()->GetRelativeTransform();
 	ConfigureOverheadWidget();
 	BindGASChangeDelegates();
 }
@@ -127,6 +128,7 @@ void ACCharacter::Respawn()
 {
 	// UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: Respawn"));
 	OnRespawn();
+	SetRagdollEnabled(false); //关闭布偶效果
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); //恢复碰撞
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); //恢复移动
 	GetMesh()->GetAnimInstance()->StopAllMontages(0.f); //关闭所有动画
@@ -142,7 +144,9 @@ void ACCharacter::PlayDeathAnimation()
 {
 	if (DeathAnimMontage)
 	{
-		PlayAnimMontage(DeathAnimMontage);
+		float MontageDuration = PlayAnimMontage(DeathAnimMontage);
+		GetWorldTimerManager().SetTimer(DeathMontageTimerHandle, this,
+			&ACCharacter::DeathMontageFinished, MontageDuration + DeathMontageFinishTimeShift);
 	}
 		
 }
@@ -162,6 +166,28 @@ void ACCharacter::OnDead()
 
 void ACCharacter::OnRespawn()
 {
+}
+
+void ACCharacter::DeathMontageFinished()
+{
+	SetRagdollEnabled(true);
+}
+
+void ACCharacter::SetRagdollEnabled(bool bIsEnable)
+{
+	if (bIsEnable)
+	{
+		GetMesh()->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform); //分离骨骼
+		GetMesh()->SetSimulatePhysics(true); //开启模拟物理
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly); //开启骨骼碰撞
+	}
+	else
+	{
+		GetMesh()->SetSimulatePhysics(false);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetMesh()->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		GetMesh()->SetRelativeTransform(MeshRelativeTransform); //设置骨骼相对变换
+	}
 }
 
 void ACCharacter::ConfigureOverheadWidget()

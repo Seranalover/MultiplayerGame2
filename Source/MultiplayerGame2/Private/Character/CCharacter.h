@@ -67,6 +67,13 @@ private:
 	/*                             Death and Respawn                            */
 	/****************************************************************************/
 private:
+	UPROPERTY(EditDefaultsOnly, Category="Death")
+	UAnimMontage* DeathAnimMontage;
+	UPROPERTY(EditDefaultsOnly, Category="Death")
+	float DeathMontageFinishTimeShift = -0.8f; //动画播放时间偏移，用于在死亡动画中途就开启布偶效果
+	FTimerHandle DeathMontageTimerHandle; //死亡动画计时器
+	FTransform MeshRelativeTransform; //骨骼相对位置
+	
 	void DeathTagUpdated(const FGameplayTag Tag, int32 NewCount); //死亡tag变更
 	void StartDeathSequence(); //开始执行死亡任务序列
 	void Respawn(); //重生
@@ -74,8 +81,7 @@ private:
 	void SetStatsGaugeEnabled(bool bIsEnable); //显示血条
 	virtual void OnDead();
 	virtual void OnRespawn();
-	
-	UPROPERTY(EditDefaultsOnly, Category="Death")
-	UAnimMontage* DeathAnimMontage;
+	void DeathMontageFinished();
+	void SetRagdollEnabled(bool bIsEnable); //设置布偶效果
 	
 };
