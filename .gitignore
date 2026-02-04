@@ -1,5 +1,9 @@
-﻿# Crunch
+﻿# 静态资源
 Content/ParagonCrunch
+Content/Maps
+Content/Megascans
+Content/Models
+Content/MSPresets
 
 # Visual Studio user-specific files
 vs/
