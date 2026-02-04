@@ -9,6 +9,7 @@
 #include "GAS/CAbilitySystemComponent.h"
 #include "GAS/CAbilitySystemStatics.h"
 #include "GAS/CAttributeSet.h"
+#include "Net/UnrealNetwork.h"
 #include "Widgets/OverheadStatsGauge.h"
 
 // Sets default values
@@ -45,6 +46,12 @@ bool ACCharacter::IsLocallyControlledByPlayer() const
 {
 	//控制器不为空且为本地玩家控制器？
 	return GetController() && GetController()->IsLocalPlayerController();
+}
+
+void ACCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ACCharacter, TeamId);
 }
 
 //only called on the Server
@@ -221,5 +228,15 @@ void ACCharacter::UpdateOverheadWidgetVisibility()
 		float DistanceSquared = FVector::DistSquared(LocalPlayerPawn->GetActorLocation(), GetActorLocation()); //距离平方
 		OverheadWidgetComponent->SetHiddenInGame(DistanceSquared > OverheadWidgetVisibilityRangeSquared); //距离过远隐藏头顶状态栏
 	}
+}
+
+void ACCharacter::SetGenericTeamId(const FGenericTeamId& NewTeamID)
+{
+	TeamId = NewTeamID;
+}
+
+FGenericTeamId ACCharacter::GetGenericTeamId() const
+{
+	return TeamId;
 }
 

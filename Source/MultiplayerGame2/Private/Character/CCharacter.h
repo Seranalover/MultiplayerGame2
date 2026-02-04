@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayTagContainer.h"
+#include "GenericTeamAgentInterface.h"
 #include "GameFramework/Character.h"
 #include "CCharacter.generated.h"
 
@@ -12,7 +13,7 @@
  * 角色基类
  */
 UCLASS()
-class ACCharacter : public ACharacter, public IAbilitySystemInterface
+class ACCharacter : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -22,11 +23,12 @@ public:
 	void ServerSideInit(); //服务端初始化
 	void ClientSideInit(); //客户端初始化
 	bool IsLocallyControlledByPlayer() const; //是否由本地玩家控制器操控
-	virtual void PossessedBy(AController* NewController) override; //only called on the Server
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override; //管理数据生命周期并同步到客户端
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void PossessedBy(AController* NewController) override; //only called on the Server
 
 public:	
 	// Called every frame
@@ -84,4 +86,16 @@ private:
 	void DeathMontageFinished();
 	void SetRagdollEnabled(bool bIsEnable); //设置布偶效果
 	
+	/****************************************************************************/
+	/*                                   Team                                   */
+	/****************************************************************************/
+public:
+	/** Assigns Team Agent to given TeamID */
+	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override; //设置team id
+	/** Retrieve team identifier in form of FGenericTeamId */
+	virtual FGenericTeamId GetGenericTeamId() const override; //获得team id
+	
+private:
+	UPROPERTY(Replicated)
+	FGenericTeamId TeamId;
 };
