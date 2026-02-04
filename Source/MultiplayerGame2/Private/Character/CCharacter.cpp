@@ -141,9 +141,16 @@ void ACCharacter::Respawn()
 	GetMesh()->GetAnimInstance()->StopAllMontages(0.f); //关闭所有动画
 	SetStatsGaugeEnabled(true); //恢复血条显示
 	
+	if (HasAuthority() && GetController())
+	{
+		TWeakObjectPtr<AActor> StartSpot = GetController()->StartSpot;
+		if (StartSpot.IsValid())
+			SetActorTransform(StartSpot->GetActorTransform());
+	}
+	
 	if (CAbilitySystemComponent)
 	{
-		CAbilitySystemComponent->ApplyFullStatEffect();
+		CAbilitySystemComponent->ApplyFullStatEffect(); //回复所有状态
 	}
 }
 

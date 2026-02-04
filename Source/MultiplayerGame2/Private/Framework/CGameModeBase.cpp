@@ -9,10 +9,10 @@ APlayerController* ACGameModeBase::SpawnPlayerController(ENetRole InRemoteRole, 
 {
 	APlayerController* NewPlayerController = Super::SpawnPlayerController(InRemoteRole, Options);
 	IGenericTeamAgentInterface* NewPlayerTeamAgentInterface = Cast<IGenericTeamAgentInterface>(NewPlayerController);
-	FGenericTeamId NewTeamId = GetTeamIdForPlayer(NewPlayerController);
+	FGenericTeamId NewTeamId = GetTeamIdForPlayer(NewPlayerController); //生成team id
 	if (NewPlayerTeamAgentInterface)
 	{
-		NewPlayerTeamAgentInterface->SetGenericTeamId(NewTeamId);
+		NewPlayerTeamAgentInterface->SetGenericTeamId(NewTeamId); //设置team id
 	}
 	NewPlayerController->StartSpot = FindNextStartSpotForTeam(NewTeamId); //分配出生点
 	return NewPlayerController;

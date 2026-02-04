@@ -21,7 +21,7 @@ public:
 private:
 	FGenericTeamId GetTeamIdForPlayer(const APlayerController* PlayerController) const; //生成team id
 	
-	AActor* FindNextStartSpotForTeam(const FGenericTeamId& TeamId) const;
+	AActor* FindNextStartSpotForTeam(const FGenericTeamId& TeamId) const; //获得出生点信息
 	
 	UPROPERTY(EditDefaultsOnly, Category="Team")
 	TMap<FGenericTeamId, FName> TeamStartSpotTagMap; //玩家出生点集合
