@@ -105,4 +105,6 @@ private:
 private:
 	UPROPERTY()
 	class UAIPerceptionStimuliSourceComponent* PerceptionStimuliSourceComponent; //感知刺激源组件
+	
+	void SetAIPerceptionStimuliSourceEnabled(bool bIsEnable); //设置是否开启感知刺激源
 };

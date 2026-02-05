@@ -136,6 +136,7 @@ void ACCharacter::StartDeathSequence()
 	SetStatsGaugeEnabled(false); //关闭血条显示
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None); //禁用移动
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision); //禁用碰撞
+	SetAIPerceptionStimuliSourceEnabled(false); //关闭感知刺激源
 }
 
 void ACCharacter::Respawn()
@@ -147,6 +148,7 @@ void ACCharacter::Respawn()
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); //恢复移动
 	GetMesh()->GetAnimInstance()->StopAllMontages(0.f); //关闭所有动画
 	SetStatsGaugeEnabled(true); //恢复血条显示
+	SetAIPerceptionStimuliSourceEnabled(true); //开启感知刺激源
 	
 	if (HasAuthority() && GetController())
 	{
@@ -253,5 +255,14 @@ void ACCharacter::SetGenericTeamId(const FGenericTeamId& NewTeamID)
 FGenericTeamId ACCharacter::GetGenericTeamId() const
 {
 	return TeamId;
+}
+
+void ACCharacter::SetAIPerceptionStimuliSourceEnabled(bool bIsEnable)
+{
+	if (!PerceptionStimuliSourceComponent) return;
+	if (bIsEnable)
+		PerceptionStimuliSourceComponent->RegisterWithPerceptionSystem(); //刺激源注册到感知系统
+	else
+		PerceptionStimuliSourceComponent->UnregisterFromPerceptionSystem(); //取消注册
 }
 

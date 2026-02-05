@@ -3,7 +3,10 @@
 
 #include "AI/CAIController.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "GAS/CAbilitySystemStatics.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 
@@ -54,6 +57,7 @@ void ACAIController::TargetPerceptionUpdated(AActor* TargetActor, FAIStimulus St
 	}
 	else
 	{
+		ForgetActorIfDead(TargetActor); //目标死亡，立即遗忘
 	}
 		
 }
@@ -95,4 +99,22 @@ AActor* ACAIController::GetNextPerceivedActor() const
 			return Actors[0];
 	}
 	return nullptr;
+}
+
+void ACAIController::ForgetActorIfDead(AActor* Actor)
+{
+	const UAbilitySystemComponent* ActorASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Actor);
+	if (!ActorASC) return;
+	
+	if (ActorASC->HasMatchingGameplayTag(UCAbilitySystemStatics::GetDeadStatTag())) //目标死亡？
+	{
+		for (UAIPerceptionComponent::TActorPerceptionContainer::TIterator Iterator = 
+			AiPerceptionComponent->GetPerceptualDataIterator(); Iterator; ++Iterator) //遍历所有感知数据
+		{
+			if (Iterator->Key != Actor) continue;
+			
+			for (FAIStimulus& Stimuli : Iterator->Value.LastSensedStimuli) //遍历该actor的所有刺激源
+				Stimuli.SetStimulusAge(TNumericLimits<float>::Max()); //直接将当前遗忘计时设为最大值
+		}
+	}
 }
