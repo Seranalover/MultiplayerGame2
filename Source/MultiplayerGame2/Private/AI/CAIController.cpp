@@ -23,7 +23,8 @@ ACAIController::ACAIController()
 	
 	AiPerceptionComponent->ConfigureSense(*SightConfig); //配置视线参数
 	//ai感知目标更新时，绑定到TargetPerceptionUpdated()
-	AiPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ACAIController::TargetPerceptionUpdated); 
+	AiPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ACAIController::TargetPerceptionUpdated);
+	AiPerceptionComponent->OnTargetPerceptionForgotten.AddDynamic(this, &ACAIController::TargetForgotten); //ai感知目标被遗忘时
 }
 
 void ACAIController::OnPossess(APawn* InPawn)
@@ -53,10 +54,16 @@ void ACAIController::TargetPerceptionUpdated(AActor* TargetActor, FAIStimulus St
 	}
 	else
 	{
-		if (GetCurrentTarget() == TargetActor)
-			SetCurrentTarget(nullptr); //清除目标
 	}
 		
+}
+
+void ACAIController::TargetForgotten(AActor* ForgottenActor)
+{
+	if (!ForgottenActor) return;
+	
+	if (GetCurrentTarget() == ForgottenActor)
+		SetCurrentTarget(GetNextPerceivedActor()); //遗忘当前目标时，将感知到的下一个目标设置为追踪目标
 }
 
 const UObject* ACAIController::GetCurrentTarget() const
@@ -75,4 +82,17 @@ void ACAIController::SetCurrentTarget(AActor* TargetActor)
 		BlackboardComponent->SetValueAsObject(TargetBlackboardKeyName, TargetActor); //设置目标
 	else
 		BlackboardComponent->ClearValue(TargetBlackboardKeyName); //清除目标
+}
+
+AActor* ACAIController::GetNextPerceivedActor() const
+{
+	if (PerceptionComponent)
+	{
+		TArray<AActor*> Actors;
+		AiPerceptionComponent->GetPerceivedHostileActors(Actors); //将感知到的敌人actor存入数组
+		
+		if (Actors.Num() != 0)
+			return Actors[0];
+	}
+	return nullptr;
 }

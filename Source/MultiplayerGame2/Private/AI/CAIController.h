@@ -34,8 +34,11 @@ private:
 	FName TargetBlackboardKeyName = "Target";
 	
 	UFUNCTION()
-	void TargetPerceptionUpdated(AActor* TargetActor, FAIStimulus Stimulus);
+	void TargetPerceptionUpdated(AActor* TargetActor, FAIStimulus Stimulus); //感知目标更新时
+	UFUNCTION()
+	void TargetForgotten(AActor* ForgottenActor); //感知目标被遗忘
 	
 	const UObject* GetCurrentTarget() const; //当前追逐目标
-	void SetCurrentTarget(AActor* TargetActor);
+	void SetCurrentTarget(AActor* TargetActor); //设置当前追逐目标
+	AActor* GetNextPerceivedActor() const; //感知到的下一个目标
 };
