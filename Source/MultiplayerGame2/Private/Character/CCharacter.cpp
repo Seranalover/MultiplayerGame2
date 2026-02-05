@@ -11,6 +11,9 @@
 #include "GAS/CAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Perception/AIPerceptionComponent.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
 #include "Widgets/OverheadStatsGauge.h"
 
 // Sets default values
@@ -27,6 +30,7 @@ ACCharacter::ACCharacter()
 	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("Overhead Widget Component"); //创建头顶状态栏
 	OverheadWidgetComponent->SetupAttachment(GetRootComponent()); //添加状态栏到根组件
 	
+	PerceptionStimuliSourceComponent = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>("Perception Stimuli Source Component");
 }
 
 //服务端初始化
@@ -72,6 +76,8 @@ void ACCharacter::BeginPlay()
 	MeshRelativeTransform = GetMesh()->GetRelativeTransform();
 	ConfigureOverheadWidget();
 	BindGASChangeDelegates();
+	
+	PerceptionStimuliSourceComponent->RegisterForSense(UAISense_Sight::StaticClass()); //注册感知功能
 }
 
 // Called every frame
