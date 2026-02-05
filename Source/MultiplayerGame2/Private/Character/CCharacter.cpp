@@ -9,6 +9,7 @@
 #include "GAS/CAbilitySystemComponent.h"
 #include "GAS/CAbilitySystemStatics.h"
 #include "GAS/CAttributeSet.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Widgets/OverheadStatsGauge.h"
 
@@ -229,7 +230,8 @@ void ACCharacter::ConfigureOverheadWidget()
 
 void ACCharacter::UpdateOverheadWidgetVisibility()
 {
-	APawn* LocalPlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn(); //获取local player pawn
+	// APawn* LocalPlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn(); //获取local player pawn，AI用该方法会导致空指针
+	APawn* LocalPlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0); //获取local player pawn
 	if (LocalPlayerPawn)
 	{
 		float DistanceSquared = FVector::DistSquared(LocalPlayerPawn->GetActorLocation(), GetActorLocation()); //距离平方
