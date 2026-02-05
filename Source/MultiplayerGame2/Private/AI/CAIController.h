@@ -8,7 +8,7 @@
 #include "CAIController.generated.h"
 
 /**
- * 
+ * AI控制器
  */
 UCLASS()
 class ACAIController : public AAIController
