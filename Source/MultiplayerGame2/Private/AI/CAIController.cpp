@@ -34,7 +34,7 @@ ACAIController::ACAIController()
 void ACAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-	SetGenericTeamId(FGenericTeamId(0)); //初始化ai的team id
+	SetGenericTeamId(FGenericTeamId(1)); //初始化ai的team id
 	
 	IGenericTeamAgentInterface* PawnTeamAgentInterface = Cast<IGenericTeamAgentInterface>(InPawn);
 	if (PawnTeamAgentInterface)
