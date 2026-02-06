@@ -41,13 +41,14 @@ FGameplayTag UGA_UpperCut::GetUpperCutLaunchTag()
 
 void UGA_UpperCut::StartLaunching(FGameplayEventData EventData)
 {
-	TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(EventData.TargetData, TargetSweepSphereRadius,
-		ETeamAttitude::Hostile, ShouldDrawDebug());
 	if (K2_HasAuthority())
 	{
+		TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(EventData.TargetData, TargetSweepSphereRadius,
+			ETeamAttitude::Hostile, ShouldDrawDebug()); //命中结果
+		PushTarget(GetAvatarActorFromActorInfo(), FVector::UpVector * UpperLaunchVelocity); //自身浮空
 		for (FHitResult& HitResult : HitResults)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("I hit: %s"), *HitResult.GetActor()->GetName());
+			PushTarget(HitResult.GetActor(), FVector::UpVector * UpperLaunchVelocity); //击飞敌人
 		}
 	}
 }

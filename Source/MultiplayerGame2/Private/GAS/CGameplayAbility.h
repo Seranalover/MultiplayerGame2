@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GenericTeamAgentInterface.h"
+#include "GameFramework/Character.h"
 #include "Abilities/GameplayAbility.h"
 #include "CGameplayAbility.generated.h"
 
@@ -22,9 +23,18 @@ protected:
 		float SphereSweepRadius = 30.0f, ETeamAttitude::Type TargetTeam = ETeamAttitude::Hostile, bool bDrawDebug = false, 
 		bool bIgnoreSelf = true) const; //Target插槽扫描结果
 	
-	FORCEINLINE bool ShouldDrawDebug() const { return bShouldDrawDebug; }
+	FORCEINLINE bool ShouldDrawDebug() const { return bShouldDrawDebug; } //是否开启绘制debug
+	
+	void PushSelf(const FVector& PushVelocity); //将自身推向某个方向，作用于浮空、被击飞等场景
+	
+	void PushTarget(AActor* Target, const FVector& PushVelocity); //将目标推向某个方向
+	
+	ACharacter* GetOwningAvatarCharacter();
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Debug")
 	bool bShouldDrawDebug = false;
+	
+	UPROPERTY()
+	class ACharacter* CharacterRef;
 };

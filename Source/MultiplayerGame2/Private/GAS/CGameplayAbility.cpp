@@ -3,6 +3,8 @@
 
 #include "GAS/CGameplayAbility.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "GA_PassiveLaunched.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 class UAnimInstance* UCGameplayAbility::GetOwnerAnimInstance() const
@@ -58,4 +60,34 @@ TArray<FHitResult> UCGameplayAbility::GetHitResultsFromSweepLocationTargetData(
 	}
 	
 	return OutResults;
+}
+
+void UCGameplayAbility::PushSelf(const FVector& PushVelocity)
+{
+	ACharacter* OwningAvatarCharacter = GetOwningAvatarCharacter();
+	if (OwningAvatarCharacter)
+	{
+		OwningAvatarCharacter->LaunchCharacter(PushVelocity, true, true); //将自身推向某个方向
+	}
+}
+
+void UCGameplayAbility::PushTarget(AActor* Target, const FVector& PushVelocity)
+{
+	if (!Target) return;
+	FGameplayEventData PushEventData;
+	FGameplayAbilityTargetData_SingleTargetHit* TargetData = new FGameplayAbilityTargetData_SingleTargetHit; //被击中的目标
+	FHitResult HitResult;
+	HitResult.ImpactNormal = PushVelocity; //将推动方向存入HitResult
+	TargetData->HitResult = HitResult; //将HitResult存入TargetData
+	PushEventData.TargetData.Add(TargetData); //将TargetData存入事件数据
+	
+	//将推动事件数据传递给GA_PassiveLaunched技能类
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Target, UGA_PassiveLaunched::GetLaunchedAbilityTriggerTag(), PushEventData);
+}
+
+ACharacter* UCGameplayAbility::GetOwningAvatarCharacter()
+{
+	if (!CharacterRef)
+		CharacterRef = Cast<ACharacter>(GetAvatarActorFromActorInfo());
+	return CharacterRef;
 }
