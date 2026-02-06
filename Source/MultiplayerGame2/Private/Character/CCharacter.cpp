@@ -132,6 +132,7 @@ void ACCharacter::StartDeathSequence()
 	
 	// UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: StartDeathSequence"));
 	OnDead(); //因当前类可能是AI，所以在子类关闭控制器输入
+	if (CAbilitySystemComponent) CAbilitySystemComponent->CancelAbilities(); //取消所有技能，包括正在执行的技能
 	PlayDeathAnimation(); //播放死亡蒙太奇
 	SetStatsGaugeEnabled(false); //关闭血条显示
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None); //禁用移动
@@ -142,7 +143,7 @@ void ACCharacter::StartDeathSequence()
 void ACCharacter::Respawn()
 {
 	// UE_LOG(LogTemp, Warning, TEXT("MultiplayerGame2 Error: Respawn"));
-	OnRespawn();
+	OnRespawn(); //在子类开启控制器输入
 	SetRagdollEnabled(false); //关闭布偶效果
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); //恢复碰撞
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); //恢复移动

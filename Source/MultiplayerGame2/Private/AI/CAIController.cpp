@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "BrainComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GAS/CAbilitySystemStatics.h"
 #include "Perception/AIPerceptionComponent.h"
@@ -39,6 +40,12 @@ void ACAIController::OnPossess(APawn* InPawn)
 	if (PawnTeamAgentInterface)
 	{
 		PawnTeamAgentInterface->SetGenericTeamId(GetGenericTeamId()); //设置ai的team id
+	}
+	
+	UAbilitySystemComponent* PawnASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InPawn);
+	if (PawnASC)
+	{
+		PawnASC->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetDeadStatTag()).AddUObject(this, &ACAIController::PawnDeadTagUpdated);
 	}
 }
 
@@ -116,5 +123,44 @@ void ACAIController::ForgetActorIfDead(AActor* Actor)
 			for (FAIStimulus& Stimuli : Iterator->Value.LastSensedStimuli) //遍历该actor的所有刺激源
 				Stimuli.SetStimulusAge(TNumericLimits<float>::Max()); //直接将当前遗忘计时设为最大值
 		}
+	}
+}
+
+void ACAIController::DisableAllSenses()
+{
+	AiPerceptionComponent->AgeStimuli(TNumericLimits<float>::Max()); //使所有刺激数据过期
+	
+	for (auto SenseConfigIt = AiPerceptionComponent->GetSensesConfigIterator(); 
+		SenseConfigIt; ++SenseConfigIt) //遍历所有感知
+	{
+		AiPerceptionComponent->SetSenseEnabled((*SenseConfigIt)->GetSenseImplementation(), false); //循环关闭所有感知
+	}
+	
+	if (GetBlackboardComponent())
+	{
+		GetBlackboardComponent()->ClearValue(TargetBlackboardKeyName); //清除黑板target信息
+	}
+}
+
+void ACAIController::EnableDisableAllSenses()
+{
+	for (auto SenseConfigIt = AiPerceptionComponent->GetSensesConfigIterator(); 
+		SenseConfigIt; ++SenseConfigIt) //遍历所有感知
+	{
+		AiPerceptionComponent->SetSenseEnabled((*SenseConfigIt)->GetSenseImplementation(), true); //循环开启所有感知
+	}
+}
+
+void ACAIController::PawnDeadTagUpdated(const FGameplayTag Tag, int32 Count)
+{
+	if (Count != 0)
+	{
+		GetBrainComponent()->StopLogic("Dead"); //停止AI行为树
+		DisableAllSenses();
+	}
+	else
+	{
+		GetBrainComponent()->StartLogic();
+		EnableDisableAllSenses();
 	}
 }
