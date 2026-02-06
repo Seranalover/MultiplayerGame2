@@ -96,8 +96,10 @@ public:
 	virtual FGenericTeamId GetGenericTeamId() const override; //获得team id
 	
 private:
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_TeamID)
 	FGenericTeamId TeamId;
+	UFUNCTION()
+	virtual void OnRep_TeamID(); //SetGenericTeamId()被调用时，TeamId在服务端还没被复制，因此手动复制
 	
 	/****************************************************************************/
 	/*                                    AI                                    */

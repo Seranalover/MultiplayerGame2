@@ -185,11 +185,11 @@ void ACCharacter::SetStatsGaugeEnabled(bool bIsEnable)
 }
 
 void ACCharacter::OnDead()
-{
+{ //override in child class
 }
 
 void ACCharacter::OnRespawn()
-{
+{ //override in child class
 }
 
 void ACCharacter::DeathMontageFinished()
@@ -267,3 +267,7 @@ void ACCharacter::SetAIPerceptionStimuliSourceEnabled(bool bIsEnable)
 		PerceptionStimuliSourceComponent->UnregisterFromPerceptionSystem(); //取消注册
 }
 
+void ACCharacter::OnRep_TeamID()
+{
+	//override in child class
+}
