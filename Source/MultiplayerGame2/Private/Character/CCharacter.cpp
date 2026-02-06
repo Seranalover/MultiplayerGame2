@@ -194,7 +194,8 @@ void ACCharacter::OnRespawn()
 
 void ACCharacter::DeathMontageFinished()
 {
-	SetRagdollEnabled(true);
+	if (IsDead())
+		SetRagdollEnabled(true);
 }
 
 void ACCharacter::SetRagdollEnabled(bool bIsEnable)
@@ -246,6 +247,18 @@ void ACCharacter::UpdateOverheadWidgetVisibility()
 		float DistanceSquared = FVector::DistSquared(LocalPlayerPawn->GetActorLocation(), GetActorLocation()); //距离平方
 		OverheadWidgetComponent->SetHiddenInGame(DistanceSquared > OverheadWidgetVisibilityRangeSquared); //距离过远隐藏头顶状态栏
 	}
+}
+
+bool ACCharacter::IsDead() const
+{
+	return GetAbilitySystemComponent()->HasMatchingGameplayTag(UCAbilitySystemStatics::GetDeadStatTag()); //是否存活？
+
+}
+
+void ACCharacter::RespawnImmediately()
+{
+	if (HasAuthority())
+		GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(UCAbilitySystemStatics::GetDeadStatTag())); //移除dead tag
 }
 
 void ACCharacter::SetGenericTeamId(const FGenericTeamId& NewTeamID)
