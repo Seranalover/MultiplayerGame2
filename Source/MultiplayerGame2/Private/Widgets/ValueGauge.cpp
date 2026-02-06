@@ -12,6 +12,9 @@ void UValueGauge::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 	ProgressBar->SetFillColorAndOpacity(BarColor); //设置颜色和不透明度
+	ValueText->SetFont(ValueTextFont);
+	ValueText->SetVisibility(bValueTextVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+	ProgressBar->SetVisibility(bProgressBarVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 }
 
 void UValueGauge::SetAndBoundToGameplayAttribute(class UAbilitySystemComponent* AbilitySystemComponent,

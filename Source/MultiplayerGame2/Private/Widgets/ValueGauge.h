@@ -39,5 +39,12 @@ private:
 	UPROPERTY(VisibleAnywhere, meta=(BindWidget))
 	class UTextBlock* ValueText; //文本
 	
+	UPROPERTY(EditAnywhere, Category="Visual")
+	FSlateFontInfo ValueTextFont; //字体
 	
+	UPROPERTY(EditAnywhere, Category="Visual")
+	bool bValueTextVisible = true;
+	
+	UPROPERTY(EditAnywhere, Category="Visual")
+	bool bProgressBarVisible = true;
 };
