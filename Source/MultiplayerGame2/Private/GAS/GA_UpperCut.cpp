@@ -4,6 +4,7 @@
 #include "GAS/GA_UpperCut.h"
 
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 
 void UGA_UpperCut::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                    const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -15,6 +16,8 @@ void UGA_UpperCut::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	}
 	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
 	{
+		//类似combo逻辑处理
+		//播放蒙太奇
 		UAbilityTask_PlayMontageAndWait* PlayMontageAndWait = 
 			UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, UpperCutMontage);
 		PlayMontageAndWait->OnBlendOut.AddDynamic(this, &UGA_UpperCut::K2_EndAbility);
@@ -22,5 +25,29 @@ void UGA_UpperCut::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 		PlayMontageAndWait->OnInterrupted.AddDynamic(this, &UGA_UpperCut::K2_EndAbility);
 		PlayMontageAndWait->OnCompleted.AddDynamic(this, &UGA_UpperCut::K2_EndAbility);
 		PlayMontageAndWait->ReadyForActivation();
+		
+		//执行攻击事件
+		UAbilityTask_WaitGameplayEvent* WaitGameplayEvent =
+			UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, GetUpperCutLaunchTag());
+		WaitGameplayEvent->EventReceived.AddDynamic(this, &UGA_UpperCut::StartLaunching);
+		WaitGameplayEvent->ReadyForActivation();
+	}
+}
+
+FGameplayTag UGA_UpperCut::GetUpperCutLaunchTag()
+{
+	return FGameplayTag::RequestGameplayTag("ability.uppercut.launch");
+}
+
+void UGA_UpperCut::StartLaunching(FGameplayEventData EventData)
+{
+	TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(EventData.TargetData, TargetSweepSphereRadius,
+		ETeamAttitude::Hostile, ShouldDrawDebug());
+	if (K2_HasAuthority())
+	{
+		for (FHitResult& HitResult : HitResults)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("I hit: %s"), *HitResult.GetActor()->GetName());
+		}
 	}
 }

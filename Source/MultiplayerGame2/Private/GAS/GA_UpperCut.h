@@ -22,4 +22,12 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Animation")
 	UAnimMontage* UpperCutMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Targetting")
+	float TargetSweepSphereRadius = 80.f; //碰撞扫描半径
+	
+	static FGameplayTag GetUpperCutLaunchTag(); //上勾拳开始tag，同时接收target信息
+	
+	UFUNCTION()
+	void StartLaunching(FGameplayEventData EventData);
 };
