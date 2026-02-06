@@ -43,7 +43,7 @@ private:
 	void SetCurrentTarget(AActor* TargetActor); //设置当前追逐目标
 	AActor* GetNextPerceivedActor() const; //感知到的下一个目标
 	void ForgetActorIfDead(AActor* Actor); //目标死亡不必等待时间，立即遗忘
-	void DisableAllSenses(); //停用所有感知
-	void EnableDisableAllSenses(); //启用所有感知
+	void ClearAndDisableAllSenses(); //停用所有感知
+	void EnableAllSenses(); //启用所有感知
 	void PawnDeadTagUpdated(const FGameplayTag Tag, int32 Count);
 };

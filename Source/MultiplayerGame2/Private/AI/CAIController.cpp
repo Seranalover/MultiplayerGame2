@@ -34,12 +34,15 @@ ACAIController::ACAIController()
 void ACAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-	SetGenericTeamId(FGenericTeamId(1)); //初始化ai的team id
+	// SetGenericTeamId(FGenericTeamId(1)); //初始化ai的team id
 	
 	IGenericTeamAgentInterface* PawnTeamAgentInterface = Cast<IGenericTeamAgentInterface>(InPawn);
 	if (PawnTeamAgentInterface)
 	{
-		PawnTeamAgentInterface->SetGenericTeamId(GetGenericTeamId()); //设置ai的team id
+		// PawnTeamAgentInterface->SetGenericTeamId(GetGenericTeamId()); //设置ai的team id
+		SetGenericTeamId(PawnTeamAgentInterface->GetGenericTeamId()); //设置ai的team id
+		ClearAndDisableAllSenses(); //清理上次的感知数据
+		EnableAllSenses(); //开启所有感知
 	}
 	
 	UAbilitySystemComponent* PawnASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InPawn);
@@ -126,7 +129,7 @@ void ACAIController::ForgetActorIfDead(AActor* Actor)
 	}
 }
 
-void ACAIController::DisableAllSenses()
+void ACAIController::ClearAndDisableAllSenses()
 {
 	AiPerceptionComponent->AgeStimuli(TNumericLimits<float>::Max()); //使所有刺激数据过期
 	
@@ -142,7 +145,7 @@ void ACAIController::DisableAllSenses()
 	}
 }
 
-void ACAIController::EnableDisableAllSenses()
+void ACAIController::EnableAllSenses()
 {
 	for (auto SenseConfigIt = AiPerceptionComponent->GetSensesConfigIterator(); 
 		SenseConfigIt; ++SenseConfigIt) //遍历所有感知
@@ -156,11 +159,11 @@ void ACAIController::PawnDeadTagUpdated(const FGameplayTag Tag, int32 Count)
 	if (Count != 0)
 	{
 		GetBrainComponent()->StopLogic("Dead"); //停止AI行为树
-		DisableAllSenses();
+		ClearAndDisableAllSenses();
 	}
 	else
 	{
 		GetBrainComponent()->StartLogic();
-		EnableDisableAllSenses();
+		EnableAllSenses();
 	}
 }

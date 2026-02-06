@@ -7,7 +7,7 @@
 #include "Minion.generated.h"
 
 /**
- * 
+ * 小兵类
  */
 UCLASS()
 class AMinion : public ACCharacter
@@ -16,6 +16,8 @@ class AMinion : public ACCharacter
 	
 public:
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
+	bool IsActive() const; //是否存活？
+	void Activate(); //存活
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Visual")

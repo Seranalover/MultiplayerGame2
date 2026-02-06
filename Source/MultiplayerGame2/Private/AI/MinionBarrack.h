@@ -7,6 +7,9 @@
 #include "GameFramework/Actor.h"
 #include "MinionBarrack.generated.h"
 
+/**
+ * 兵营类，用于生成小兵2
+ */
 UCLASS()
 class AMinionBarrack : public AActor
 {
@@ -27,17 +30,28 @@ public:
 private:
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	FGenericTeamId BarrackTeamId;
+	
 	UPROPERTY()
 	TArray<class AMinion*> MinionPool;
+	
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	TSubclassOf<class AMinion> MinionClass;
+	
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	TArray<class APlayerStart*> SpawnSpots; //出生点
 	
 	int NextSpawnSpotIndex = -1; //下一个出生点索引
 	
+	FTimerHandle SpawnIntervalTimerHandle; //生成间隔计时器句柄
+	
+	UPROPERTY(EditAnywhere, Category = "Spawn")
+	float GroupSpawnInterval = 10.f;
+	
+	UPROPERTY(EditAnywhere, Category = "Spawn")
+	int MinionPerGroup = 3; 
+	
 	const APlayerStart* GetNextSpawnSpot();
 	void SpawnNewMinions(int Amount); //生成小兵
-	
-
+	void SpawnNewGroup();
+	AMinion* GetNextAvailableMinion() const; 
 };
