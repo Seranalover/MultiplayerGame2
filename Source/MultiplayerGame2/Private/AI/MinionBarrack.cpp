@@ -54,6 +54,7 @@ void AMinionBarrack::SpawnNewMinions(int Amount)
 			nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn); //生成兵营
 		NewMinion->SetGenericTeamId(BarrackTeamId); //设置team id
 		NewMinion->FinishSpawning(SpawnTransform); //完成生成
+		NewMinion->SetGoal(Goal); //设置目标
 		MinionPool.Add(NewMinion);
 	}
 }

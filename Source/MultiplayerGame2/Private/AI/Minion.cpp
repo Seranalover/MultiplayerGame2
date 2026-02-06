@@ -4,6 +4,8 @@
 #include "AI/Minion.h"
 
 #include "AbilitySystemComponent.h"
+#include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "GAS/CAbilitySystemStatics.h"
 
 //重写SetGenericTeamId（）确保在监听服务器也能正常使用
@@ -21,6 +23,17 @@ bool AMinion::IsActive() const
 void AMinion::Activate()
 {
 	GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(UCAbilitySystemStatics::GetDeadStatTag())); //移除dead tag
+}
+
+void AMinion::SetGoal(AActor* Goal)
+{
+	if (AAIController* AIController = Cast<AAIController>(GetOwner()))
+	{
+		if (UBlackboardComponent* Blackboard = AIController->GetBlackboardComponent())
+		{
+			Blackboard->SetValueAsObject(GoalBlackboardKeyName, Goal);
+		}
+	}
 }
 
 void AMinion::PickSkinBasedOnTeamID()

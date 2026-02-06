@@ -18,10 +18,14 @@ public:
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 	bool IsActive() const; //是否存活？
 	void Activate(); //存活
+	void SetGoal(AActor* Goal); //设置目标
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Visual")
 	TMap<FGenericTeamId, USkeletalMesh*> SkinMap; //皮肤和队伍映射集
+	
+	UPROPERTY(EditDefaultsOnly, Category="AI")
+	FName GoalBlackboardKeyName = "Goal"; //黑板键
 	
 	void PickSkinBasedOnTeamID(); //根据队伍设置不同皮肤（骨骼）
 	virtual void OnRep_TeamID() override;

@@ -8,7 +8,7 @@
 #include "MinionBarrack.generated.h"
 
 /**
- * 兵营类，用于生成小兵2
+ * 兵营类，用于生成小兵
  */
 UCLASS()
 class AMinionBarrack : public AActor
@@ -49,6 +49,9 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	int MinionPerGroup = 3; 
+	
+	UPROPERTY(EditAnywhere, Category = "Spawn")
+	AActor* Goal; //目标
 	
 	const APlayerStart* GetNextSpawnSpot();
 	void SpawnNewMinions(int Amount); //生成小兵
