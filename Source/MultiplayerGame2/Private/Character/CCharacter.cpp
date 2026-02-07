@@ -106,7 +106,33 @@ void ACCharacter::BindGASChangeDelegates()
 		//监听Dead Tag，绑定DeathTagUpdated()
 		CAbilitySystemComponent->RegisterGameplayTagEvent(
 			UCAbilitySystemStatics::GetDeadStatTag()).AddUObject(this, &ACCharacter::DeathTagUpdated);
+		
+		CAbilitySystemComponent->RegisterGameplayTagEvent(
+			UCAbilitySystemStatics::GetStunStatTag()).AddUObject(this, &ACCharacter::StunTagUpdated);
 	}
+}
+
+void ACCharacter::StunTagUpdated(const FGameplayTag Tag, int32 NewCount)
+{
+	if (IsDead()) return;
+	if (NewCount != 0)
+	{
+		OnStun();
+		PlayAnimMontage(StunAnimMontage);
+	}
+	else
+	{
+		OnRecoverFromStun();
+		StopAnimMontage(StunAnimMontage);
+	}
+}
+
+void ACCharacter::OnStun()
+{
+}
+
+void ACCharacter::OnRecoverFromStun()
+{
 }
 
 void ACCharacter::DeathTagUpdated(const FGameplayTag Tag, int32 NewCount)

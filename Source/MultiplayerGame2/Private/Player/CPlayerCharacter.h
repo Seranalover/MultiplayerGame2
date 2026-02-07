@@ -55,9 +55,17 @@ private:
 	TMap<ECAbilityInputID, class UInputAction*> GameplayAbilityInputActions; //所有技能id与IA的map集合
 	void HandleAbilityInput(const FInputActionValue& InputActionValue, ECAbilityInputID AbilityInputID); //施放技能实现
 	
+	void SetInputEnabled(bool bEnabled); //设置禁用输入
+	
 	/*****************************************************************/
 	/*                        Death and Respawn                      */
 	/*****************************************************************/
 	virtual void OnDead() override;
 	virtual void OnRespawn() override;
+	
+	/*****************************************************************/
+	/*                              Stun                             */
+	/*****************************************************************/
+	virtual void OnStun() override;
+	virtual void OnRecoverFromStun() override;
 };

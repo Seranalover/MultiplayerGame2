@@ -4,8 +4,14 @@
 #include "GAS/CGameplayAbility.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "CAbilitySystemStatics.h"
 #include "GA_PassiveLaunched.h"
 #include "Kismet/KismetSystemLibrary.h"
+
+UCGameplayAbility::UCGameplayAbility()
+{
+	ActivationBlockedTags.AddTag(UCAbilitySystemStatics::GetStunStatTag()); //默认具有stun tag时停止能力
+}
 
 class UAnimInstance* UCGameplayAbility::GetOwnerAnimInstance() const
 {

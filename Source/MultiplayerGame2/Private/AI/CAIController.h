@@ -34,6 +34,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "AI Behavior")
 	FName TargetBlackboardKeyName = "Target";
 	
+	bool bIsPawnDead = false;
+	
 	UFUNCTION()
 	void TargetPerceptionUpdated(AActor* TargetActor, FAIStimulus Stimulus); //感知目标更新时
 	UFUNCTION()
@@ -46,4 +48,5 @@ private:
 	void ClearAndDisableAllSenses(); //停用所有感知
 	void EnableAllSenses(); //启用所有感知
 	void PawnDeadTagUpdated(const FGameplayTag Tag, int32 Count);
+	void PawnStunTagUpdated(const FGameplayTag Tag, int32 Count);
 };

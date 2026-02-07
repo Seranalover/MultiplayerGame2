@@ -66,6 +66,17 @@ private:
 	void UpdateOverheadWidgetVisibility(); //设置可视性，被计时器周期性调用
 	
 	/****************************************************************************/
+	/*                                 Stun                                     */
+	/****************************************************************************/
+private:
+	UPROPERTY(editDefaultsOnly, Category="Stun")
+	UAnimMontage* StunAnimMontage;
+	
+	void StunTagUpdated(const FGameplayTag Tag, int32 NewCount); //stun tag变更
+	virtual void OnStun();
+	virtual void OnRecoverFromStun();
+	
+	/****************************************************************************/
 	/*                             Death and Respawn                            */
 	/****************************************************************************/
 public:

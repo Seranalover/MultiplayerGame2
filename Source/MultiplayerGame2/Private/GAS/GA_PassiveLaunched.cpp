@@ -3,9 +3,14 @@
 
 #include "GAS/GA_PassiveLaunched.h"
 
+#include "CAbilitySystemStatics.h"
+
 UGA_PassiveLaunched::UGA_PassiveLaunched()
 {
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerOnly; //该技能仅在Server触发，避免客户端操作不当产生bug，更安全
+	
+	ActivationBlockedTags.RemoveTag(UCAbilitySystemStatics::GetStunStatTag()); //移除stun tag
+	
 	FAbilityTriggerData TriggerData; //定义一个Trigger Data
 	TriggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent; //设置trigger source
 	TriggerData.TriggerTag = GetLaunchedAbilityTriggerTag(); //设置trigger tag

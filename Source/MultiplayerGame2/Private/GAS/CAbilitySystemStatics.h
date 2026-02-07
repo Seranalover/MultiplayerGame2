@@ -16,5 +16,6 @@ class UCAbilitySystemStatics : public UObject
 public:
 	static FGameplayTag GetBasicAttackAbilityTag(); //基础攻击tag
 	static FGameplayTag GetDeadStatTag(); //死亡状态tag
+	static FGameplayTag GetStunStatTag(); 
 	
 };
