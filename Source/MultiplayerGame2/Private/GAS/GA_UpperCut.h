@@ -29,11 +29,16 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Targetting")
 	float TargetSweepSphereRadius = 80.f; //碰撞扫描半径
 	
-	static FGameplayTag GetUpperCutLaunchTag(); //上勾拳开始tag，同时接收target信息
-	
 	UPROPERTY(EditDefaultsOnly, Category="Launch")
 	float UpperLaunchVelocity = 1000.f; //浮空速度
 	
+	FName NextComboName;
+	
+	static FGameplayTag GetUpperCutLaunchTag(); //上勾拳开始tag，同时接收target信息
+	
 	UFUNCTION()
 	void StartLaunching(FGameplayEventData EventData);
+	
+	UFUNCTION()
+	void HandleComboChangeEvent(FGameplayEventData EventData);
 };
