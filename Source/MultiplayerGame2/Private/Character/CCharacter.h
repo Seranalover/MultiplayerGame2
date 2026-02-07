@@ -6,6 +6,7 @@
 #include "AbilitySystemInterface.h"
 #include "GameplayTagContainer.h"
 #include "GenericTeamAgentInterface.h"
+#include "Abilities/GameplayAbilityTypes.h"
 #include "GameFramework/Character.h"
 #include "CCharacter.generated.h"
 
@@ -42,6 +43,9 @@ public:
 	/****************************************************************************/
 public:	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UFUNCTION(Server, Reliable, WithValidation) //client调用该函数时，会通知server调用相同的函数
+	void Server_SendGameplayEventToSelf(const FGameplayTag& EventTag, const FGameplayEventData& EventData);
+	
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category="Gameplay Ability")
 	class UCAbilitySystemComponent* CAbilitySystemComponent;

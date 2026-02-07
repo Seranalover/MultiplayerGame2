@@ -15,6 +15,8 @@ class UGA_UpperCut : public UCGameplayAbility
 	GENERATED_BODY()
 	
 public:
+	UGA_UpperCut();
+	
 	/** Actually activate ability, do not call this directly */
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, 
 		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
@@ -41,4 +43,7 @@ private:
 	
 	UFUNCTION()
 	void HandleComboChangeEvent(FGameplayEventData EventData);
+	
+	UFUNCTION()
+	void HandleComboCommitEvent(FGameplayEventData EventData);
 };

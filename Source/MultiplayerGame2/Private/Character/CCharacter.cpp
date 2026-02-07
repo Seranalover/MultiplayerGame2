@@ -3,6 +3,7 @@
 
 #include "Character/CCharacter.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -97,6 +98,19 @@ void ACCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 UAbilitySystemComponent* ACCharacter::GetAbilitySystemComponent() const
 { 
 	return CAbilitySystemComponent;
+}
+
+void ACCharacter::Server_SendGameplayEventToSelf_Implementation(const FGameplayTag& EventTag,
+	const FGameplayEventData& EventData)
+{	
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, EventTag, EventData);
+}
+
+bool ACCharacter::Server_SendGameplayEventToSelf_Validate(const FGameplayTag& EventTag,
+	const FGameplayEventData& EventData)
+{
+	//验证失败返回false时，会立即断开验证失败的客户端连接
+	return true;
 }
 
 void ACCharacter::BindGASChangeDelegates()

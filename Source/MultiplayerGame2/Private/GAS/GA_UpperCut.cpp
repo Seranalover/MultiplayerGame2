@@ -7,6 +7,12 @@
 #include "GA_Combo.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "GAS/CAbilitySystemStatics.h"
+
+UGA_UpperCut::UGA_UpperCut()
+{
+	BlockAbilitiesWithTag.AddTag(UCAbilitySystemStatics::GetBasicAttackAbilityTag()); //添加block tag
+}
 
 void UGA_UpperCut::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                    const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -57,10 +63,15 @@ void UGA_UpperCut::StartLaunching(FGameplayEventData EventData)
 	}
 	
 	//空中combo
-	UAbilityTask_WaitGameplayEvent* WaitGameplayEvent = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this,
+	UAbilityTask_WaitGameplayEvent* WaitComboChangeEvent = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this,
 		UGA_Combo::GetComboChangedEventTag(), nullptr, false, false);
-	WaitGameplayEvent->EventReceived.AddDynamic(this, &UGA_UpperCut::HandleComboChangeEvent);
-	WaitGameplayEvent->ReadyForActivation();
+	WaitComboChangeEvent->EventReceived.AddDynamic(this, &UGA_UpperCut::HandleComboChangeEvent);
+	WaitComboChangeEvent->ReadyForActivation();
+	
+	UAbilityTask_WaitGameplayEvent* WaitComboCommitEvent = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this,
+		UCAbilitySystemStatics::GetBasicAttackInputPressedTag());
+	WaitComboCommitEvent->EventReceived.AddDynamic(this, &UGA_UpperCut::HandleComboCommitEvent);
+	WaitComboCommitEvent->ReadyForActivation();
 }
 
 void UGA_UpperCut::HandleComboChangeEvent(FGameplayEventData EventData)
@@ -77,4 +88,9 @@ void UGA_UpperCut::HandleComboChangeEvent(FGameplayEventData EventData)
 	UGameplayTagsManager::Get().SplitGameplayTagFName(EventTag, TagNames);
 	NextComboName = TagNames.Last();
 	UE_LOG(LogTemp,Warning,TEXT("next combo is: %s"), *NextComboName.ToString());
+}
+
+void UGA_UpperCut::HandleComboCommitEvent(FGameplayEventData EventData)
+{
+	UE_LOG(LogTemp,Warning,TEXT("combo change commit"));
 }

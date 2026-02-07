@@ -3,12 +3,14 @@
 
 #include "Player/CPlayerCharacter.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GAS/CAbilitySystemStatics.h"
 
 ACPlayerCharacter::ACPlayerCharacter()
 {
@@ -103,6 +105,12 @@ void ACPlayerCharacter::HandleAbilityInput(const FInputActionValue& InputActionV
 	else
 	{
 		GetAbilitySystemComponent()->AbilityLocalInputReleased((int32)AbilityInputID);
+	}
+	if (AbilityInputID == ECAbilityInputID::BasicAttack) //添加basic attack input tag事件到actor
+	{
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, 
+			UCAbilitySystemStatics::GetBasicAttackInputPressedTag(), FGameplayEventData()); //client only
+		Server_SendGameplayEventToSelf(UCAbilitySystemStatics::GetBasicAttackInputPressedTag(), FGameplayEventData()); //copy to server
 	}
 }
 
