@@ -91,3 +91,18 @@ ACharacter* UCGameplayAbility::GetOwningAvatarCharacter()
 		CharacterRef = Cast<ACharacter>(GetAvatarActorFromActorInfo());
 	return CharacterRef;
 }
+
+void UCGameplayAbility::ApplyGameplayEffectToHitResult(const FHitResult& HitResult,
+	TSubclassOf<UGameplayEffect> GameplayEffect, int Level)
+{
+	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(GameplayEffect, Level); //设置当前技能等级的effect spec handle
+		
+	//将HitResults信息传递到Context里，以便于在GameplayCue蓝图中调用
+	FGameplayEffectContextHandle ContextHandle = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
+	ContextHandle.AddHitResult(HitResult);
+	EffectSpecHandle.Data->SetContext(ContextHandle);
+		
+	//使用handle应用攻击效果
+	ApplyGameplayEffectSpecToTarget(GetCurrentAbilitySpecHandle(), CurrentActorInfo, CurrentActivationInfo,
+		EffectSpecHandle, UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(HitResult.GetActor()));
+}

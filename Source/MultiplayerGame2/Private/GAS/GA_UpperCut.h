@@ -20,6 +20,9 @@ public:
 		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category="Launch")
+	TSubclassOf<UGameplayEffect> GameplayEffect;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Animation")
 	UAnimMontage* UpperCutMontage;
 	

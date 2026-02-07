@@ -49,6 +49,7 @@ void UGA_UpperCut::StartLaunching(FGameplayEventData EventData)
 		for (FHitResult& HitResult : HitResults)
 		{
 			PushTarget(HitResult.GetActor(), FVector::UpVector * UpperLaunchVelocity); //击飞敌人
+			ApplyGameplayEffectToHitResult(HitResult, GameplayEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo)); //对目标应用攻击效果
 		}
 	}
 }

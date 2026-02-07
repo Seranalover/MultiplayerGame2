@@ -31,6 +31,8 @@ protected:
 	
 	ACharacter* GetOwningAvatarCharacter();
 	
+	void ApplyGameplayEffectToHitResult(const FHitResult& HitResult, TSubclassOf<UGameplayEffect> GameplayEffect, int Level = 1); //对目标应用攻击效果
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Debug")
 	bool bShouldDrawDebug = false;
