@@ -175,7 +175,7 @@ void ACCharacter::StartDeathSequence()
 	if (CAbilitySystemComponent) CAbilitySystemComponent->CancelAbilities(); //取消所有技能，包括正在执行的技能
 	PlayDeathAnimation(); //播放死亡蒙太奇
 	SetStatsGaugeEnabled(false); //关闭血条显示
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None); //禁用移动
+	// GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None); //禁用移动
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision); //禁用碰撞
 	SetAIPerceptionStimuliSourceEnabled(false); //关闭感知刺激源
 }
@@ -186,7 +186,7 @@ void ACCharacter::Respawn()
 	OnRespawn(); //在子类开启控制器输入
 	SetRagdollEnabled(false); //关闭布偶效果
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); //恢复碰撞
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); //恢复移动
+	// GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); //恢复移动
 	GetMesh()->GetAnimInstance()->StopAllMontages(0.f); //关闭所有动画
 	SetStatsGaugeEnabled(true); //恢复血条显示
 	SetAIPerceptionStimuliSourceEnabled(true); //开启感知刺激源

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CGameplayAbilityTypes.h"
 #include "GAS/CGameplayAbility.h"
 #include "GA_UpperCut.generated.h"
 
@@ -22,6 +23,9 @@ public:
 		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category="Combo")
+	TMap<FName, FGenericDamageEffectDef> ComboDamageMap;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Launch")
 	TSubclassOf<UGameplayEffect> GameplayEffect;
 	
@@ -52,4 +56,6 @@ private:
 	
 	UFUNCTION()
 	void HandleComboDamageEvent(FGameplayEventData EventData);
+	
+	const FGenericDamageEffectDef* GetDamageEffectDefForCurrentCombo() const; 
 };

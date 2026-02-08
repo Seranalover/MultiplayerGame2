@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffect.h"
 #include "CGameplayAbilityTypes.generated.h"
 
 /**
@@ -22,4 +23,20 @@ enum class ECAbilityInputID : uint8
 	AbilityFive							UMETA(DisplayName = "Ability Five"),
 	AbilitySix							UMETA(DisplayName = "Ability Six"),
 	
+};
+
+/**
+ * 伤害效果结构体
+ */
+USTRUCT(BlueprintType)
+struct FGenericDamageEffectDef
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UGameplayEffect> DamageEffect; //伤害效果
+	
+	UPROPERTY(EditAnywhere)
+	FVector PushVelocity; //推动方向
 };

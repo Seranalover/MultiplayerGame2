@@ -85,14 +85,14 @@ void UGA_UpperCut::HandleComboChangeEvent(FGameplayEventData EventData)
 	if (EventTag == UGA_Combo::GetComboChangedEventEndTag())
 	{
 		NextComboName = NAME_None;
-		UE_LOG(LogTemp,Warning,TEXT("next combo is cleared"));
+		// UE_LOG(LogTemp,Warning,TEXT("next combo is cleared"));
 		return;
 	}
 	
 	TArray<FName> TagNames;
 	UGameplayTagsManager::Get().SplitGameplayTagFName(EventTag, TagNames);
 	NextComboName = TagNames.Last();
-	UE_LOG(LogTemp,Warning,TEXT("next combo is: %s"), *NextComboName.ToString());
+	// UE_LOG(LogTemp,Warning,TEXT("next combo is: %s"), *NextComboName.ToString());
 }
 
 void UGA_UpperCut::HandleComboCommitEvent(FGameplayEventData EventData)
@@ -114,10 +114,25 @@ void UGA_UpperCut::HandleComboDamageEvent(FGameplayEventData EventData)
 		TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(EventData.TargetData, TargetSweepSphereRadius,
 			ETeamAttitude::Hostile, ShouldDrawDebug()); //命中结果
 		PushTarget(GetAvatarActorFromActorInfo(), FVector::UpVector * UpperHoldVelocity); //保持自身浮空
+		const FGenericDamageEffectDef* EffectDef = GetDamageEffectDefForCurrentCombo(); //伤害效果结构体
+		if (!EffectDef) return;
 		for (FHitResult& HitResult : HitResults)
 		{
-			PushTarget(HitResult.GetActor(), FVector::UpVector * UpperHoldVelocity); //保持敌人浮空
-			ApplyGameplayEffectToHitResult(HitResult, GameplayEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo)); //对目标应用攻击效果
+			FVector PushVelocity = GetAvatarActorFromActorInfo()->GetActorTransform().TransformVector(EffectDef->PushVelocity); //推动敌人方向
+			PushTarget(HitResult.GetActor(), PushVelocity); //保持敌人浮空
+			ApplyGameplayEffectToHitResult(HitResult, EffectDef->DamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo)); //对目标应用攻击效果
 		}
 	}
+}
+
+const FGenericDamageEffectDef* UGA_UpperCut::GetDamageEffectDefForCurrentCombo() const
+{
+	UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance(); //动画实例
+	if (OwnerAnimInstance)
+	{
+		FName CurrentComboName = OwnerAnimInstance->Montage_GetCurrentSection(UpperCutMontage); //蒙太奇段落
+		const FGenericDamageEffectDef* DamageEffect = ComboDamageMap.Find(CurrentComboName);
+		return DamageEffect;
+	}
+	return nullptr;
 }
