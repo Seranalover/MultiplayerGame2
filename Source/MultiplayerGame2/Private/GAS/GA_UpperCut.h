@@ -34,6 +34,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Launch")
 	float UpperLaunchVelocity = 1000.f; //浮空速度
 	
+	UPROPERTY(EditDefaultsOnly, Category="Launch")
+	float UpperHoldVelocity = 100.f; //保持浮空速度
+	
 	FName NextComboName;
 	
 	static FGameplayTag GetUpperCutLaunchTag(); //上勾拳开始tag，同时接收target信息
@@ -46,4 +49,7 @@ private:
 	
 	UFUNCTION()
 	void HandleComboCommitEvent(FGameplayEventData EventData);
+	
+	UFUNCTION()
+	void HandleComboDamageEvent(FGameplayEventData EventData);
 };

@@ -72,6 +72,11 @@ void UGA_UpperCut::StartLaunching(FGameplayEventData EventData)
 		UCAbilitySystemStatics::GetBasicAttackInputPressedTag());
 	WaitComboCommitEvent->EventReceived.AddDynamic(this, &UGA_UpperCut::HandleComboCommitEvent);
 	WaitComboCommitEvent->ReadyForActivation();
+	
+	UAbilityTask_WaitGameplayEvent* WaitComboDamageEvent = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this,
+		UGA_Combo::GetComboTargetEventTag());
+	WaitComboDamageEvent->EventReceived.AddDynamic(this, &UGA_UpperCut::HandleComboDamageEvent);
+	WaitComboDamageEvent->ReadyForActivation();
 }
 
 void UGA_UpperCut::HandleComboChangeEvent(FGameplayEventData EventData)
@@ -92,5 +97,27 @@ void UGA_UpperCut::HandleComboChangeEvent(FGameplayEventData EventData)
 
 void UGA_UpperCut::HandleComboCommitEvent(FGameplayEventData EventData)
 {
-	UE_LOG(LogTemp,Warning,TEXT("combo change commit"));
+	if (NextComboName == NAME_None) return;;
+	
+	UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance(); //获得蒙太奇实例
+	if (!OwnerAnimInstance) return;
+	
+	//设置连招下一段蒙太奇
+	OwnerAnimInstance->Montage_SetNextSection(OwnerAnimInstance->Montage_GetCurrentSection(UpperCutMontage), NextComboName, UpperCutMontage);
+
+}
+
+void UGA_UpperCut::HandleComboDamageEvent(FGameplayEventData EventData)
+{
+	if (K2_HasAuthority())
+	{
+		TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(EventData.TargetData, TargetSweepSphereRadius,
+			ETeamAttitude::Hostile, ShouldDrawDebug()); //命中结果
+		PushTarget(GetAvatarActorFromActorInfo(), FVector::UpVector * UpperHoldVelocity); //保持自身浮空
+		for (FHitResult& HitResult : HitResults)
+		{
+			PushTarget(HitResult.GetActor(), FVector::UpVector * UpperHoldVelocity); //保持敌人浮空
+			ApplyGameplayEffectToHitResult(HitResult, GameplayEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo)); //对目标应用攻击效果
+		}
+	}
 }
