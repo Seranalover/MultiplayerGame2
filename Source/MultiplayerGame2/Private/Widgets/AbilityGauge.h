@@ -57,6 +57,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Visual")
 	FName IconMaterialParamName = "Icon"; //材质名
 	
+	UPROPERTY(EditDefaultsOnly, Category="Visual")
+	FName CooldownPercentParamName = "Percent"; 
+	
 	UPROPERTY()
 	class UGameplayAbility* AbilityCDO; //Ability类默认对象
 	
