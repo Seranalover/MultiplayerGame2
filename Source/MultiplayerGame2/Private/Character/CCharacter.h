@@ -10,6 +10,7 @@
 #include "GameFramework/Character.h"
 #include "CCharacter.generated.h"
 
+enum class ECAbilityInputID : uint8;
 /**
  * 角色基类
  */
@@ -25,6 +26,7 @@ public:
 	void ClientSideInit(); //客户端初始化
 	bool IsLocallyControlledByPlayer() const; //是否由本地玩家控制器操控
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override; //管理数据生命周期并同步到客户端
+	const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const; //获得附加技能，不包括基础技能
 
 protected:
 	// Called when the game starts or when spawned

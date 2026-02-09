@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "GAS/CGameplayAbilityTypes.h"
 #include "GameplayWidget.generated.h"
 
 /**
@@ -16,6 +17,7 @@ class UGameplayWidget : public UUserWidget
 	
 public:
 	virtual void NativeConstruct() override; 
+	void ConfigureAbilities(const TMap<ECAbilityInputID, TSubclassOf<class UGameplayAbility>>& Abilities);
 	
 private:
 	UPROPERTY(meta=(BindWidget))

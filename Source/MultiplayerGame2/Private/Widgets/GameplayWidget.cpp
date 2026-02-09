@@ -4,6 +4,7 @@
 #include "Widgets/GameplayWidget.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "ValueGauge.h"
+#include "GAS/CAbilitySystemComponent.h"
 
 void UGameplayWidget::NativeConstruct()
 {
@@ -15,4 +16,15 @@ void UGameplayWidget::NativeConstruct()
 		HealthBar->SetAndBoundToGameplayAttribute(OwnerAbilitySystemComponent, UCAttributeSet::GetHealthAttribute(), UCAttributeSet::GetMaxHealthAttribute());
 		ManaBar->SetAndBoundToGameplayAttribute(OwnerAbilitySystemComponent, UCAttributeSet::GetManaAttribute(), UCAttributeSet::GetMaxManaAttribute());
 	}
+	// const UCAbilitySystemComponent* CAbilitySystemComponent = Cast<UCAbilitySystemComponent>(OwnerAbilitySystemComponent);
+	// if (CAbilitySystemComponent)
+	// {
+	// 	ConfigureAbilities(CAbilitySystemComponent->GetAbilities());
+	// }
+
+}
+
+void UGameplayWidget::ConfigureAbilities(const TMap<ECAbilityInputID, TSubclassOf<class UGameplayAbility>>& Abilities)
+{
+	
 }

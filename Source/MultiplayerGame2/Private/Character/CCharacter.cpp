@@ -60,6 +60,11 @@ void ACCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	DOREPLIFETIME(ACCharacter, TeamId);
 }
 
+const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& ACCharacter::GetAbilities() const
+{
+	return CAbilitySystemComponent->GetAbilities();
+}
+
 //only called on the Server
 void ACCharacter::PossessedBy(AController* NewController)
 {

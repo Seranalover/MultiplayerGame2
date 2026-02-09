@@ -17,10 +17,13 @@ class UAbilityGauge : public UUserWidget
 private:
 	UPROPERTY(meta=(BindWidget))
 	class UImage* Icon;
+	
 	UPROPERTY(meta=(BindWidget))
-	class UTextBlock* CooldownCounterText;
+	class UTextBlock* CooldownCounterText; //冷却计数
+	
 	UPROPERTY(meta=(BindWidget))
-	class UTextBlock* CooldownDurationText;
+	class UTextBlock* CooldownDurationText; //冷却持续时间
+	
 	UPROPERTY(meta=(BindWidget))
-	class UTextBlock* CostText;
+	class UTextBlock* CostText; //消耗
 };

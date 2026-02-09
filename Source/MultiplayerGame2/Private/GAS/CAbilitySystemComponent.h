@@ -20,6 +20,7 @@ public:
 	void ApplyInitialEffects(); //初始化所有数值
 	void GiveInitialAbilities(); //赋予技能
 	void ApplyFullStatEffect(); //回满状态
+	const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const; //获得附加技能，不包括基础技能
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay Effects")
@@ -31,13 +32,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay Abilities")
 	TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>> BasicAbilities; //基础技能
 	
-	void HealthUpdated(const FOnAttributeChangeData& ChangeData); //生命值变更
-	
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay Abilities")
 	TSubclassOf<UGameplayEffect> DeathEffect; //死亡GE
 	
-	void AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect> GameplayEffect, int Level = 1);
-	
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay Abilities")
 	TSubclassOf<UGameplayEffect> FullStatEffect; //复活GE
+	
+	void HealthUpdated(const FOnAttributeChangeData& ChangeData); //生命值变更
+	void AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect> GameplayEffect, int Level = 1);
 };
