@@ -26,6 +26,9 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	class UValueGauge* ManaBar;
 	
+	UPROPERTY(meta=(BindWidget))
+	class UAbilitiesListView* AbilitiesListView;
+	
 	UPROPERTY()
 	class UAbilitySystemComponent* OwnerAbilitySystemComponent;
 };

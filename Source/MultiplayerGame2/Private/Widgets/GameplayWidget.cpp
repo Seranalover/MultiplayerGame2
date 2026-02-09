@@ -2,6 +2,8 @@
 
 
 #include "Widgets/GameplayWidget.h"
+
+#include "AbilitiesListView.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "ValueGauge.h"
 #include "GAS/CAbilitySystemComponent.h"
@@ -16,6 +18,7 @@ void UGameplayWidget::NativeConstruct()
 		HealthBar->SetAndBoundToGameplayAttribute(OwnerAbilitySystemComponent, UCAttributeSet::GetHealthAttribute(), UCAttributeSet::GetMaxHealthAttribute());
 		ManaBar->SetAndBoundToGameplayAttribute(OwnerAbilitySystemComponent, UCAttributeSet::GetManaAttribute(), UCAttributeSet::GetMaxManaAttribute());
 	}
+	// 耦合度过高，依赖于ASC组件，已在Ccharacter类中重新实现
 	// const UCAbilitySystemComponent* CAbilitySystemComponent = Cast<UCAbilitySystemComponent>(OwnerAbilitySystemComponent);
 	// if (CAbilitySystemComponent)
 	// {
@@ -26,5 +29,5 @@ void UGameplayWidget::NativeConstruct()
 
 void UGameplayWidget::ConfigureAbilities(const TMap<ECAbilityInputID, TSubclassOf<class UGameplayAbility>>& Abilities)
 {
-	
+	AbilitiesListView->ConfigureAbilities(Abilities);
 }
