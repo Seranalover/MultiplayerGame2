@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "Abilities/GameplayAbility.h"
 #include "CAbilitySystemStatics.generated.h"
 
 /**
- * 静态tag类
+ * 静态资源类
  */
 UCLASS()
 class UCAbilitySystemStatics : public UObject
@@ -22,6 +23,9 @@ public:
 	 */
 	static FGameplayTag GetBasicAttackInputPressedTag(); 
 	static FGameplayTag GetDeadStatTag(); //死亡状态tag
-	static FGameplayTag GetStunStatTag(); 
+	static FGameplayTag GetStunStatTag(); //眩晕tag
+	
+	static float GetStaticCooldownDurationForAbility(const UGameplayAbility* Ability); //查询技能冷却时间
+	static float GetStaticCostForAbility(const UGameplayAbility* Ability); //查询技能消耗
 	
 };

@@ -37,6 +37,7 @@ class UAbilityGauge : public UUserWidget, public IUserObjectListEntry
 	GENERATED_BODY()
 	
 public:
+	virtual void NativeConstruct() override;
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 	void ConfigureWithWidgetData(const FAbilityWidgetData* WidgetData);
 	
@@ -55,4 +56,7 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Visual")
 	FName IconMaterialParamName = "Icon"; //材质名
+	
+	UPROPERTY()
+	class UGameplayAbility* AbilityCDO; //Ability类默认对象
 };
