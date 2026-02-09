@@ -8,7 +8,28 @@
 #include "AbilityGauge.generated.h"
 
 /**
- * 技能图标UI
+ * data table 结构体
+ */
+USTRUCT(blueprintType)
+struct FAbilityWidgetData : public FTableRowBase
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class UGameplayAbility> AbilityClass;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName AbilityName;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSoftObjectPtr<UTexture2D> Icon; //Soft指针，仅保留软引用资源到内存，需要访问时才加载到内存，节省开销
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText Description;
+};
+
+/**
+ * 技能图标UI基础类
  */
 UCLASS()
 class UAbilityGauge : public UUserWidget, public IUserObjectListEntry
@@ -17,7 +38,7 @@ class UAbilityGauge : public UUserWidget, public IUserObjectListEntry
 	
 public:
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
-
+	void ConfigureWithWidgetData(const FAbilityWidgetData* WidgetData);
 	
 private:
 	UPROPERTY(meta=(BindWidget))
@@ -31,4 +52,7 @@ private:
 	
 	UPROPERTY(meta=(BindWidget))
 	class UTextBlock* CostText; //消耗
+	
+	UPROPERTY(EditDefaultsOnly, Category="Visual")
+	FName IconMaterialParamName = "Icon"; //材质名
 };

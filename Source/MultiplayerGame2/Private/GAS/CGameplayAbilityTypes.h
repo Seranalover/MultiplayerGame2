@@ -38,5 +38,5 @@ public:
 	TSubclassOf<UGameplayEffect> DamageEffect; //伤害效果
 	
 	UPROPERTY(EditAnywhere)
-	FVector PushVelocity; //推动方向
+	FVector PushVelocity = FVector::ZeroVector;; //推动方向
 };
