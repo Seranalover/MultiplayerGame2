@@ -59,4 +59,20 @@ private:
 	
 	UPROPERTY()
 	class UGameplayAbility* AbilityCDO; //Ability类默认对象
+	
+	UPROPERTY(EditDefaultsOnly, Category="Cooldown")
+	float CooldownUpdateInterval = 0.1f;
+	
+	float CachedCooldownDuration;
+	float CachedCooldownTimeRemaining;
+	FTimerHandle CooldownTimerHandle;
+	FTimerHandle CooldownTimerUpdateHandle;
+	FNumberFormattingOptions WholeNumberFormattingOptions; //冷却剩余时间 整数格式器
+	FNumberFormattingOptions DigitNumberFormattingOptions; //冷却剩余时间 小数格式器
+	
+	void AbilityCommitted(UGameplayAbility* Ability);
+	void StartCooldown(float CooldownTimeRemaining,float CooldownDuration);
+	
+	void CooldownFinished();
+	void UpdateCooldown();
 };
