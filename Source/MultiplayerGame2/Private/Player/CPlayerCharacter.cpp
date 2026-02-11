@@ -11,6 +11,7 @@
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/CAbilitySystemStatics.h"
+#include "MultiplayerGame2/MultiplayerGame2.h"
 
 ACPlayerCharacter::ACPlayerCharacter()
 {
@@ -18,6 +19,7 @@ ACPlayerCharacter::ACPlayerCharacter()
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
 	CameraBoom->SetupAttachment(GetRootComponent()); 
 	CameraBoom->bUsePawnControlRotation = true; //弹簧臂使用pawn的控制旋转
+	CameraBoom->ProbeChannel = ECC_SpringArm; //设置弹簧臂碰撞检测渠道
 	
 	//添加相机组件
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>("CameraComponent");

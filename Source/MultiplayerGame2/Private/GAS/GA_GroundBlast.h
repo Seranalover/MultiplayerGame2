@@ -29,8 +29,8 @@ private:
 	TSubclassOf<class ATargetActor_GroundPick> TargetActorClass;
 	
 	UFUNCTION()
-	void TargetConfirmed(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
+	void TargetConfirmed(const FGameplayAbilityTargetDataHandle& TargetDataHandle); //确认选取目标
 	
 	UFUNCTION()
-	void TargetCanceled(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
+	void TargetCanceled(const FGameplayAbilityTargetDataHandle& TargetDataHandle); //取消选取目标
 };

@@ -11,6 +11,7 @@
 #include "GAS/CAbilitySystemStatics.h"
 #include "GAS/CAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
+#include "MultiplayerGame2/MultiplayerGame2.h"
 #include "Net/UnrealNetwork.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
@@ -24,6 +25,8 @@ ACCharacter::ACCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision); //关闭骨骼碰撞
 	// GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); //开启胶囊体碰撞
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_SpringArm, ECR_Ignore); //忽略弹簧臂碰撞
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Target, ECR_Ignore); //忽略目标选择器碰撞
 	
 	CAbilitySystemComponent = CreateDefaultSubobject<UCAbilitySystemComponent>("CAbility System Component"); //创建GAS组件
 	CAttributeSet = CreateDefaultSubobject<UCAttributeSet>("CAttribute Set"); //创建AS组件
