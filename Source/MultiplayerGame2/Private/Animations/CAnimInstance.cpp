@@ -43,7 +43,7 @@ void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		LookAtRotationOffset = UKismetMathLibrary::NormalizedDeltaRotator(ControlRotation, BodyRotation); //瞄准偏移量
 		
 		FwdSpeed = Velocity.Dot(ControlRotation.Vector()); //向前速度 = 速度 点积 控制器面朝向量
-		RightSpeed = Velocity.Dot(ControlRotation.Vector().Cross(FVector::UpVector)); //向右速度 = 速度 点积 （控制器面朝向量 叉乘 向上向量）
+		RightSpeed = -Velocity.Dot(ControlRotation.Vector().Cross(FVector::UpVector)); //-向右速度 = 速度 点积 （控制器面朝向量 叉乘 向上向量）
 	}
 	
 	if (OwnerMovementComponent)

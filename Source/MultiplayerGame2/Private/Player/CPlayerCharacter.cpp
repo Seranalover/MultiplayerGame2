@@ -145,3 +145,30 @@ void ACPlayerCharacter::OnRecoverFromStun()
 	if (IsDead()) return;
 	SetInputEnabled(true);
 }
+
+void ACPlayerCharacter::OnAimStateChanged(bool bIsAiming)
+{
+	LerpCameraToLocalOffsetLocation(bIsAiming ? CameraAimLocalOffset : FVector::ZeroVector);
+}
+
+void ACPlayerCharacter::LerpCameraToLocalOffsetLocation(const FVector& Goal)
+{
+	GetWorldTimerManager().ClearTimer(CameraLerpTimerHandle);
+	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, & ACPlayerCharacter::TickCameraLocalOffsetLerp, Goal)); //在下一次tick时创建插值计时器
+}
+
+void ACPlayerCharacter::TickCameraLocalOffsetLerp(const FVector Goal)
+{
+	FVector CurrentLocalOffset = ViewCamera->GetRelativeLocation();
+	if (FVector::Dist(CurrentLocalOffset, Goal) < 1.f)
+	{
+		ViewCamera->SetRelativeLocation(Goal);
+		return;
+	}
+	
+	float LerpAlpha = FMath::Clamp(GetWorld()->GetDeltaSeconds() * CameraLerpSpeed, 0.f, 1.f); //计算插值
+	FVector NewLocalOffset = FMath::Lerp(CurrentLocalOffset, Goal, LerpAlpha); //计算下一帧相机位置
+	ViewCamera->SetRelativeLocation(NewLocalOffset); //移动相机
+	
+	GetWorldTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, & ACPlayerCharacter::TickCameraLocalOffsetLerp, Goal)); //在下一次tick时创建插值计时器
+}

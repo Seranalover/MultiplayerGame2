@@ -59,6 +59,7 @@ private:
 	void StunTagUpdated(const FGameplayTag Tag, int32 NewCount); //stun tag变更
 	void AimTagUpdated(const FGameplayTag Tag, int32 NewCount); //aim tag变更
 	void SetIsAiming(bool bIsAiming); //瞄准时的处理
+	virtual void OnAimStateChanged(bool bIsAiming);
 	
 	/****************************************************************************/
 	/*                                    UI                                    */

@@ -30,6 +30,12 @@ private:
 	class UCameraComponent* ViewCamera; //相机组件
 	
 	/*****************************************************************/
+	/*                       Gameplay Ability                        */
+	/*****************************************************************/
+private:
+	virtual void OnAimStateChanged(bool bIsAiming) override;
+	
+	/*****************************************************************/
 	/*                             Input                             */
 	/*****************************************************************/
 	UPROPERTY(EditDefaultsOnly, Category="Input")
@@ -68,4 +74,19 @@ private:
 	/*****************************************************************/
 	virtual void OnStun() override;
 	virtual void OnRecoverFromStun() override;
+	
+	/*****************************************************************/
+	/*                         Camera View                           */
+	/*****************************************************************/
+private:
+	UPROPERTY(EditDefaultsOnly, Category="View")
+	FVector CameraAimLocalOffset; //相机瞄准偏移量
+	
+	UPROPERTY(EditDefaultsOnly, Category="View")
+	float CameraLerpSpeed = 20.f; //相机插值速度
+	
+	FTimerHandle CameraLerpTimerHandle; //相机插值计时器，这里也可用时间轴实现相机过渡
+	
+	void LerpCameraToLocalOffsetLocation(const FVector& Goal); 
+	void TickCameraLocalOffsetLerp(const FVector Goal);
 };

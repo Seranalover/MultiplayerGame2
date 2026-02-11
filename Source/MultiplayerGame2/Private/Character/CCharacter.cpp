@@ -158,14 +158,22 @@ void ACCharacter::SetIsAiming(bool bIsAiming)
 {
 	bUseControllerRotationYaw = bIsAiming;
 	GetCharacterMovement()->bOrientRotationToMovement = !bIsAiming;
+	OnAimStateChanged(bIsAiming);
+}
+
+void ACCharacter::OnAimStateChanged(bool bIsAiming)
+{
+	//override in child class
 }
 
 void ACCharacter::OnStun()
 {
+	//override in child class
 }
 
 void ACCharacter::OnRecoverFromStun()
 {
+	//override in child class
 }
 
 void ACCharacter::DeathTagUpdated(const FGameplayTag Tag, int32 NewCount)
