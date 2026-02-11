@@ -32,6 +32,9 @@ protected:
 	
 	void PushTarget(AActor* Target, const FVector& PushVelocity); //将目标推向某个方向
 	
+	void PushTargets(const TArray<AActor*>& Targets, const FVector& PushVelocity); //将多个目标推向某个方向
+	void PushTargets(const FGameplayAbilityTargetDataHandle& TargetDataHandle, const FVector& PushVelocity); //将多个目标推向某个方向
+	
 	ACharacter* GetOwningAvatarCharacter();
 	
 	void ApplyGameplayEffectToHitResult(const FHitResult& HitResult, TSubclassOf<UGameplayEffect> GameplayEffect, int Level = 1); //对目标应用攻击效果

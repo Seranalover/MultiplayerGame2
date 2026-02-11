@@ -47,6 +47,9 @@ void ATargetActor_GroundPick::ConfirmTargetingAndContinue()
 		TargetActors.Add(OverlapResult.GetActor());
 	}
 	FGameplayAbilityTargetDataHandle TargetData = UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActorArray(TargetActors.Array(), false); //选中目标
+	FGameplayAbilityTargetData_SingleTargetHit* HitLocation = new FGameplayAbilityTargetData_SingleTargetHit; //获得单个目标对象
+	HitLocation->HitResult.ImpactPoint = GetActorLocation(); //获得目标对象位置，用于生成粒子特效
+	TargetData.Add(HitLocation); //将位置信息记入TargetData
 	TargetDataReadyDelegate.Broadcast(TargetData); //广播事件，触发GA_GroundBlast类中ValidData函数
 }
 
