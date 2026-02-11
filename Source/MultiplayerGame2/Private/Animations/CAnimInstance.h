@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Animation/AnimInstance.h"
 #include "CAnimInstance.generated.h"
 
@@ -53,12 +54,26 @@ public:
 	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
 	FORCEINLINE float GetLookAtPitchOffset() const { return LookAtRotationOffset.Pitch; }
 	
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE bool GetIsAiming() const { return bIsAiming; }
+	
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE float GetFwdSpeed() const { return FwdSpeed; }
+	
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	FORCEINLINE float GetRightSpeed() const { return RightSpeed; }
+	
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	bool ShouldDoFullBody() const; //是否应该执行全身动作？
+	
 private:
 	UPROPERTY()
 	class ACharacter* OwnerCharacter; 
 	
 	UPROPERTY()
 	class UCharacterMovementComponent* OwnerMovementComponent;
+	
+	void OwnerAimTagChanged(const FGameplayTag Tag, int32 NewCount);
 	
 	float Speed; 
 	float YawSpeed;
@@ -68,5 +83,8 @@ private:
 	float YawSpeedSmoothLerp = 1.0f; //平滑量插值
 	FRotator BodyPrevRotation; //上一帧身体旋转量
 	FRotator LookAtRotationOffset; //瞄准偏移旋转
+	bool bIsAiming;
+	float FwdSpeed; //向前速度
+	float RightSpeed; //向右速度
 	
 };
