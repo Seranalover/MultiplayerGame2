@@ -55,6 +55,10 @@ private:
 	class UCAttributeSet* CAttributeSet;
 	
 	void BindGASChangeDelegates(); //绑定所有从GAS监听到的变更
+	void DeathTagUpdated(const FGameplayTag Tag, int32 NewCount); //死亡tag变更
+	void StunTagUpdated(const FGameplayTag Tag, int32 NewCount); //stun tag变更
+	void AimTagUpdated(const FGameplayTag Tag, int32 NewCount); //aim tag变更
+	void SetIsAiming(bool bIsAiming); //瞄准时的处理
 	
 	/****************************************************************************/
 	/*                                    UI                                    */
@@ -78,7 +82,6 @@ private:
 	UPROPERTY(editDefaultsOnly, Category="Stun")
 	UAnimMontage* StunAnimMontage;
 	
-	void StunTagUpdated(const FGameplayTag Tag, int32 NewCount); //stun tag变更
 	virtual void OnStun();
 	virtual void OnRecoverFromStun();
 	
@@ -96,7 +99,6 @@ private:
 	FTimerHandle DeathMontageTimerHandle; //死亡动画计时器
 	FTransform MeshRelativeTransform; //骨骼相对位置
 	
-	void DeathTagUpdated(const FGameplayTag Tag, int32 NewCount); //死亡tag变更
 	void StartDeathSequence(); //开始执行死亡任务序列
 	void Respawn(); //重生
 	void PlayDeathAnimation(); //播放死亡动画

@@ -24,6 +24,7 @@ public:
 	static FGameplayTag GetBasicAttackInputPressedTag(); 
 	static FGameplayTag GetDeadStatTag(); //死亡状态tag
 	static FGameplayTag GetStunStatTag(); //眩晕tag
+	static FGameplayTag GetAimStatTag(); //瞄准状态tag
 	
 	static float GetStaticCooldownDurationForAbility(const UGameplayAbility* Ability); //查询技能冷却时间
 	static float GetStaticCostForAbility(const UGameplayAbility* Ability); //查询技能消耗
