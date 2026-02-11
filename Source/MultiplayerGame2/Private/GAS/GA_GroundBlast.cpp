@@ -5,10 +5,13 @@
 
 #include "CAbilitySystemStatics.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
+#include "GAS/TargetActor_GroundPick.h"
 
 UGA_GroundBlast::UGA_GroundBlast()
 {
 	ActivationOwnedTags.AddTag(UCAbilitySystemStatics::GetAimStatTag()); //技能激活时，添加tag
+	BlockAbilitiesWithTag.AddTag(UCAbilitySystemStatics::GetBasicAttackAbilityTag()); //添加中断ability的tag
 }
 
 void UGA_GroundBlast::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, 
@@ -27,4 +30,26 @@ void UGA_GroundBlast::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 	PlayGroundBlastAnimTask->OnInterrupted.AddDynamic(this, &UGA_GroundBlast::K2_EndAbility);
 	PlayGroundBlastAnimTask->OnCompleted.AddDynamic(this, &UGA_GroundBlast::K2_EndAbility);
 	PlayGroundBlastAnimTask->ReadyForActivation();
+	
+	//目标选择task
+	UAbilityTask_WaitTargetData* WaitTargetDataTask = UAbilityTask_WaitTargetData::WaitTargetData(this, NAME_None, 
+		EGameplayTargetingConfirmation::UserConfirmed, TargetActorClass);
+	WaitTargetDataTask->ValidData.AddDynamic(this, &UGA_GroundBlast::TargetConfirmed);
+	WaitTargetDataTask->Cancelled.AddDynamic(this, &UGA_GroundBlast::TargetCanceled);
+	WaitTargetDataTask->ReadyForActivation();
+	AGameplayAbilityTargetActor* TargetActor; //目标actor
+	WaitTargetDataTask->BeginSpawningActor(this, TargetActorClass, TargetActor); //生成目标actor
+	WaitTargetDataTask->FinishSpawningActor(this, TargetActor); //完成生成目标actor
+}
+
+void UGA_GroundBlast::TargetConfirmed(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Target confirmed"));
+	K2_EndAbility();
+}
+
+void UGA_GroundBlast::TargetCanceled(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Target canceled"));
+	K2_EndAbility();
 }

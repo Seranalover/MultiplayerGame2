@@ -24,4 +24,13 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Aimation")
 	UAnimMontage* GroundBlastMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Targeting")
+	TSubclassOf<class ATargetActor_GroundPick> TargetActorClass;
+	
+	UFUNCTION()
+	void TargetConfirmed(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
+	
+	UFUNCTION()
+	void TargetCanceled(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
 };
