@@ -2,11 +2,53 @@
 
 
 #include "GAS/TargetActor_GroundPick.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
+#include "GenericTeamAgentInterface.h"
+#include "Abilities/GameplayAbility.h"
+#include "Engine/OverlapResult.h"
 #include "MultiplayerGame2/MultiplayerGame2.h"
 
 ATargetActor_GroundPick::ATargetActor_GroundPick()
 {
 	PrimaryActorTick.bCanEverTick = true;
+}
+
+void ATargetActor_GroundPick::SetTargetAreaRadius(float NewRadius)
+{
+	TargetAreaRadius = NewRadius;
+}
+
+void ATargetActor_GroundPick::ConfirmTargetingAndContinue()
+{
+	TArray<FOverlapResult> OverlapResults; //重叠结果
+	FCollisionObjectQueryParams CollisionParams; //碰撞参数
+	CollisionParams.AddObjectTypesToQuery(ECC_Pawn);
+	FCollisionShape CollisionShape; //碰撞形状
+	CollisionShape.SetSphere(TargetAreaRadius);
+	GetWorld()->OverlapMultiByObjectType(OverlapResults, GetActorLocation(), FQuat::Identity, CollisionParams, CollisionShape); //碰撞检测
+	TSet<AActor*> TargetActors; //命中对象集合
+	IGenericTeamAgentInterface* TeamAgentInterface = nullptr;
+	if (OwningAbility)
+	{
+		TeamAgentInterface = Cast<IGenericTeamAgentInterface>(OwningAbility->GetAvatarActorFromActorInfo());
+	}
+	for (const FOverlapResult& OverlapResult : OverlapResults)
+	{
+		if (TeamAgentInterface && TeamAgentInterface->GetTeamAttitudeTowards(*OverlapResult.GetActor()) == ETeamAttitude::Friendly && !bShouldTargetFriendly) //排除友方单位
+			continue;
+		if (TeamAgentInterface && TeamAgentInterface->GetTeamAttitudeTowards(*OverlapResult.GetActor()) == ETeamAttitude::Hostile && !bShouldTargetEnemy) //排除特定敌方单位
+			continue;
+		TargetActors.Add(OverlapResult.GetActor());
+	}
+	FGameplayAbilityTargetDataHandle TargetData = UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActorArray(TargetActors.Array(), false); //选中目标
+	TargetDataReadyDelegate.Broadcast(TargetData); //广播事件，触发GA_GroundBlast类中ValidData函数
+}
+
+void ATargetActor_GroundPick::SetTargetOptions(bool bTargetFriendly, bool bTargetEnemy)
+{
+	bShouldTargetEnemy = bTargetEnemy;
+	bShouldTargetFriendly = bTargetFriendly;
 }
 
 void ATargetActor_GroundPick::Tick(float DeltaTime)

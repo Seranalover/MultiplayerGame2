@@ -3,6 +3,7 @@
 
 #include "GAS/GA_GroundBlast.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "CAbilitySystemStatics.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
@@ -34,7 +35,7 @@ void UGA_GroundBlast::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 	//目标选择task
 	UAbilityTask_WaitTargetData* WaitTargetDataTask = UAbilityTask_WaitTargetData::WaitTargetData(this, NAME_None, 
 		EGameplayTargetingConfirmation::UserConfirmed, TargetActorClass);
-	WaitTargetDataTask->ValidData.AddDynamic(this, &UGA_GroundBlast::TargetConfirmed);
+	WaitTargetDataTask->ValidData.AddDynamic(this, &UGA_GroundBlast::TargetConfirmed); //ValidData接收广播事件
 	WaitTargetDataTask->Cancelled.AddDynamic(this, &UGA_GroundBlast::TargetCanceled);
 	WaitTargetDataTask->ReadyForActivation();
 	AGameplayAbilityTargetActor* TargetActor; //目标actor
@@ -44,6 +45,11 @@ void UGA_GroundBlast::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 
 void UGA_GroundBlast::TargetConfirmed(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
+	TArray<AActor*> OverlapActors = UAbilitySystemBlueprintLibrary::GetAllActorsFromTargetData(TargetDataHandle); //接收广播事件中的数据
+	for (AActor* Actor : OverlapActors)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("find target: %s"), *Actor->GetName());
+	}
 	UE_LOG(LogTemp, Warning, TEXT("Target confirmed"));
 	K2_EndAbility();
 }
