@@ -19,9 +19,11 @@ class ATargetActor_GroundPick : public AGameplayAbilityTargetActor
 public:
 	ATargetActor_GroundPick();
 	void SetTargetAreaRadius(float NewRadius);
+	void SetTargetTraceRange(float NewRange);
 	/** Requesting targeting data, but not necessarily stopping/destroying the task. Useful for external target data requests. */
 	virtual void ConfirmTargetingAndContinue() override;
 	void SetTargetOptions(bool bTargetFriendly, bool bTargetEnemy = true); //设置是否选取敌方或友方单位
+	FORCEINLINE void SetShouldDrawDebug(bool bdDrawDebug) { bShouldDrawDebug = bdDrawDebug; }
 	
 protected:
 	FVector GetTargetActorLocation() const; //获得目标选择器的位置，即玩家视线瞄准位置
@@ -34,6 +36,7 @@ protected:
 	
 	bool bShouldTargetEnemy = true; //是否选取地方单位
 	bool bShouldTargetFriendly = false; //是否选取友方单位
+	bool bShouldDrawDebug = false; //绘制debug？
 	
 	virtual void Tick(float DeltaTime) override;
 	

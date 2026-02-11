@@ -19,6 +19,11 @@ void ATargetActor_GroundPick::SetTargetAreaRadius(float NewRadius)
 	TargetAreaRadius = NewRadius;
 }
 
+void ATargetActor_GroundPick::SetTargetTraceRange(float NewRange)
+{
+	TargetRange = NewRange;
+}
+
 void ATargetActor_GroundPick::ConfirmTargetingAndContinue()
 {
 	TArray<FOverlapResult> OverlapResults; //重叠结果
@@ -71,14 +76,14 @@ FVector ATargetActor_GroundPick::GetTargetActorLocation() const
 	PrimaryPC->GetPlayerViewPoint(ViewLocation, ViewRotation); //获取当前ViewLocation和ViewRotation
 	FVector TraceEnd = ViewLocation + ViewRotation.Vector() * TargetRange; //trace终点位置
 	GetWorld()->LineTraceSingleByChannel(TraceResult, ViewLocation, TraceEnd, ECC_Target); //射线追踪玩家Aim位置，ECC_Target是DefaultEngine.ini新建的检测通道，并且在MultiplayerGame2.h中重命名
-	
 	//如果没检测到结果，可能是看向空中，从空中的Aim位置投影到地面，再次进行一次射线检测
 	if (!TraceResult.bBlockingHit)
 		GetWorld()->LineTraceSingleByChannel(TraceResult, ViewLocation, TraceEnd + FVector::DownVector * TNumericLimits<float>::Max(), ECC_Target);
-	
 	//如果还没检测到结果，直接返回
 	if (!TraceResult.bBlockingHit)
 		return GetActorLocation();
-	
+	//绘制debug范围
+	if (bShouldDrawDebug)
+		DrawDebugSphere(GetWorld(), TraceResult.ImpactPoint, TargetAreaRadius, 32, FColor::Red);
 	return TraceResult.ImpactPoint; //返回trace的命中结果
 }

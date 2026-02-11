@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CGameplayAbilityTypes.h"
 #include "GAS/CGameplayAbility.h"
 #include "GA_GroundBlast.generated.h"
 
@@ -27,6 +28,15 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Targeting")
 	TSubclassOf<class ATargetActor_GroundPick> TargetActorClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Targeting")
+	float TargetAreaRadius = 300.f; //目标范围
+	
+	UPROPERTY(EditDefaultsOnly, Category="Targeting")
+	float TargetTraceRange = 2000.f; //射程
+	
+	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	FGenericDamageEffectDef DamageEffectDef; //伤害效果
 	
 	UFUNCTION()
 	void TargetConfirmed(const FGameplayAbilityTargetDataHandle& TargetDataHandle); //确认选取目标

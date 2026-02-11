@@ -40,16 +40,19 @@ void UGA_GroundBlast::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 	WaitTargetDataTask->ReadyForActivation();
 	AGameplayAbilityTargetActor* TargetActor; //目标actor
 	WaitTargetDataTask->BeginSpawningActor(this, TargetActorClass, TargetActor); //生成目标actor
+	ATargetActor_GroundPick* GroundPickActor = Cast<ATargetActor_GroundPick>(TargetActor); //用于调试的类型转换
+	if (GroundPickActor)
+	{
+		GroundPickActor->SetShouldDrawDebug(ShouldDrawDebug());
+		GroundPickActor->SetTargetAreaRadius(TargetAreaRadius);
+		GroundPickActor->SetTargetTraceRange(TargetTraceRange);
+	}
 	WaitTargetDataTask->FinishSpawningActor(this, TargetActor); //完成生成目标actor
 }
 
 void UGA_GroundBlast::TargetConfirmed(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
-	TArray<AActor*> OverlapActors = UAbilitySystemBlueprintLibrary::GetAllActorsFromTargetData(TargetDataHandle); //接收广播事件中的数据
-	for (AActor* Actor : OverlapActors)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("find target: %s"), *Actor->GetName());
-	}
+	BP_ApplyGameplayEffectToTarget(TargetDataHandle, DamageEffectDef.DamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 	UE_LOG(LogTemp, Warning, TEXT("Target confirmed"));
 	K2_EndAbility();
 }
