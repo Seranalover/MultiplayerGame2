@@ -25,9 +25,7 @@ public:
 	void SetTargetOptions(bool bTargetFriendly, bool bTargetEnemy = true); //设置是否选取敌方或友方单位
 	FORCEINLINE void SetShouldDrawDebug(bool bdDrawDebug) { bShouldDrawDebug = bdDrawDebug; }
 	
-protected:
-	FVector GetTargetActorLocation() const; //获得目标选择器的位置，即玩家视线瞄准位置
-	
+private:
 	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
 	float TargetRange = 2000.f; //技能射程半径
 	
@@ -38,6 +36,10 @@ protected:
 	bool bShouldTargetFriendly = false; //是否选取友方单位
 	bool bShouldDrawDebug = false; //绘制debug？
 	
+	UPROPERTY(VisibleDefaultsOnly, Category = "Visual")
+	class UDecalComponent* DecalComponent;
+	
+	FVector GetTargetActorLocation() const; //获得目标选择器的位置，即玩家视线瞄准位置
 	virtual void Tick(float DeltaTime) override;
 	
 	

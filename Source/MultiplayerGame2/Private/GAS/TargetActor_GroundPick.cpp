@@ -4,19 +4,24 @@
 #include "GAS/TargetActor_GroundPick.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
-#include "GenericTeamAgentInterface.h"
 #include "Abilities/GameplayAbility.h"
+#include "Components/DecalComponent.h"
 #include "Engine/OverlapResult.h"
+#include "GenericTeamAgentInterface.h"
 #include "MultiplayerGame2/MultiplayerGame2.h"
 
 ATargetActor_GroundPick::ATargetActor_GroundPick()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	SetRootComponent(CreateDefaultSubobject<USceneComponent>("RootS Component"));
+	DecalComponent = CreateDefaultSubobject<UDecalComponent>("Decal Component");
+	DecalComponent->SetupAttachment(RootComponent);
 }
 
 void ATargetActor_GroundPick::SetTargetAreaRadius(float NewRadius)
 {
 	TargetAreaRadius = NewRadius;
+	DecalComponent->DecalSize = FVector(NewRadius);
 }
 
 void ATargetActor_GroundPick::SetTargetTraceRange(float NewRange)
