@@ -38,5 +38,35 @@ public:
 	TSubclassOf<UGameplayEffect> DamageEffect; //伤害效果
 	
 	UPROPERTY(EditAnywhere)
-	FVector PushVelocity = FVector::ZeroVector;; //推动方向
+	FVector PushVelocity = FVector::ZeroVector; //推动方向
+};
+
+/**
+ * 英雄基础属性结构体
+ */
+USTRUCT()
+struct FHeroBaseStats : public FTableRowBase
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> Class;
+	UPROPERTY(EditAnywhere)
+	float Strength;
+	UPROPERTY(EditAnywhere)
+	float Intelligence;
+	UPROPERTY(EditAnywhere)
+	float StrengthGrowthRate; //力量成长值
+	UPROPERTY(EditAnywhere)
+	float IntelligenceGrowthRate; //智力成长值
+	UPROPERTY(EditAnywhere)
+	float BaseMaxHealth;
+	UPROPERTY(EditAnywhere)
+	float BaseMaxMana;
+	UPROPERTY(EditAnywhere)
+	float BaseAttackDamage;
+	UPROPERTY(EditAnywhere)
+	float BaseArmor;
+	UPROPERTY(EditAnywhere)
+	float BaseMoveSpeed;
 };
