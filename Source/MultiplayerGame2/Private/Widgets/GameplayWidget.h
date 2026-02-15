@@ -27,7 +27,22 @@ private:
 	class UValueGauge* ManaBar;
 	
 	UPROPERTY(meta=(BindWidget))
-	class UAbilitiesListView* AbilitiesListView;
+	class UAbilitiesListView* AbilitiesListView; //技能栏列表
+	
+	UPROPERTY(meta=(BindWidget))
+	class UStatsGauge* AttackDamageGauge;
+	
+	UPROPERTY(meta=(BindWidget))
+	class UStatsGauge* ArmorGauge;
+	
+	UPROPERTY(meta=(BindWidget))
+	class UStatsGauge* MoveSpeedGauge;
+	
+	UPROPERTY(meta=(BindWidget))
+	class UStatsGauge* StrengthGauge;
+	
+	UPROPERTY(meta=(BindWidget))
+	class UStatsGauge* IntelligenceGauge;
 	
 	UPROPERTY()
 	class UAbilitySystemComponent* OwnerAbilitySystemComponent;
