@@ -41,8 +41,7 @@ ACCharacter::ACCharacter()
 void ACCharacter::ServerSideInit()
 {
 	CAbilitySystemComponent->InitAbilityActorInfo(this, this);
-	CAbilitySystemComponent->ApplyInitialEffects(); //初始化属性值
-	CAbilitySystemComponent->GiveInitialAbilities(); //初始化能力，不用在客户端调用，根据文档，它会自动同步到客户端
+	CAbilitySystemComponent->ServerSideInit(); //初始化属性，能力，不用在客户端调用，根据文档，它会自动同步到客户端
 }
 
 //客户端初始化

@@ -4,12 +4,45 @@
 #include "GAS/CAbilitySystemComponent.h"
 
 #include "CAttributeSet.h"
+#include "CHeroAttributeSet.h"
 
 UCAbilitySystemComponent::UCAbilitySystemComponent()
 {
 	GetGameplayAttributeValueChangeDelegate(UCAttributeSet::GetHealthAttribute()).AddUObject(this, &UCAbilitySystemComponent::HealthUpdated); //监听attribute change，绑定HealthUpdated()函数
 	GenericConfirmInputID = (int32)ECAbilityInputID::Confirm; //技能确认输入
 	GenericCancelInputID = (int32)ECAbilityInputID::Cancel; //技能取消输入
+}
+
+void UCAbilitySystemComponent::ServerSideInit()
+{
+	InitializeBaseAttributes();
+	ApplyInitialEffects();
+	GiveInitialAbilities();
+}
+
+void UCAbilitySystemComponent::InitializeBaseAttributes()
+{
+	if (!BaseStatsDataTable || !GetOwner()) return;
+	const FHeroBaseStats* BaseStats = nullptr;
+	for (const TPair<FName, uint8*>& DataPair : BaseStatsDataTable->GetRowMap())
+	{
+		BaseStats = BaseStatsDataTable->FindRow<FHeroBaseStats>(DataPair.Key, "");
+		if (BaseStats && BaseStats->Class == GetOwner()->GetClass())
+			break;
+	}
+	if (BaseStats)
+	{
+		SetNumericAttributeBase(UCAttributeSet::GetMaxHealthAttribute(), BaseStats->BaseMaxHealth);
+		SetNumericAttributeBase(UCAttributeSet::GetMaxManaAttribute(), BaseStats->BaseMaxMana);
+		SetNumericAttributeBase(UCAttributeSet::GetAttackDamageAttribute(), BaseStats->BaseAttackDamage);
+		SetNumericAttributeBase(UCAttributeSet::GetArmorAttribute(), BaseStats->BaseArmor);
+		SetNumericAttributeBase(UCAttributeSet::GetMoveSpeedAttribute(), BaseStats->BaseMoveSpeed);
+		
+		SetNumericAttributeBase(UCHeroAttributeSet::GetStrengthAttribute(), BaseStats->Strength);
+		SetNumericAttributeBase(UCHeroAttributeSet::GetStrengthGrowthRateAttribute(), BaseStats->StrengthGrowthRate);
+		SetNumericAttributeBase(UCHeroAttributeSet::GetIntelligenceAttribute(), BaseStats->Intelligence);
+		SetNumericAttributeBase(UCHeroAttributeSet::GetIntelligenceGrowthRateAttribute(), BaseStats->IntelligenceGrowthRate);
+	}
 }
 
 void UCAbilitySystemComponent::ApplyInitialEffects()
