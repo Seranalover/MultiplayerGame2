@@ -127,12 +127,13 @@ void ACCharacter::BindGASChangeDelegates()
 		//监听Dead Tag，绑定DeathTagUpdated()
 		CAbilitySystemComponent->RegisterGameplayTagEvent(
 			UCAbilitySystemStatics::GetDeadStatTag()).AddUObject(this, &ACCharacter::DeathTagUpdated);
-		
 		CAbilitySystemComponent->RegisterGameplayTagEvent(
 			UCAbilitySystemStatics::GetStunStatTag()).AddUObject(this, &ACCharacter::StunTagUpdated);
-		
 		CAbilitySystemComponent->RegisterGameplayTagEvent(
 			UCAbilitySystemStatics::GetAimStatTag()).AddUObject(this, &ACCharacter::AimTagUpdated);
+		
+		CAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
+			UCAttributeSet::GetMoveSpeedAttribute()).AddUObject(this, &ACCharacter::MoveSpeedUpdated);
 	}
 }
 
@@ -166,6 +167,11 @@ void ACCharacter::SetIsAiming(bool bIsAiming)
 void ACCharacter::OnAimStateChanged(bool bIsAiming)
 {
 	//override in child class
+}
+
+void ACCharacter::MoveSpeedUpdated(const FOnAttributeChangeData& Data)
+{
+	GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
 }
 
 void ACCharacter::OnStun()
