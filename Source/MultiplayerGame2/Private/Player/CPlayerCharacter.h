@@ -33,6 +33,9 @@ private:
 	/*                       Gameplay Ability                        */
 	/*****************************************************************/
 private:
+	UPROPERTY()
+	class UCHeroAttributeSet* HeroAttributeSet;
+	
 	virtual void OnAimStateChanged(bool bIsAiming) override;
 	
 	/*****************************************************************/

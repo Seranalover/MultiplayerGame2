@@ -11,6 +11,7 @@
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/CAbilitySystemStatics.h"
+#include "GAS/CHeroAttributeSet.h"
 #include "MultiplayerGame2/MultiplayerGame2.h"
 
 ACPlayerCharacter::ACPlayerCharacter()
@@ -28,6 +29,8 @@ ACPlayerCharacter::ACPlayerCharacter()
 	bUseControllerRotationYaw = false; //禁用控制器yaw旋转
 	GetCharacterMovement()->bOrientRotationToMovement = true; //角色面朝移动方向
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f); //旋转速率
+	
+	HeroAttributeSet = CreateDefaultSubobject<UCHeroAttributeSet>("Hero Attribute Set");
 }
 
 void ACPlayerCharacter::PawnClientRestart()
