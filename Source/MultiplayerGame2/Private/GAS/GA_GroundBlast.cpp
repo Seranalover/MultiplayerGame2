@@ -26,7 +26,7 @@ void UGA_GroundBlast::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 	
 	//播放蒙太奇
 	UAbilityTask_PlayMontageAndWait* PlayGroundBlastAnimTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this,
-		NAME_None, GroundBlastMontage);
+		NAME_None, TargetMontage);
 	PlayGroundBlastAnimTask->OnBlendOut.AddDynamic(this, &UGA_GroundBlast::K2_EndAbility);
 	PlayGroundBlastAnimTask->OnCancelled.AddDynamic(this, &UGA_GroundBlast::K2_EndAbility);
 	PlayGroundBlastAnimTask->OnInterrupted.AddDynamic(this, &UGA_GroundBlast::K2_EndAbility);
@@ -53,15 +53,24 @@ void UGA_GroundBlast::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 
 void UGA_GroundBlast::TargetConfirmed(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
-	BP_ApplyGameplayEffectToTarget(TargetDataHandle, DamageEffectDef.DamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo)); //伤害目标
-	PushTargets(TargetDataHandle, DamageEffectDef.PushVelocity); //击飞所有目标
-	
+	if (!K2_CommitAbility())
+	{
+		K2_EndAbility();
+		return;
+	}
+	if (K2_HasAuthority())
+	{
+		BP_ApplyGameplayEffectToTarget(TargetDataHandle, DamageEffectDef.DamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo)); //伤害目标
+		PushTargets(TargetDataHandle, DamageEffectDef.PushVelocity); //击飞所有目标
+	}
 	//代码调用GameplayCue
 	FGameplayCueParameters BlastingCueParams; //定义GC
 	BlastingCueParams.Location = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(TargetDataHandle, 1).ImpactPoint; //从TargetDataHandle获得特效生成位置
 	BlastingCueParams.RawMagnitude = TargetAreaRadius; //爆炸特效范围，基于技能半径
 	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(BlastCueTag, BlastingCueParams); //执行爆炸特效GC
 	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(UCAbilitySystemStatics::GetCameraShakeGameplayCueTag(), BlastingCueParams); //执行相机震动GC，自动向client同步
+	if (UAnimInstance* OwnerAnimInstance = GetOwnerAnimInstance())
+		OwnerAnimInstance->Montage_Play(CastMontage);
 	K2_EndAbility();
 }
 

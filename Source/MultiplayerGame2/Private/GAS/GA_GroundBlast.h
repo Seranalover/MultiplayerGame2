@@ -24,7 +24,10 @@ public:
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Aimation")
-	UAnimMontage* GroundBlastMontage;
+	UAnimMontage* TargetMontage; //瞄准动画
+	
+	UPROPERTY(EditDefaultsOnly, Category="Aimation")
+	UAnimMontage* CastMontage; //施放技能动画
 	
 	UPROPERTY(EditDefaultsOnly, Category="Targeting")
 	TSubclassOf<class ATargetActor_GroundPick> TargetActorClass;
