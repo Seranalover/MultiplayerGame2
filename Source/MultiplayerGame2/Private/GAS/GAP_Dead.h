@@ -27,5 +27,22 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Reward")
 	float RewardRange = 1000.f; //击杀奖励范围
 	
+	UPROPERTY(EditDefaultsOnly, Category="Reward")
+	float BaseExperienceReward = 200.f; //基础经验奖励
+	
+	UPROPERTY(EditDefaultsOnly, Category="Reward")
+	float BaseGoldReward = 200.f; //基础金币奖励
+	
+	UPROPERTY(EditDefaultsOnly, Category="Reward")
+	float ExperienceRewardPerExperience = 200.f; //额外经验奖励
+	
+	UPROPERTY(EditDefaultsOnly, Category="Reward")
+	float GoldRewardPerExperience = 200.f; //额外金币奖励
+	
+	float KillerRewardPortion = 0.5f; //Killer奖励占比
+	
+	UPROPERTY(EditDefaultsOnly, Category="Reward")
+	TSubclassOf<UGameplayEffect> RewardEffect; //奖励GE
+	
 	TArray<AActor*> GetRewardActors() const;
 };

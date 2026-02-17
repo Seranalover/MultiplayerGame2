@@ -24,6 +24,8 @@ public:
 	static FGameplayTag GetManaFullStatTag();
 	static FGameplayTag GetManaEmptyStatTag();
 	static FGameplayTag GetHeroRoleTag(); //英雄角色标签
+	static FGameplayTag GetExperienceAttributeTag();
+	static FGameplayTag GetGoldAttributeTag();
 	
 	/*
 	 * 按下攻击键tag
