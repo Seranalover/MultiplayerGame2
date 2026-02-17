@@ -19,6 +19,11 @@ public:
 	static FGameplayTag GetDeadStatTag(); //死亡状态tag
 	static FGameplayTag GetStunStatTag(); //眩晕tag
 	static FGameplayTag GetAimStatTag(); //瞄准状态tag
+	static FGameplayTag GetHealthFullStatTag();
+	static FGameplayTag GetHealthEmptyStatTag();
+	static FGameplayTag GetManaFullStatTag();
+	static FGameplayTag GetManaEmptyStatTag();
+
 	
 	/*
 	 * 按下攻击键tag

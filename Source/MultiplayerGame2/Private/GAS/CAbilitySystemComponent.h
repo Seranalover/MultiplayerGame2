@@ -44,5 +44,6 @@ private:
 	void ApplyInitialEffects(); //初始化所有数值
 	void GiveInitialAbilities(); //赋予技能
 	void HealthUpdated(const FOnAttributeChangeData& ChangeData); //生命值变更
+	void ManaUpdated(const FOnAttributeChangeData& ChangeData); //魔力值变更
 	void AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect> GameplayEffect, int Level = 1);
 };

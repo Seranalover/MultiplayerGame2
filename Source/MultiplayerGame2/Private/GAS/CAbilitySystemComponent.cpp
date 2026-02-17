@@ -3,12 +3,14 @@
 
 #include "GAS/CAbilitySystemComponent.h"
 
+#include "CAbilitySystemStatics.h"
 #include "CAttributeSet.h"
 #include "CHeroAttributeSet.h"
 
 UCAbilitySystemComponent::UCAbilitySystemComponent()
 {
 	GetGameplayAttributeValueChangeDelegate(UCAttributeSet::GetHealthAttribute()).AddUObject(this, &UCAbilitySystemComponent::HealthUpdated); //监听attribute change，绑定HealthUpdated()函数
+	GetGameplayAttributeValueChangeDelegate(UCAttributeSet::GetManaAttribute()).AddUObject(this, &UCAbilitySystemComponent::ManaUpdated); //监听attribute change，绑定ManaUpdated()函数
 	GenericConfirmInputID = (int32)ECAbilityInputID::Confirm; //技能确认输入
 	GenericCancelInputID = (int32)ECAbilityInputID::Cancel; //技能取消输入
 }
@@ -83,11 +85,65 @@ const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& UCAbilitySystemComp
 
 void UCAbilitySystemComponent::HealthUpdated(const FOnAttributeChangeData& ChangeData)
 {
-	if (!GetOwner()) return;
+	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
 	
-	if (ChangeData.NewValue <= 0 && GetOwner()->HasAuthority() && DeathEffect)
+	bool bFound = false;
+	float MaxHealth = GetGameplayAttributeValue(UCAttributeSet::GetMaxHealthAttribute(), bFound);
+	if (bFound && ChangeData.NewValue >= MaxHealth)
 	{
-		AuthApplyGameplayEffect(DeathEffect);
+		if (!HasMatchingGameplayTag(UCAbilitySystemStatics::GetHealthFullStatTag()))
+			AddLooseGameplayTag(UCAbilitySystemStatics::GetHealthFullStatTag()); //local only
+	}
+	else
+	{
+		if (HasMatchingGameplayTag(UCAbilitySystemStatics::GetHealthFullStatTag()))
+			RemoveLooseGameplayTag(UCAbilitySystemStatics::GetHealthFullStatTag()); //local only
+	}
+	
+	if (ChangeData.NewValue <= 0)
+	{
+		if (!HasMatchingGameplayTag(UCAbilitySystemStatics::GetHealthEmptyStatTag()))
+		{
+			AddLooseGameplayTag(UCAbilitySystemStatics::GetHealthEmptyStatTag());
+			if (DeathEffect)
+				AuthApplyGameplayEffect(DeathEffect);
+		}
+		else
+		{
+			if (HasMatchingGameplayTag(UCAbilitySystemStatics::GetHealthFullStatTag()))
+				RemoveLooseGameplayTag(UCAbilitySystemStatics::GetHealthEmptyStatTag());
+		}
+	}
+}
+
+void UCAbilitySystemComponent::ManaUpdated(const FOnAttributeChangeData& ChangeData)
+{
+	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
+	
+	bool bFound = false;
+	float MaxMana = GetGameplayAttributeValue(UCAttributeSet::GetMaxManaAttribute(), bFound);
+	if (bFound && ChangeData.NewValue >= MaxMana)
+	{
+		if (!HasMatchingGameplayTag(UCAbilitySystemStatics::GetManaFullStatTag()))
+			AddLooseGameplayTag(UCAbilitySystemStatics::GetManaFullStatTag()); //local only
+	}
+	else
+	{
+		if (HasMatchingGameplayTag(UCAbilitySystemStatics::GetManaFullStatTag()))
+			RemoveLooseGameplayTag(UCAbilitySystemStatics::GetManaFullStatTag()); //local only
+	}
+	
+	if (ChangeData.NewValue <= 0)
+	{
+		if (!HasMatchingGameplayTag(UCAbilitySystemStatics::GetManaEmptyStatTag()))
+		{
+			AddLooseGameplayTag(UCAbilitySystemStatics::GetManaEmptyStatTag());
+		}
+		else
+		{
+			if (HasMatchingGameplayTag(UCAbilitySystemStatics::GetManaEmptyStatTag()))
+				RemoveLooseGameplayTag(UCAbilitySystemStatics::GetManaEmptyStatTag());
+		}
 	}
 }
 
