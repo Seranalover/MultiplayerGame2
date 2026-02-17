@@ -3,9 +3,11 @@
 
 #include "GAS/CAbilitySystemComponent.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "CAbilitySystemStatics.h"
 #include "CAttributeSet.h"
 #include "CHeroAttributeSet.h"
+#include "GameplayEffectExtension.h"
 
 UCAbilitySystemComponent::UCAbilitySystemComponent()
 {
@@ -71,6 +73,11 @@ void UCAbilitySystemComponent::GiveInitialAbilities()
 	{
 		GiveAbility(FGameplayAbilitySpec(BasicAbilityPair.Value, 1, (int32)BasicAbilityPair.Key, nullptr)); //赋予基础能力
 	}
+	
+	for (const TSubclassOf<UGameplayAbility>& PassiveAbility : PassiveAbilities)
+	{
+		GiveAbility(FGameplayAbilitySpec(PassiveAbility, 1, -1, nullptr)); //赋予被动技能
+	}
 }
 
 void UCAbilitySystemComponent::ApplyFullStatEffect()
@@ -104,14 +111,19 @@ void UCAbilitySystemComponent::HealthUpdated(const FOnAttributeChangeData& Chang
 	{
 		if (!HasMatchingGameplayTag(UCAbilitySystemStatics::GetHealthEmptyStatTag()))
 		{
-			AddLooseGameplayTag(UCAbilitySystemStatics::GetHealthEmptyStatTag());
+			AddLooseGameplayTag(UCAbilitySystemStatics::GetHealthEmptyStatTag()); //local only
 			if (DeathEffect)
 				AuthApplyGameplayEffect(DeathEffect);
+			
+			FGameplayEventData DeathAbilityEventData; //死亡事件信息，传递给GAP_Death中
+			if (ChangeData.GEModData)
+				DeathAbilityEventData.ContextHandle = ChangeData.GEModData->EffectSpec.GetContext(); //从传入参数中获得上下文句柄
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwner(), UCAbilitySystemStatics::GetDeadStatTag(), DeathAbilityEventData); //传递死亡事件
 		}
 		else
 		{
 			if (HasMatchingGameplayTag(UCAbilitySystemStatics::GetHealthFullStatTag()))
-				RemoveLooseGameplayTag(UCAbilitySystemStatics::GetHealthEmptyStatTag());
+				RemoveLooseGameplayTag(UCAbilitySystemStatics::GetHealthEmptyStatTag()); //local only
 		}
 	}
 }
@@ -137,12 +149,12 @@ void UCAbilitySystemComponent::ManaUpdated(const FOnAttributeChangeData& ChangeD
 	{
 		if (!HasMatchingGameplayTag(UCAbilitySystemStatics::GetManaEmptyStatTag()))
 		{
-			AddLooseGameplayTag(UCAbilitySystemStatics::GetManaEmptyStatTag());
+			AddLooseGameplayTag(UCAbilitySystemStatics::GetManaEmptyStatTag()); //local only
 		}
 		else
 		{
 			if (HasMatchingGameplayTag(UCAbilitySystemStatics::GetManaEmptyStatTag()))
-				RemoveLooseGameplayTag(UCAbilitySystemStatics::GetManaEmptyStatTag());
+				RemoveLooseGameplayTag(UCAbilitySystemStatics::GetManaEmptyStatTag()); //local only
 		}
 	}
 }

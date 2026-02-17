@@ -33,6 +33,9 @@ private:
 	TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>> BasicAbilities; //基础技能
 	
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> PassiveAbilities; //被动技能
+	
+	UPROPERTY(EditDefaultsOnly, Category="Gameplay Abilities")
 	TSubclassOf<UGameplayEffect> DeathEffect; //死亡GE
 	
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay Abilities")
