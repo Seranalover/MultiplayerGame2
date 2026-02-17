@@ -23,4 +23,9 @@ public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, 
 		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
+private:
+	UPROPERTY(EditDefaultsOnly, Category="Reward")
+	float RewardRange = 1000.f; //击杀奖励范围
+	
+	TArray<AActor*> GetRewardActors() const;
 };

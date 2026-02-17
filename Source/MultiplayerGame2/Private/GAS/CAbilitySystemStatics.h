@@ -23,7 +23,7 @@ public:
 	static FGameplayTag GetHealthEmptyStatTag();
 	static FGameplayTag GetManaFullStatTag();
 	static FGameplayTag GetManaEmptyStatTag();
-
+	static FGameplayTag GetHeroRoleTag(); //英雄角色标签
 	
 	/*
 	 * 按下攻击键tag
@@ -36,5 +36,6 @@ public:
 	
 	static float GetStaticCooldownDurationForAbility(const UGameplayAbility* Ability); //查询技能冷却时间
 	static float GetStaticCostForAbility(const UGameplayAbility* Ability); //查询技能消耗
-	
+	static bool IsHero(const AActor* Actor); //查询是否英雄单位
+
 };
