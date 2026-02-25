@@ -49,6 +49,15 @@ void UCAbilitySystemComponent::InitializeBaseAttributes()
 		SetNumericAttributeBase(UCHeroAttributeSet::GetIntelligenceAttribute(), BaseStats->Intelligence);
 		SetNumericAttributeBase(UCHeroAttributeSet::GetIntelligenceGrowthRateAttribute(), BaseStats->IntelligenceGrowthRate);
 	}
+	const FRealCurve* ExperienceCurve = AbilitySystemGenerics->GetExperienceCurve();
+	if (ExperienceCurve) //根据ExperienceCurve数据表初始化最高等级和经验
+	{
+		int MaxLevel = ExperienceCurve->GetNumKeys();
+		SetNumericAttributeBase(UCHeroAttributeSet::GetMaxLevelAttribute(), MaxLevel);
+		float MaxExp = ExperienceCurve->GetKeyValue(ExperienceCurve->GetLastKeyHandle());
+		SetNumericAttributeBase(UCHeroAttributeSet::GetMaxLevelExperienceAttribute(), MaxExp);
+		UE_LOG(LogTemp,Warning,TEXT("max level: %d, max experience: %f"), MaxLevel, MaxExp);
+	}
 }
 
 void UCAbilitySystemComponent::ApplyInitialEffects()
