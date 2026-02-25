@@ -7,7 +7,7 @@
 #include "MMC_BaseAttackDamage.generated.h"
 
 /**
- * 
+ * 伤害修改计算类
  */
 UCLASS()
 class UMMC_BaseAttackDamage : public UGameplayModMagnitudeCalculation
@@ -16,10 +16,10 @@ class UMMC_BaseAttackDamage : public UGameplayModMagnitudeCalculation
 	
 public:
 	UMMC_BaseAttackDamage();
-	virtual  float CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const override;
+	virtual float CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const override;
 
 private:
-	FGameplayEffectAttributeCaptureDefinition DamageCaptureDef;
-	FGameplayEffectAttributeCaptureDefinition ArmorCaptureDef;
+	FGameplayEffectAttributeCaptureDefinition DamageCaptureDef; //捕获damage属性
+	FGameplayEffectAttributeCaptureDefinition ArmorCaptureDef; //捕获armor属性
 	
 };
