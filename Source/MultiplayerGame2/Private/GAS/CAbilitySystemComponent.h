@@ -23,9 +23,6 @@ public:
 	const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const; //获得附加技能，不包括基础技能
 	
 private:
-	UPROPERTY(EditDefaultsOnly, Category="Gameplay Effects")
-	TArray<TSubclassOf<UGameplayEffect>> InitialEffects;
-	
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay Abilities")
 	TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>> Abilities; //附加技能
 	
@@ -33,16 +30,7 @@ private:
 	TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>> BasicAbilities; //基础技能
 	
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay Abilities")
-	TArray<TSubclassOf<UGameplayAbility>> PassiveAbilities; //被动技能
-	
-	UPROPERTY(EditDefaultsOnly, Category="Gameplay Abilities")
-	TSubclassOf<UGameplayEffect> DeathEffect; //死亡GE
-	
-	UPROPERTY(EditDefaultsOnly, Category="Gameplay Abilities")
-	TSubclassOf<UGameplayEffect> FullStatEffect; //复活GE
-	
-	UPROPERTY(EditDefaultsOnly, Category="Base Stats")
-	UDataTable* BaseStatsDataTable;
+	class UPA_AbilitySystemGenerics* AbilitySystemGenerics;
 	
 	void ApplyInitialEffects(); //初始化所有数值
 	void GiveInitialAbilities(); //赋予技能
