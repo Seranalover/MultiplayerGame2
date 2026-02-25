@@ -14,6 +14,7 @@ UCAbilitySystemComponent::UCAbilitySystemComponent()
 {
 	GetGameplayAttributeValueChangeDelegate(UCAttributeSet::GetHealthAttribute()).AddUObject(this, &UCAbilitySystemComponent::HealthUpdated); //监听attribute change，绑定HealthUpdated()函数
 	GetGameplayAttributeValueChangeDelegate(UCAttributeSet::GetManaAttribute()).AddUObject(this, &UCAbilitySystemComponent::ManaUpdated); //监听attribute change，绑定ManaUpdated()函数
+	GetGameplayAttributeValueChangeDelegate(UCHeroAttributeSet::GetExperienceAttribute()).AddUObject(this, &UCAbilitySystemComponent::ExperienceUpdated); //监听attribute change，绑定ExperienceUpdated()函数
 	GenericConfirmInputID = (int32)ECAbilityInputID::Confirm; //技能确认输入
 	GenericCancelInputID = (int32)ECAbilityInputID::Cancel; //技能取消输入
 }
@@ -56,8 +57,8 @@ void UCAbilitySystemComponent::InitializeBaseAttributes()
 		SetNumericAttributeBase(UCHeroAttributeSet::GetMaxLevelAttribute(), MaxLevel);
 		float MaxExp = ExperienceCurve->GetKeyValue(ExperienceCurve->GetLastKeyHandle());
 		SetNumericAttributeBase(UCHeroAttributeSet::GetMaxLevelExperienceAttribute(), MaxExp);
-		UE_LOG(LogTemp,Warning,TEXT("max level: %d, max experience: %f"), MaxLevel, MaxExp);
 	}
+	ExperienceUpdated(FOnAttributeChangeData());
 }
 
 void UCAbilitySystemComponent::ApplyInitialEffects()
@@ -103,6 +104,14 @@ void UCAbilitySystemComponent::ApplyFullStatEffect()
 const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& UCAbilitySystemComponent::GetAbilities() const
 {
 	return Abilities;
+}
+
+bool UCAbilitySystemComponent::IsAtMaxLevel() const
+{
+	bool bFound;
+	float CurrentLevel = GetGameplayAttributeValue(UCHeroAttributeSet::GetLevelAttribute(), bFound);
+	float MaxLevel = GetGameplayAttributeValue(UCHeroAttributeSet::GetMaxLevelAttribute(), bFound);
+	return CurrentLevel >= MaxLevel;
 }
 
 void UCAbilitySystemComponent::HealthUpdated(const FOnAttributeChangeData& ChangeData)
@@ -181,4 +190,38 @@ void UCAbilitySystemComponent::AuthApplyGameplayEffect(TSubclassOf<UGameplayEffe
 		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingSpec(GameplayEffect, Level, MakeEffectContext()); 
 		ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());	
 	}
+}
+
+void UCAbilitySystemComponent::ExperienceUpdated(const FOnAttributeChangeData& ChangeData)
+{
+	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
+	if (IsAtMaxLevel()) return;
+	if (!AbilitySystemGenerics) return;
+	float CurrentExp = ChangeData.NewValue;
+	const FRealCurve* ExperienceCurve = AbilitySystemGenerics->GetExperienceCurve();
+	if (!ExperienceCurve) return;
+	
+	float PrevLevelExp = 0;
+	float NextLevelExp = 0;
+	float NewLevel = 1;
+	
+	for (auto Iter = ExperienceCurve->GetKeyHandleIterator(); Iter; ++Iter)
+	{
+		float ExperienceToReachLevel = ExperienceCurve->GetKeyValue(*Iter);
+		if (CurrentExp < ExperienceToReachLevel)
+		{
+			NextLevelExp = ExperienceToReachLevel;
+			break;
+		}
+		PrevLevelExp = ExperienceToReachLevel;
+		NewLevel = Iter.GetIndex() + 1;
+	}
+	float CurrentLevel = GetNumericAttributeBase(UCHeroAttributeSet::GetLevelAttribute());
+	float CurrentUpgradePoint = GetNumericAttribute(UCHeroAttributeSet::GetUpgradePointAttribute());
+	float LevelUpgraded = NewLevel - CurrentLevel;
+	float NewUpgradePoint = CurrentUpgradePoint + LevelUpgraded;
+	SetNumericAttributeBase(UCHeroAttributeSet::GetLevelAttribute(), NewLevel);
+	SetNumericAttributeBase(UCHeroAttributeSet::GetPrevLevelExperienceAttribute(), PrevLevelExp);
+	SetNumericAttributeBase(UCHeroAttributeSet::GetNextLevelExperienceAttribute(), NextLevelExp);
+	SetNumericAttributeBase(UCHeroAttributeSet::GetUpgradePointAttribute(), NewUpgradePoint);
 }

@@ -21,6 +21,7 @@ public:
 	void InitializeBaseAttributes();
 	void ApplyFullStatEffect(); //回满状态
 	const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const; //获得附加技能，不包括基础技能
+	bool IsAtMaxLevel() const; //是否满级
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay Abilities")
@@ -37,4 +38,5 @@ private:
 	void HealthUpdated(const FOnAttributeChangeData& ChangeData); //生命值变更
 	void ManaUpdated(const FOnAttributeChangeData& ChangeData); //魔力值变更
 	void AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect> GameplayEffect, int Level = 1);
+	void ExperienceUpdated(const FOnAttributeChangeData& ChangeData); //经验值变更
 };
