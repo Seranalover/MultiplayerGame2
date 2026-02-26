@@ -30,6 +30,9 @@ public:
 	ATTRIBUTE_ACCESSORS(UCAttributeSet, AttackDamage);
 	ATTRIBUTE_ACCESSORS(UCAttributeSet, Armor);
 	ATTRIBUTE_ACCESSORS(UCAttributeSet, MoveSpeed);
+	ATTRIBUTE_ACCESSORS(UCAttributeSet, CachedHealthPercent);
+	ATTRIBUTE_ACCESSORS(UCAttributeSet, CachedManaPercent);
+	
 	//指定向客户端复制属性的方式
 	virtual void GetLifetimeReplicatedProps( TArray< class FLifetimeProperty > & OutLifetimeProps ) const override;
 	
@@ -48,6 +51,8 @@ public:
 	 */
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData &Data) override; //限制属性的最大值和最小值，与上一个函数的区别是调用时机不同
 
+	void RescaleHealth();
+	void RescaleMana();
 	
 private:
 	UPROPERTY(ReplicatedUsing=OnRep_Health)
@@ -64,6 +69,10 @@ private:
 	FGameplayAttributeData Armor;
 	UPROPERTY(ReplicatedUsing=OnRep_MoveSpeed)
 	FGameplayAttributeData MoveSpeed;
+	UPROPERTY()
+	FGameplayAttributeData CachedHealthPercent;
+	UPROPERTY()
+	FGameplayAttributeData CachedManaPercent;
 	
 	//函数被调用时，服务端向客户端拷贝新的数据，且仍会提供旧的数据供你使用，这样新值旧值都可以使用
 	UFUNCTION()

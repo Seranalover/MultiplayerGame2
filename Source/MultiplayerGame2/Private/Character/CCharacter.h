@@ -61,6 +61,8 @@ private:
 	void SetIsAiming(bool bIsAiming); //瞄准时的处理
 	virtual void OnAimStateChanged(bool bIsAiming);
 	void MoveSpeedUpdated(const FOnAttributeChangeData& Data);
+	void MaxHealthUpdated(const FOnAttributeChangeData& Data);
+	void MaxManaUpdated(const FOnAttributeChangeData& Data);
 	
 	/****************************************************************************/
 	/*                                    UI                                    */
