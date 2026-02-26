@@ -126,6 +126,7 @@ void UCAbilitySystemComponent::Server_UpgradeAbilityWithInputID_Implementation(E
 	SetNumericAttributeBase(UCHeroAttributeSet::GetUpgradePointAttribute(), UpgradePoint - 1); //技能点 -1
 	AbilitySpec->Level += 1; //技能等级 +1
 	MarkAbilitySpecDirty(*AbilitySpec); //触发spec dirty回调
+	Client_AbilitySpecLevelUpdated(AbilitySpec->Handle, AbilitySpec->Level);
 }
 
 bool UCAbilitySystemComponent::Server_UpgradeAbilityWithInputID_Validate(ECAbilityInputID InputID)

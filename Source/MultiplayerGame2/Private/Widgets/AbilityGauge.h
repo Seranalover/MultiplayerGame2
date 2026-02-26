@@ -5,7 +5,12 @@
 #include "CoreMinimal.h"
 #include "Blueprint/IUserObjectListEntry.h"
 #include "Blueprint/UserWidget.h"
+#include "GAS/CAttributeSet.h"
+#include "GameplayEffectTypes.h"
 #include "AbilityGauge.generated.h"
+
+class UAbilitySystemComponent;
+struct FGameplayAbilitySpec;
 
 /**
  * data table 结构体
@@ -66,6 +71,18 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Cooldown")
 	float CooldownUpdateInterval = 0.1f;
 	
+	UPROPERTY(meta=(BindWidget))
+	class UImage* LevelGauge; //技能等级
+	
+	UPROPERTY(EditDefaultsOnly, Category="Visual")
+	FName AbilityLevelParamName = "Level";
+	
+	UPROPERTY(EditDefaultsOnly, Category="Visual")
+	FName CanCastAbilityParamName = "CanCast";
+	
+	UPROPERTY(EditDefaultsOnly, Category="Visual")
+	FName UpgradePointAvailableParamName = "UpgradeAvailable";
+	
 	float CachedCooldownDuration;
 	float CachedCooldownTimeRemaining;
 	FTimerHandle CooldownTimerHandle;
@@ -78,4 +95,15 @@ private:
 	
 	void CooldownFinished();
 	void UpdateCooldown();
+	
+	const UAbilitySystemComponent* OwnerAbilitySystemComponent; //ASC组件
+	const FGameplayAbilitySpec* CachedAbilitySpec; //Ability组件
+	
+	const FGameplayAbilitySpec* GetAbilitySpec(); //CachedAbilitySpec不存在时加载AbilitySpec
+	
+	bool bIsAbilityLearned = false;
+	
+	void AbilitySpecUpdated(const FGameplayAbilitySpec& AbilitySpec);
+	void UpdateCanCast();
+	void UpgradePointUpdated(const FOnAttributeChangeData& ChangeData);
 };
