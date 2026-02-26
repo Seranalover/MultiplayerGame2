@@ -52,21 +52,21 @@ struct FHeroBaseStats : public FTableRowBase
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> Class;
 	UPROPERTY(EditAnywhere)
-	float Strength;
+	float Strength = 0.0f;
 	UPROPERTY(EditAnywhere)
-	float Intelligence;
+	float Intelligence = 0.0f;
 	UPROPERTY(EditAnywhere)
-	float StrengthGrowthRate; //力量成长值
+	float StrengthGrowthRate = 0.0f; //力量成长值
 	UPROPERTY(EditAnywhere)
-	float IntelligenceGrowthRate; //智力成长值
+	float IntelligenceGrowthRate = 0.0f; //智力成长值
 	UPROPERTY(EditAnywhere)
-	float BaseMaxHealth;
+	float BaseMaxHealth = 0.0f;
 	UPROPERTY(EditAnywhere)
-	float BaseMaxMana;
+	float BaseMaxMana = 0.0f;
 	UPROPERTY(EditAnywhere)
-	float BaseAttackDamage;
+	float BaseAttackDamage = 0.0f;
 	UPROPERTY(EditAnywhere)
-	float BaseArmor;
+	float BaseArmor = 0.0f;
 	UPROPERTY(EditAnywhere)
-	float BaseMoveSpeed;
+	float BaseMoveSpeed = 0.0f;
 };
