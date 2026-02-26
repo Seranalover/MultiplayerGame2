@@ -107,3 +107,8 @@ bool UCAbilitySystemStatics::IsHero(const AActor* Actor)
 	}
 	return false;
 }
+
+bool UCAbilitySystemStatics::IsAbilityAtMaxLevel(const FGameplayAbilitySpec& AbilitySpec)
+{
+	return AbilitySpec.Level >= 4;
+}

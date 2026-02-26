@@ -4,6 +4,7 @@
 #include "GAS/CGameplayAbility.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "CAbilitySystemStatics.h"
 #include "GA_PassiveLaunched.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -11,6 +12,15 @@
 UCGameplayAbility::UCGameplayAbility()
 {
 	ActivationBlockedTags.AddTag(UCAbilitySystemStatics::GetStunStatTag()); //默认具有stun tag时停止能力
+}
+
+bool UCGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
+	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	FGameplayAbilitySpec* AbilitySpec = ActorInfo->AbilitySystemComponent->FindAbilitySpecFromHandle(Handle);
+	if (AbilitySpec && AbilitySpec->Level <= 0) return false; //未学习的技能无法施放
+	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 }
 
 class UAnimInstance* UCGameplayAbility::GetOwnerAnimInstance() const

@@ -58,6 +58,8 @@ void ACPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 		EnhancedInputComponent->BindAction(JumpInputAction, ETriggerEvent::Triggered, this, &ACPlayerCharacter::Jump); //绑定跳跃方法到跳跃IA，跳跃方法UE已实现
 		EnhancedInputComponent->BindAction(LookInputAction, ETriggerEvent::Triggered, this, &ACPlayerCharacter::HandleLookInput); //绑定转动视角方法到视角IA
 		EnhancedInputComponent->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &ACPlayerCharacter::HandleMoveInput); //移动IA
+		EnhancedInputComponent->BindAction(LearnAbilityLeaderAction, ETriggerEvent::Started, this, &ACPlayerCharacter::LearnAbilityLeaderDown); //学习技能IA
+		EnhancedInputComponent->BindAction(LearnAbilityLeaderAction, ETriggerEvent::Completed, this, &ACPlayerCharacter::LearnAbilityLeaderUp); //完成学习技能IA
 		
 		for (const TPair<ECAbilityInputID, UInputAction*>& InputActionPair : GameplayAbilityInputActions)
 		{
@@ -103,6 +105,11 @@ FVector ACPlayerCharacter::GetMoveForwardDirection() const
 void ACPlayerCharacter::HandleAbilityInput(const FInputActionValue& InputActionValue, ECAbilityInputID AbilityInputID)
 {
 	bool bPressed = InputActionValue.Get<bool>(); //是否按下？
+	if (bPressed && bIsLearnAbilityLeaderDown)
+	{
+		UpgradeAbilityWithInputID(AbilityInputID);
+		return;
+	}
 	if (bPressed)
 	{
 		GetAbilitySystemComponent()->AbilityLocalInputPressed((int32)AbilityInputID);
@@ -128,6 +135,16 @@ void ACPlayerCharacter::SetInputEnabled(bool bEnabled)
 	else
 		DisableInput(PlayerController);
 	
+}
+
+void ACPlayerCharacter::LearnAbilityLeaderDown(const FInputActionValue& InputActionValue)
+{
+	bIsLearnAbilityLeaderDown = true;
+}
+
+void ACPlayerCharacter::LearnAbilityLeaderUp(const FInputActionValue& InputActionValue)
+{
+	bIsLearnAbilityLeaderDown = false;
 }
 
 void ACPlayerCharacter::OnDead()

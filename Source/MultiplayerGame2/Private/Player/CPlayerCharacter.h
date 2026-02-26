@@ -20,7 +20,6 @@ public:
 	ACPlayerCharacter();
 	virtual void PawnClientRestart() override; //客户端生成pawn时调用
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category="View")
@@ -53,6 +52,14 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	class UInputAction* MoveInputAction; //移动
 	
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	class UInputAction* LearnAbilityLeaderAction; //学习技能
+	
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TMap<ECAbilityInputID, class UInputAction*> GameplayAbilityInputActions; //所有技能id与IA的map集合
+	
+	bool bIsLearnAbilityLeaderDown = false;
+	
 	void HandleLookInput(const FInputActionValue& InputActionValue); //视角旋转实现
 	void HandleMoveInput(const FInputActionValue& InputActionValue); //移动功能实现
 	
@@ -60,11 +67,11 @@ private:
 	FVector GetLookForwardDirection() const; //向右视角方向
 	FVector GetMoveForwardDirection() const; //向前移动方向
 	
-	UPROPERTY(EditDefaultsOnly, Category="Input")
-	TMap<ECAbilityInputID, class UInputAction*> GameplayAbilityInputActions; //所有技能id与IA的map集合
 	void HandleAbilityInput(const FInputActionValue& InputActionValue, ECAbilityInputID AbilityInputID); //施放技能实现
-	
 	void SetInputEnabled(bool bEnabled); //设置禁用输入
+	
+	void LearnAbilityLeaderDown(const FInputActionValue& InputActionValue); 
+	void LearnAbilityLeaderUp(const FInputActionValue& InputActionValue);
 	
 	/*****************************************************************/
 	/*                        Death and Respawn                      */

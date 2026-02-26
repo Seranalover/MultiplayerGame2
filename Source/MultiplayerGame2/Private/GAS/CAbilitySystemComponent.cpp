@@ -114,6 +114,35 @@ bool UCAbilitySystemComponent::IsAtMaxLevel() const
 	return CurrentLevel >= MaxLevel;
 }
 
+void UCAbilitySystemComponent::Server_UpgradeAbilityWithInputID_Implementation(ECAbilityInputID InputID)
+{
+	bool bFound;
+	float UpgradePoint = GetGameplayAttributeValue(UCHeroAttributeSet::GetUpgradePointAttribute(), bFound);
+	if (!bFound || UpgradePoint <= 0) return;
+	
+	FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromInputID((int32)InputID);
+	if (!AbilitySpec || UCAbilitySystemStatics::IsAbilityAtMaxLevel(*AbilitySpec)) return;
+	
+	SetNumericAttributeBase(UCHeroAttributeSet::GetUpgradePointAttribute(), UpgradePoint - 1); //技能点 -1
+	AbilitySpec->Level += 1; //技能等级 +1
+	MarkAbilitySpecDirty(*AbilitySpec); //触发spec dirty回调
+}
+
+bool UCAbilitySystemComponent::Server_UpgradeAbilityWithInputID_Validate(ECAbilityInputID InputID)
+{
+	return true;
+}
+
+void UCAbilitySystemComponent::Client_AbilitySpecLevelUpdated_Implementation(FGameplayAbilitySpecHandle Handle, int NewLevel)
+{
+	FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(Handle);
+	if (AbilitySpec)
+	{
+		AbilitySpec->Level = NewLevel; //client技能等级 +1
+		AbilitySpecDirtiedCallbacks.Broadcast(*AbilitySpec); //spec dirty回调
+	}
+}
+
 void UCAbilitySystemComponent::HealthUpdated(const FOnAttributeChangeData& ChangeData)
 {
 	if (!GetOwner() || !GetOwner()->HasAuthority()) return;

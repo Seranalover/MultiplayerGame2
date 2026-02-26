@@ -48,6 +48,9 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation) //client调用该函数时，会通知server调用相同的函数
 	void Server_SendGameplayEventToSelf(const FGameplayTag& EventTag, const FGameplayEventData& EventData);
 	
+protected:
+	void UpgradeAbilityWithInputID(ECAbilityInputID InputID);
+	
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category="Gameplay Ability")
 	class UCAbilitySystemComponent* CAbilitySystemComponent;

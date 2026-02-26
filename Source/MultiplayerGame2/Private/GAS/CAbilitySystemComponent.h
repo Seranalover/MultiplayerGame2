@@ -23,6 +23,11 @@ public:
 	const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const; //获得附加技能，不包括基础技能
 	bool IsAtMaxLevel() const; //是否满级
 	
+	UFUNCTION(Server, Reliable, WithValidation) //server only
+	void Server_UpgradeAbilityWithInputID(ECAbilityInputID InputID); //server使用技能点升级技能
+	UFUNCTION(Client, Reliable) //client only
+	void Client_AbilitySpecLevelUpdated(FGameplayAbilitySpecHandle Handle, int NewLevel); //通知client技能已升级
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay Abilities")
 	TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>> Abilities; //附加技能
