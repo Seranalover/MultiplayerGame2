@@ -106,4 +106,5 @@ private:
 	void AbilitySpecUpdated(const FGameplayAbilitySpec& AbilitySpec);
 	void UpdateCanCast();
 	void UpgradePointUpdated(const FOnAttributeChangeData& ChangeData);
+	void ManaUpdated(const FOnAttributeChangeData& ChangeData);
 };
