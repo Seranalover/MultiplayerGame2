@@ -34,6 +34,8 @@ struct FGenericDamageEffectDef
 	GENERATED_BODY()
 
 public:
+	FGenericDamageEffectDef();
+	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UGameplayEffect> DamageEffect; //伤害效果
 	
@@ -49,24 +51,27 @@ struct FHeroBaseStats : public FTableRowBase
 {
 	GENERATED_BODY()
 	
+public:
+	FHeroBaseStats();
+	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> Class;
 	UPROPERTY(EditAnywhere)
-	float Strength = 0.0f;
+	float Strength;
 	UPROPERTY(EditAnywhere)
-	float Intelligence = 0.0f;
+	float Intelligence;
 	UPROPERTY(EditAnywhere)
-	float StrengthGrowthRate = 0.0f; //力量成长值
+	float StrengthGrowthRate; //力量成长值
 	UPROPERTY(EditAnywhere)
-	float IntelligenceGrowthRate = 0.0f; //智力成长值
+	float IntelligenceGrowthRate; //智力成长值
 	UPROPERTY(EditAnywhere)
-	float BaseMaxHealth = 0.0f;
+	float BaseMaxHealth;
 	UPROPERTY(EditAnywhere)
-	float BaseMaxMana = 0.0f;
+	float BaseMaxMana;
 	UPROPERTY(EditAnywhere)
-	float BaseAttackDamage = 0.0f;
+	float BaseAttackDamage;
 	UPROPERTY(EditAnywhere)
-	float BaseArmor = 0.0f;
+	float BaseArmor;
 	UPROPERTY(EditAnywhere)
-	float BaseMoveSpeed = 0.0f;
+	float BaseMoveSpeed;
 };
