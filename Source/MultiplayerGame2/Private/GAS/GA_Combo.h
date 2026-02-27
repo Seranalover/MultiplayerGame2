@@ -38,8 +38,8 @@ private:
 	UFUNCTION()
 	void DoDamage(FGameplayEventData Data); //combo攻击实现
 	
-	UPROPERTY(EditDefaultsOnly, Category="Targetting")
-	float TargetSweepSphereRadius = 30.f; //碰撞扫描半径
+	// UPROPERTY(EditDefaultsOnly, Category="Targetting")
+	// float TargetSweepSphereRadius = 30.f; //碰撞扫描半径
 	
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay Effect")
 	TMap<FName, TSubclassOf<UGameplayEffect>> DamageEffectMap; //攻击效果映射集

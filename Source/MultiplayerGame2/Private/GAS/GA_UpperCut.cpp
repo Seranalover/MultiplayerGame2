@@ -3,6 +3,7 @@
 
 #include "GAS/GA_UpperCut.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayTagsManager.h"
 #include "GA_Combo.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
@@ -52,11 +53,12 @@ void UGA_UpperCut::StartLaunching(FGameplayEventData EventData)
 {
 	if (K2_HasAuthority())
 	{
-		TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(EventData.TargetData, TargetSweepSphereRadius,
-			ETeamAttitude::Hostile, ShouldDrawDebug()); //命中结果
+		// TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(EventData.TargetData, TargetSweepSphereRadius, ETeamAttitude::Hostile, ShouldDrawDebug()); //命中结果
 		PushTarget(GetAvatarActorFromActorInfo(), FVector::UpVector * UpperLaunchVelocity); //自身浮空
-		for (FHitResult& HitResult : HitResults)
+		int HitResultCount = UAbilitySystemBlueprintLibrary::GetDataCountFromTargetData(EventData.TargetData);
+		for (int i = 0; i < HitResultCount; i++)
 		{
+			FHitResult HitResult = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(EventData.TargetData, i);
 			PushTarget(HitResult.GetActor(), FVector::UpVector * UpperLaunchVelocity); //击飞敌人
 			ApplyGameplayEffectToHitResult(HitResult, GameplayEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo)); //对目标应用攻击效果
 		}
@@ -111,13 +113,14 @@ void UGA_UpperCut::HandleComboDamageEvent(FGameplayEventData EventData)
 {
 	if (K2_HasAuthority())
 	{
-		TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(EventData.TargetData, TargetSweepSphereRadius,
-			ETeamAttitude::Hostile, ShouldDrawDebug()); //命中结果
+		// TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(EventData.TargetData, TargetSweepSphereRadius, ETeamAttitude::Hostile, ShouldDrawDebug()); //命中结果
 		PushTarget(GetAvatarActorFromActorInfo(), FVector::UpVector * UpperHoldVelocity); //保持自身浮空
 		const FGenericDamageEffectDef* EffectDef = GetDamageEffectDefForCurrentCombo(); //伤害效果结构体
 		if (!EffectDef) return;
-		for (FHitResult& HitResult : HitResults)
+		int HitResultCount = UAbilitySystemBlueprintLibrary::GetDataCountFromTargetData(EventData.TargetData);
+		for (int i = 0; i < HitResultCount; i++)
 		{
+			FHitResult HitResult = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(EventData.TargetData, i);
 			FVector PushVelocity = GetAvatarActorFromActorInfo()->GetActorTransform().TransformVector(EffectDef->PushVelocity); //推动敌人方向
 			PushTarget(HitResult.GetActor(), PushVelocity); //保持敌人浮空
 			ApplyGameplayEffectToHitResult(HitResult, EffectDef->DamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo)); //对目标应用攻击效果

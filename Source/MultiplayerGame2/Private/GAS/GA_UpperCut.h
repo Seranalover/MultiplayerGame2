@@ -32,8 +32,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Animation")
 	UAnimMontage* UpperCutMontage;
 	
-	UPROPERTY(EditDefaultsOnly, Category="Targetting")
-	float TargetSweepSphereRadius = 80.f; //碰撞扫描半径
+	// UPROPERTY(EditDefaultsOnly, Category="Targetting")
+	// float TargetSweepSphereRadius = 80.f; //碰撞扫描半径
 	
 	UPROPERTY(EditDefaultsOnly, Category="Launch")
 	float UpperLaunchVelocity = 1000.f; //浮空速度

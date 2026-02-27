@@ -128,11 +128,17 @@ void UGA_Combo::TryCommitCombo()
 void UGA_Combo::DoDamage(FGameplayEventData Data)
 {
 	//扫描结果
-	TArray<FHitResult> HitResults = 
-		GetHitResultsFromSweepLocationTargetData(Data.TargetData, TargetSweepSphereRadius);
+	// TArray<FHitResult> HitResults = GetHitResultsFromSweepLocationTargetData(Data.TargetData, TargetSweepSphereRadius);
 	
-	for (const FHitResult& HitResult : HitResults)
+	// for (const FHitResult& HitResult : HitResults)
+	// {
+	// 	TSubclassOf<UGameplayEffect> GameplayEffect = GetDamageEffectForCurrentCombo(); //获得当前连段攻击效果
+	// 	ApplyGameplayEffectToHitResult(HitResult, GameplayEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo)); //对目标应用攻击效果
+	// }
+	int HitResultCount = UAbilitySystemBlueprintLibrary::GetDataCountFromTargetData(Data.TargetData);
+	for (int i = 0; i < HitResultCount; i++)
 	{
+		FHitResult HitResult = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(Data.TargetData, i);
 		TSubclassOf<UGameplayEffect> GameplayEffect = GetDamageEffectForCurrentCombo(); //获得当前连段攻击效果
 		ApplyGameplayEffectToHitResult(HitResult, GameplayEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo)); //对目标应用攻击效果
 	}
