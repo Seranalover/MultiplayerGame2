@@ -44,6 +44,9 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	class UStatsGauge* IntelligenceGauge;
 	
+	UPROPERTY(meta=(BindWidget))
+	class UShopWidget* ShopWidget;
+	
 	UPROPERTY()
 	class UAbilitySystemComponent* OwnerAbilitySystemComponent;
 };
