@@ -18,6 +18,7 @@ class UGameplayWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override; 
 	void ConfigureAbilities(const TMap<ECAbilityInputID, TSubclassOf<class UGameplayAbility>>& Abilities);
+	void ToggleShop(); //开关商店
 	
 private:
 	UPROPERTY(meta=(BindWidget))
@@ -45,8 +46,13 @@ private:
 	class UStatsGauge* IntelligenceGauge;
 	
 	UPROPERTY(meta=(BindWidget))
-	class UShopWidget* ShopWidget;
+	class UShopWidget* ShopWidget; //商店页面
+	
+	UPROPERTY(Transient, meta=(BindWidgetAnim))
+	class UWidgetAnimation* ShopPopupAnimation; //商店页面淡入淡出动画
 	
 	UPROPERTY()
 	class UAbilitySystemComponent* OwnerAbilitySystemComponent;
+	
+	void PlayShopPopupAnimation(bool bPlayForward);
 };

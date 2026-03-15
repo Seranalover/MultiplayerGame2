@@ -26,6 +26,8 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override; //管理数据生命周期并同步到客户端
 	
+	virtual void SetupInputComponent() override; //设置打开商店的输入映射
+	
 private:
 	UPROPERTY()
 	class ACPlayerCharacter* CPlayerCharacter;
@@ -39,5 +41,14 @@ private:
 	UPROPERTY(Replicated)
 	FGenericTeamId TeamId;
 	
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	class UInputMappingContext* UIInputMapping;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	class UInputAction* ShopToggleInputAction;
+	
 	void SpawnGameplayWidget(); //生成GUI
+	
+	UFUNCTION()
+	void ToggleShop();
 };
