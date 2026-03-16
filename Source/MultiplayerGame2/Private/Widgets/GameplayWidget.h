@@ -55,4 +55,8 @@ private:
 	class UAbilitySystemComponent* OwnerAbilitySystemComponent;
 	
 	void PlayShopPopupAnimation(bool bPlayForward);
+	void SetOwningPawnInputEnabled(bool bEnable); //用于打开商店时，禁用Pawn操作输入
+	void SetShowMouseCursor(bool bShow); //用于打开商店时，显示鼠标
+	void SetFocusToGameAndUI(); //打开商店时，设置焦点为游戏和UI
+	void SetFocusToGameOnly(); //关闭商店时，设置焦点为仅游戏
 };
