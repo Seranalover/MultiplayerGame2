@@ -58,6 +58,7 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* NewItem)
 	OnItemAdded.Broadcast(InventoryItem); //广播事件
 	UE_LOG(LogTemp, Warning, TEXT("Server adding shop item: %s, with id: %d"), *(InventoryItem->GetShopItem()->GetItemName().ToString()), NewHandle.GetHandleId());
 	Client_ItemAdded(NewHandle, NewItem); //客户端同步购买物品
+	InventoryItem->ApplyGASModifications(OwnerAbilitySystemComponent); //GAS应用变更
 }
 
 void UInventoryComponent::Client_ItemAdded_Implementation(FInventoryItemHandle AssignedHandle, const UPA_ShopItem* Item)

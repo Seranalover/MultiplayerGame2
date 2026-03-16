@@ -44,7 +44,7 @@ public:
 	float GetSellPrice() const {return Price / 2.f; }
 	TSubclassOf<class UGameplayEffect> GetEquippedEffect() const { return EquippedEffect; }
 	TSubclassOf<class UGameplayEffect> GetConsumableEffect() const { return ConsumableEffect; }
-	TSubclassOf<class UGameplayAbility> GetGtantedAbility() const { return GrantedAbility; }
+	TSubclassOf<class UGameplayAbility> GetGrantedAbility() const { return GrantedAbility; }
 	bool IsStackable() const { return bIsStackable; }
 	bool IsConsumable() const { return bIsConsumable; }
 	int GetMaxStackCount() const { return MaxStackCount; }

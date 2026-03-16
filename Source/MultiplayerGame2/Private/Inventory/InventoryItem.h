@@ -3,10 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActiveGameplayEffectHandle.h"
+#include "GameplayAbilitySpecHandle.h"
 #include "UObject/NoExportTypes.h"
 #include "InventoryItem.generated.h"
 
 class UPA_ShopItem;
+class UAbilitySystemComponent;
 
 /**
  * 句柄结构体
@@ -51,10 +54,13 @@ public:
 	FInventoryItemHandle GetHandle() const { return Handle; }
 	
 	void InitItem(const FInventoryItemHandle& NewHandle, const UPA_ShopItem* NewShopItem);
+	void ApplyGASModifications(UAbilitySystemComponent* AbilitySystemComponent); //GAS应用变更
 	
 private:
 	UPROPERTY()
 	const UPA_ShopItem* ShopItem;
 	
 	FInventoryItemHandle Handle;
+	FActiveGameplayEffectHandle AppliedEquippedEffectHandle;
+	FGameplayAbilitySpecHandle GrantedAbilitySpecHandle;
 };
