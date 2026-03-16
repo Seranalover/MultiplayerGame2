@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
+#include "UObject/NoExportTypes.h"
 #include "InventoryItem.generated.h"
+
+class UPA_ShopItem;
 
 /**
  * 句柄结构体
@@ -44,4 +46,15 @@ class UInventoryItem : public UObject
 {
 	GENERATED_BODY()
 	
+public:
+	const UPA_ShopItem* GetShopItem() const { return ShopItem; }
+	FInventoryItemHandle GetHandle() const { return Handle; }
+	
+	void InitItem(const FInventoryItemHandle& NewHandle, const UPA_ShopItem* NewShopItem);
+	
+private:
+	UPROPERTY()
+	const UPA_ShopItem* ShopItem;
+	
+	FInventoryItemHandle Handle;
 };
