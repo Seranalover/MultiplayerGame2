@@ -38,8 +38,8 @@ public:
 	static FPrimaryAssetType GetShopItemAssetType();
 	
 	UTexture2D* GetIcon() const;
-	FText GetIconName() const { return ItemName; }
-	FText GetDescription() const { return ItemDescription; }
+	FText GetItemName() const { return ItemName; }
+	FText GetItemDescription() const { return ItemDescription; }
 	float GetPrice() const { return Price; }
 	float GetSellPrice() const {return Price / 2.f; }
 	TSubclassOf<class UGameplayEffect> GetEquippedEffect() const { return EquippedEffect; }

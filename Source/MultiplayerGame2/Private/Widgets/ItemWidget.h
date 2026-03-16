@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ItemToolTip.h"
 #include "Blueprint/UserWidget.h"
 #include "ItemWidget.generated.h"
 
@@ -19,9 +20,15 @@ public:
 	virtual void NativeConstruct() override;
 	virtual void SetIcon(UTexture2D* IconTexture); //这里设置为virtual，方便以后子类重写方法，实现使用装备主动技能时，图标显示倒计时等功能
 	
+protected:
+	UItemToolTip* SetToolTipWidget(const UPA_ShopItem* Item);
+	
 private:
 	UPROPERTY(meta=(BindWidget))
 	class UImage* ItemIcon;
+	
+	UPROPERTY(EditDefaultsOnly, Category="ToolTip")
+	TSubclassOf<UItemToolTip> ItemToolTipClass;
 	
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override; //鼠标按下
 	virtual FReply NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override; //鼠标释放
