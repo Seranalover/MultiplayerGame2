@@ -3,11 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ShopItemWidget.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/TileView.h"
-#include "Inventory/PA_ShopItem.h"
 #include "ShopWidget.generated.h"
+
+class UPA_ShopItem;
+class UTileView;
+class UInventoryComponent;
+class UShopItemWidget;
 
 /**
  * 商店页面控件类
@@ -26,6 +28,9 @@ private:
 	
 	UPROPERTY()
 	TMap<const UPA_ShopItem*, const UShopItemWidget*> ItemsMap;
+	
+	UPROPERTY()
+	UInventoryComponent* OwnerInventoryComponent;
 	
 	void LoadShopItems();
 	void ShopItemLoadFinished();

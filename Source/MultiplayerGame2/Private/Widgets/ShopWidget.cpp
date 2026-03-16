@@ -2,8 +2,10 @@
 
 
 #include "Widgets/ShopWidget.h"
-
+#include "Widgets/ShopItemWidget.h"
+#include "Components/TileView.h"
 #include "Framework/CAssetManager.h"
+#include "Inventory/InventoryComponent.h"
 
 void UShopWidget::NativeConstruct()
 {
@@ -11,6 +13,10 @@ void UShopWidget::NativeConstruct()
 	SetIsFocusable(true);
 	LoadShopItems();
 	ShopItemList->OnEntryWidgetGenerated().AddUObject(this, &UShopWidget::ShopItemWidgetGenerated);
+	if (APawn* OwnerPawn = GetOwningPlayerPawn())
+	{
+		OwnerInventoryComponent = OwnerPawn->GetComponentByClass<UInventoryComponent>(); //引入库存组件
+	}
 }
 
 void UShopWidget::LoadShopItems()
@@ -30,10 +36,14 @@ void UShopWidget::ShopItemLoadFinished()
 
 void UShopWidget::ShopItemWidgetGenerated(UUserWidget& NewWidget)
 {
-	UShopItemWidget* ShopItemWidget = Cast<UShopItemWidget>(&NewWidget);
-	if (ShopItemWidget)
+	UShopItemWidget* ItemWidget = Cast<UShopItemWidget>(&NewWidget);
+	if (ItemWidget)
 	{
-		ItemsMap.Add(ShopItemWidget->GetShopItem(), ShopItemWidget);
+		if (OwnerInventoryComponent)
+		{
+			ItemWidget->OnItemPurchaseIssued.AddUObject(OwnerInventoryComponent, &UInventoryComponent::TryPurchase);
+		}
+		ItemsMap.Add(ItemWidget->GetShopItem(), ItemWidget);
 	}
 }
 

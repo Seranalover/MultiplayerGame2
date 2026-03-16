@@ -12,6 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/CAbilitySystemStatics.h"
 #include "GAS/CHeroAttributeSet.h"
+#include "Inventory/InventoryComponent.h"
 #include "MultiplayerGame2/MultiplayerGame2.h"
 
 ACPlayerCharacter::ACPlayerCharacter()
@@ -31,6 +32,7 @@ ACPlayerCharacter::ACPlayerCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f); //旋转速率
 	
 	HeroAttributeSet = CreateDefaultSubobject<UCHeroAttributeSet>("Hero Attribute Set");
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>("Inventory Component"); //库存（背包）组件
 }
 
 void ACPlayerCharacter::PawnClientRestart()

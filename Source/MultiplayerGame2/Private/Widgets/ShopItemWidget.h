@@ -4,9 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/IUserObjectListEntry.h"
-#include "Inventory/PA_ShopItem.h"
 #include "Widgets/ItemWidget.h"
 #include "ShopItemWidget.generated.h"
+
+class UPA_ShopItem;
+class UShopItemWidget;
+
+//声明委托
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemPurchaseIssued, const UPA_ShopItem*);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnShopItemSelected, const UShopItemWidget*);
 
 /**
  * 商店物品控件类
@@ -18,10 +24,16 @@ class UShopItemWidget : public UItemWidget, public IUserObjectListEntry
 	GENERATED_BODY()
 	
 public:
+	FOnItemPurchaseIssued OnItemPurchaseIssued; //购买委托事件
+	FOnShopItemSelected OnShopItemSelected; //选中物品委托事件
+	
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 	FORCEINLINE const UPA_ShopItem* GetShopItem() const { return ShopItem; }
 	
 private:
 	UPROPERTY()
 	const UPA_ShopItem* ShopItem;
+	
+	virtual void RightButtonClicked() override; //点击右键，确认购买，广播委托
+	virtual void LeftButtonClicked() override; //点击左键，选中物品，广播委托
 };
