@@ -51,6 +51,9 @@ private:
 	UPROPERTY(Transient, meta=(BindWidgetAnim))
 	class UWidgetAnimation* ShopPopupAnimation; //商店页面淡入淡出动画
 	
+	UPROPERTY(meta=(BindWidget))
+	class UInventoryWidget* InventoryWidget; //装备栏控件
+	
 	UPROPERTY()
 	class UAbilitySystemComponent* OwnerAbilitySystemComponent;
 	

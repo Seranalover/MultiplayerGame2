@@ -95,6 +95,8 @@ void UInventoryComponent::Server_Purchase_Implementation(const UPA_ShopItem* Ite
 	
 	if (GetGold() < ItemToPurchase->GetPrice()) return; //金钱不足
 	
+	if (InventoryMap.Num() >= GetCapacity()) return; //装备栏已满
+	
 	OwnerAbilitySystemComponent->ApplyModToAttribute(UCHeroAttributeSet::GetGoldAttribute(), EGameplayModOp::Additive, -ItemToPurchase->GetPrice()); //购买物品，消耗金币
 	GrantItem(ItemToPurchase);
 }
