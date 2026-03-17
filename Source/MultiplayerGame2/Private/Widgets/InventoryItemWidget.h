@@ -26,6 +26,7 @@ public:
 	FORCEINLINE int GetSlotNumber() const { return SlotNumber; }
 	void SetSlotNumber(int NewSlotNumber); //设置插槽编号
 	void UpdateStackCount(); //更新堆叠数
+	UTexture2D* GetIconTexture() const; //查询Icon
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Visual")
