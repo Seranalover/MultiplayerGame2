@@ -53,6 +53,33 @@ UInventoryItem* UInventoryComponent::GetInventoryItemByHandle(const FInventoryIt
 	return nullptr;
 }
 
+bool UInventoryComponent::IsAllSlotOccupied() const
+{
+	return InventoryMap.Num() >= GetCapacity();
+}
+
+UInventoryItem* UInventoryComponent::GetAvailableStackForItem(const UPA_ShopItem* Item) const
+{
+	if (!Item->GetIsStackable()) return nullptr;
+	
+	for (const TPair<FInventoryItemHandle, UInventoryItem*>& Pair : InventoryMap)
+	{
+		if (Pair.Value && Pair.Value->IsForItem(Item) && !Pair.Value->IsStackFull())
+			return Pair.Value;
+	}
+	return nullptr;
+}
+
+bool UInventoryComponent::IsFullFor(const UPA_ShopItem* Item) const
+{
+	if (!Item) return false;
+	
+	if (IsAllSlotOccupied())
+		return GetAvailableStackForItem(Item) == nullptr;
+	
+	return false;
+}
+
 
 // Called when the game starts
 void UInventoryComponent::BeginPlay()

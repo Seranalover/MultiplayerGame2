@@ -31,6 +31,9 @@ public:
 	FORCEINLINE int GetCapacity() const { return Capacity; }
 	void ItemSlotChanged(const FInventoryItemHandle& Handle, int NewSlotNumber); //装备插槽变更
 	UInventoryItem* GetInventoryItemByHandle(const FInventoryItemHandle& Handle);
+	bool IsAllSlotOccupied() const; //装备栏已满？
+	UInventoryItem* GetAvailableStackForItem(const UPA_ShopItem* Item) const; //获得可堆叠的装备格
+	bool IsFullFor(const UPA_ShopItem* Item) const;
 	
 protected:
 	// Called when the game starts

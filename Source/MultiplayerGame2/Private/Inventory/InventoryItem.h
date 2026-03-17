@@ -59,6 +59,11 @@ public:
 	bool IsValid() const;
 	FORCEINLINE int GetStackCount() const { return StackCount; }
 	void SetSlot(int NewSlot);
+	bool IsStackFull() const; //装备已满？
+	bool IsForItem(const UPA_ShopItem* Item) const;
+	bool AddStackCount();
+	bool ReduceStackCount();
+	bool SetStackCount(int NewStackCount);
 	
 private:
 	UPROPERTY()
