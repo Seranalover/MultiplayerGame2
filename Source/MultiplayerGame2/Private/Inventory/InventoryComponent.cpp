@@ -94,14 +94,35 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* NewItem)
 {
 	if (!GetOwner()->HasAuthority()) return;
 	
-	UInventoryItem* InventoryItem = NewObject<UInventoryItem>();
-	FInventoryItemHandle NewHandle = FInventoryItemHandle::CreateHandle();
-	InventoryItem->InitItem(NewHandle, NewItem);
-	InventoryMap.Add(NewHandle, InventoryItem);
-	OnItemAdded.Broadcast(InventoryItem); //广播事件
-	UE_LOG(LogTemp, Warning, TEXT("Server adding shop item: %s, with id: %d"), *(InventoryItem->GetShopItem()->GetItemName().ToString()), NewHandle.GetHandleId());
-	Client_ItemAdded(NewHandle, NewItem); //客户端同步购买物品
-	InventoryItem->ApplyGASModifications(OwnerAbilitySystemComponent); //GAS应用变更
+	if (UInventoryItem* StackItem = GetAvailableStackForItem(NewItem))
+	{
+		StackItem->AddStackCount(); //堆叠数+1
+		OnItemStackCountChanged.Broadcast(StackItem->GetHandle(), StackItem->GetStackCount()); //广播物品堆叠数变更
+		Client_ItemStackCountChanged(StackItem->GetHandle(), StackItem->GetStackCount()); //client同步广播堆叠数变更
+	}
+	else
+	{
+		UInventoryItem* InventoryItem = NewObject<UInventoryItem>();
+		FInventoryItemHandle NewHandle = FInventoryItemHandle::CreateHandle();
+		InventoryItem->InitItem(NewHandle, NewItem);
+		InventoryMap.Add(NewHandle, InventoryItem);
+		OnItemAdded.Broadcast(InventoryItem); //广播事件
+		UE_LOG(LogTemp, Warning, TEXT("Server adding shop item: %s, with id: %d"), *(InventoryItem->GetShopItem()->GetItemName().ToString()), NewHandle.GetHandleId());
+		Client_ItemAdded(NewHandle, NewItem); //客户端同步购买物品
+		InventoryItem->ApplyGASModifications(OwnerAbilitySystemComponent); //GAS应用变更
+	}
+}
+
+void UInventoryComponent::Client_ItemStackCountChanged_Implementation(FInventoryItemHandle Handle, int NewCount)
+{
+	if (GetOwner()->HasAuthority()) return;
+	
+	UInventoryItem* FoundItem = GetInventoryItemByHandle(Handle);
+	if (FoundItem)
+	{
+		FoundItem->SetStackCount(NewCount);
+		OnItemStackCountChanged.Broadcast(Handle, NewCount);
+	}
 }
 
 void UInventoryComponent::Client_ItemAdded_Implementation(FInventoryItemHandle AssignedHandle, const UPA_ShopItem* Item)
@@ -122,7 +143,7 @@ void UInventoryComponent::Server_Purchase_Implementation(const UPA_ShopItem* Ite
 	
 	if (GetGold() < ItemToPurchase->GetPrice()) return; //金钱不足
 	
-	if (InventoryMap.Num() >= GetCapacity()) return; //装备栏已满
+	if (IsFullFor(ItemToPurchase)) return; //装备栏已满，且无法堆叠
 	
 	OwnerAbilitySystemComponent->ApplyModToAttribute(UCHeroAttributeSet::GetGoldAttribute(), EGameplayModOp::Additive, -ItemToPurchase->GetPrice()); //购买物品，消耗金币
 	GrantItem(ItemToPurchase);

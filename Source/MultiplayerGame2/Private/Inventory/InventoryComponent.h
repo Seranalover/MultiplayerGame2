@@ -11,6 +11,7 @@ class UAbilitySystemComponent;
 class UPA_ShopItem;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemAddedDelegate, const UInventoryItem* /*NewItem*/); //声明委托事件，用于广播
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnItemStackCountChangedDelegate, const FInventoryItemHandle&, int /*NewCount*/); //声明委托事件，用于广播
 
 /**
  * 库存组件类
@@ -21,7 +22,8 @@ class UInventoryComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	FOnItemAddedDelegate OnItemAdded;
+	FOnItemAddedDelegate OnItemAdded; //新增物品事件
+	FOnItemStackCountChangedDelegate OnItemStackCountChanged; //物品堆叠数变更事件
 	
 	// Sets default values for this component's properties
 	UInventoryComponent();
@@ -33,7 +35,7 @@ public:
 	UInventoryItem* GetInventoryItemByHandle(const FInventoryItemHandle& Handle);
 	bool IsAllSlotOccupied() const; //装备栏已满？
 	UInventoryItem* GetAvailableStackForItem(const UPA_ShopItem* Item) const; //获得可堆叠的装备格
-	bool IsFullFor(const UPA_ShopItem* Item) const;
+	bool IsFullFor(const UPA_ShopItem* Item) const; //装备栏已满，且无法堆叠
 	
 protected:
 	// Called when the game starts
@@ -62,4 +64,7 @@ private:
 private:
 	UFUNCTION(Client, Reliable)
 	void Client_ItemAdded(FInventoryItemHandle AssignedHandle, const UPA_ShopItem* Item); //客户端同步添加购买的物品
+	
+	UFUNCTION(Client, Reliable)
+	void Client_ItemStackCountChanged(FInventoryItemHandle Handle, int NewCount); //client响应物品堆叠数变更
 };

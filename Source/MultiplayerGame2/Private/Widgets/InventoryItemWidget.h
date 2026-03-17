@@ -25,6 +25,7 @@ public:
 	void EmptySlot(); //清空槽位
 	FORCEINLINE int GetSlotNumber() const { return SlotNumber; }
 	void SetSlotNumber(int NewSlotNumber); //设置插槽编号
+	void UpdateStackCount(); //更新堆叠数
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Visual")
@@ -46,6 +47,4 @@ private:
 	const UInventoryItem* InventoryItem; //物品指针
 	
 	int SlotNumber; //槽位编号
-	
-	void UpdateStackCount();
 };

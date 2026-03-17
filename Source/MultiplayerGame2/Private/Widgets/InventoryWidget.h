@@ -32,7 +32,8 @@ private:
 	TArray<UInventoryItemWidget*> ItemWidgets;
 	TMap<FInventoryItemHandle, UInventoryItemWidget*> PopulatedItemEntryWidgets;
 	
-	void ItemAdded(const UInventoryItem* InventoryItem);
+	void ItemAdded(const UInventoryItem* InventoryItem); //订阅新增物品事件委托
+	void ItemStackCountChanged(const FInventoryItemHandle& Handle, int NewCount); //订阅物品堆叠数变更事件委托
 	UInventoryItemWidget* GetNextAvailableSlot() const; //获得下一个空闲槽位
 	
 };

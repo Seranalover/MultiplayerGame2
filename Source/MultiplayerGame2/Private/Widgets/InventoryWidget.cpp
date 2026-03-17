@@ -15,7 +15,8 @@ void UInventoryWidget::NativeConstruct()
 		InventoryComponent = OwnerPawn->GetComponentByClass<UInventoryComponent>(); //加载组件
 		if (InventoryComponent)
 		{
-			InventoryComponent->OnItemAdded.AddUObject(this, &UInventoryWidget::ItemAdded);
+			InventoryComponent->OnItemAdded.AddUObject(this, &UInventoryWidget::ItemAdded); //订阅广播的委托
+			InventoryComponent->OnItemStackCountChanged.AddUObject(this, &UInventoryWidget::ItemStackCountChanged);
 			int Capacity = InventoryComponent->GetCapacity(); //装备栏数量
 			ItemList->ClearChildren(); //清除子节点
 			for (int i = 0; i < Capacity; ++i)
@@ -46,6 +47,13 @@ void UInventoryWidget::ItemAdded(const UInventoryItem* InventoryItem)
 			InventoryComponent->ItemSlotChanged(InventoryItem->GetHandle(), NextAvailableSlot->GetSlotNumber());
 		}
 	}
+}
+
+void UInventoryWidget::ItemStackCountChanged(const FInventoryItemHandle& Handle, int NewCount)
+{
+	UInventoryItemWidget** FoundWidget = PopulatedItemEntryWidgets.Find(Handle);
+	if (FoundWidget)
+		(*FoundWidget)->UpdateStackCount();
 }
 
 UInventoryItemWidget* UInventoryWidget::GetNextAvailableSlot() const

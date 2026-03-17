@@ -57,13 +57,13 @@ public:
 	void InitItem(const FInventoryItemHandle& NewHandle, const UPA_ShopItem* NewShopItem);
 	void ApplyGASModifications(UAbilitySystemComponent* AbilitySystemComponent); //GAS应用变更
 	bool IsValid() const;
-	FORCEINLINE int GetStackCount() const { return StackCount; }
-	void SetSlot(int NewSlot);
+	FORCEINLINE int GetStackCount() const { return StackCount; } //获得堆叠数
+	void SetSlot(int NewSlot); //设置槽位编号
 	bool IsStackFull() const; //装备已满？
 	bool IsForItem(const UPA_ShopItem* Item) const;
-	bool AddStackCount();
-	bool ReduceStackCount();
-	bool SetStackCount(int NewStackCount);
+	bool AddStackCount(); //堆叠数+1
+	bool ReduceStackCount(); //堆叠数-1
+	bool SetStackCount(int NewStackCount); //设置堆叠数
 	
 private:
 	UPROPERTY()
