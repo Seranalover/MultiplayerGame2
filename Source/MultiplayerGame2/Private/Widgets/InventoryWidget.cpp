@@ -16,7 +16,7 @@ void UInventoryWidget::NativeConstruct()
 		if (InventoryComponent)
 		{
 			InventoryComponent->OnItemAdded.AddUObject(this, &UInventoryWidget::ItemAdded); //订阅广播的委托
-			InventoryComponent->OnItemStackCountChanged.AddUObject(this, &UInventoryWidget::ItemStackCountChanged);
+			InventoryComponent->OnItemStackCountChanged.AddUObject(this, &UInventoryWidget::ItemStackCountChanged); //订阅广播的委托
 			int Capacity = InventoryComponent->GetCapacity(); //装备栏数量
 			ItemList->ClearChildren(); //清除子节点
 			for (int i = 0; i < Capacity; ++i)
@@ -28,6 +28,8 @@ void UInventoryWidget::NativeConstruct()
 					UWrapBoxSlot* NewItemSlot = ItemList->AddChildToWrapBox(NewEmptyWidget); //将新装备格加入装备栏
 					NewEmptyWidget->SetPadding(FMargin(2.f)); //设置装备格内边距
 					ItemWidgets.Add(NewEmptyWidget); //将新装备格加入装备栏
+					
+					NewEmptyWidget->OnInventoryItemDropped.AddUObject(this, &UInventoryWidget::HandleItemDragDrop); //订阅拖拽事件委托
 				}
 			}
 		}
@@ -64,4 +66,30 @@ UInventoryItemWidget* UInventoryWidget::GetNextAvailableSlot() const
 			return Widget;
 	}
 	return nullptr;
+}
+
+void UInventoryWidget::HandleItemDragDrop(UInventoryItemWidget* DestinationWidget, UInventoryItemWidget* SourceWidget)
+{
+	//从控件中获得物品对象
+	const UInventoryItem* SourceItem = SourceWidget->GetInventoryItem(); 
+	const UInventoryItem* DestinationItem = DestinationWidget->GetInventoryItem();
+	
+	//交换物品对象
+	DestinationWidget->UpdateInventoryItem(SourceItem); 
+	SourceWidget->UpdateInventoryItem(DestinationItem);
+	
+	//更新目标控件映射信息
+	PopulatedItemEntryWidgets[DestinationWidget->GetInventoryItemHandle()] = DestinationWidget;
+	if (InventoryComponent)
+	{
+		InventoryComponent->ItemSlotChanged(DestinationWidget->GetInventoryItemHandle(), DestinationWidget->GetSlotNumber());
+	}
+	
+	//拖拽后源控件不为空，更新源控件映射信息，拖拽后源控件为空，不做处理
+	if (!SourceWidget->IsEmpty())
+	{
+		PopulatedItemEntryWidgets[SourceWidget->GetInventoryItemHandle()] = SourceWidget;
+		if (InventoryComponent)
+			InventoryComponent->ItemSlotChanged(SourceWidget->GetInventoryItemHandle(), SourceWidget->GetSlotNumber());
+	}
 }
