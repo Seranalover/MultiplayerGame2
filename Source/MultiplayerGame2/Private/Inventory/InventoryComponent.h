@@ -10,7 +10,7 @@
 class UAbilitySystemComponent;
 class UPA_ShopItem;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemAddedDelegate, UInventoryItem* /*NewItem*/); //声明委托事件，用于广播
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemAddedDelegate, const UInventoryItem* /*NewItem*/); //声明委托事件，用于广播
 
 /**
  * 库存组件类
@@ -28,12 +28,18 @@ public:
 	
 	void TryPurchase(const UPA_ShopItem* ItemToPurchase); //尝试购买物品
 	float GetGold() const; //获得金币数
-
+	FORCEINLINE int GetCapacity() const { return Capacity; }
+	void ItemSlotChanged(const FInventoryItemHandle& Handle, int NewSlotNumber); //装备插槽变更
+	UInventoryItem* GetInventoryItemByHandle(const FInventoryItemHandle& Handle);
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category="Inventory")
+	int Capacity = 6; //最大装备数量
+	
 	UPROPERTY()	
 	UAbilitySystemComponent* OwnerAbilitySystemComponent;
 	

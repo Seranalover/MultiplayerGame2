@@ -50,15 +50,21 @@ class UInventoryItem : public UObject
 	GENERATED_BODY()
 	
 public:
+	UInventoryItem();
 	const UPA_ShopItem* GetShopItem() const { return ShopItem; }
 	FInventoryItemHandle GetHandle() const { return Handle; }
 	
 	void InitItem(const FInventoryItemHandle& NewHandle, const UPA_ShopItem* NewShopItem);
 	void ApplyGASModifications(UAbilitySystemComponent* AbilitySystemComponent); //GAS应用变更
+	bool IsValid() const;
+	FORCEINLINE int GetStackCount() const { return StackCount; }
+	void SetSlot(int NewSlot);
 	
 private:
 	UPROPERTY()
 	const UPA_ShopItem* ShopItem;
+	int StackCount; //堆叠数量
+	int SlotNumber; //槽位编号
 	
 	FInventoryItemHandle Handle;
 	FActiveGameplayEffectHandle AppliedEquippedEffectHandle;

@@ -45,8 +45,8 @@ public:
 	TSubclassOf<class UGameplayEffect> GetEquippedEffect() const { return EquippedEffect; }
 	TSubclassOf<class UGameplayEffect> GetConsumableEffect() const { return ConsumableEffect; }
 	TSubclassOf<class UGameplayAbility> GetGrantedAbility() const { return GrantedAbility; }
-	bool IsStackable() const { return bIsStackable; }
-	bool IsConsumable() const { return bIsConsumable; }
+	bool GetIsStackable() const { return bIsStackable; }
+	bool GetIsConsumable() const { return bIsConsumable; }
 	int GetMaxStackCount() const { return MaxStackCount; }
 	const TArray<TSoftObjectPtr<UPA_ShopItem>>& GetIngredients() const { return IngredientItems; }
 	
