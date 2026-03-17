@@ -3,6 +3,7 @@
 
 #include "Widgets/InventoryItemWidget.h"
 
+#include "InventoryItemDragDropOp.h"
 #include "Components/TextBlock.h"
 #include "Inventory/InventoryItem.h"
 
@@ -72,4 +73,40 @@ UTexture2D* UInventoryItemWidget::GetIconTexture() const
 	if (InventoryItem && InventoryItem->GetShopItem())
 		return InventoryItem->GetShopItem()->GetIcon();
 	return nullptr;
+}
+
+FInventoryItemHandle UInventoryItemWidget::GetInventoryItemHandle() const
+{
+	if (!IsEmpty())
+		return InventoryItem->GetHandle();
+	return FInventoryItemHandle::InvalidHandle();
+}
+
+void UInventoryItemWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent,
+                                                UDragDropOperation*& OutOperation)
+{
+	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
+	if (!IsEmpty() && DragDropOpClass)
+	{
+		UInventoryItemDragDropOp* DragDropOp = NewObject<UInventoryItemDragDropOp>(this, DragDropOpClass); //定义拖拽操作
+		if (DragDropOp)
+		{
+			DragDropOp->SetDraggedItem(this); //配置拖拽对象
+			OutOperation = DragDropOp;
+		}
+	}
+}
+
+bool UInventoryItemWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
+	UDragDropOperation* InOperation)
+{
+	if (UInventoryItemWidget* OtherWidget = Cast<UInventoryItemWidget>(InOperation->Payload))
+	{
+		if (OtherWidget && !OtherWidget->IsEmpty()) //拖拽的目标位置不为空，存在其他对象
+		{
+			OnInventoryItemDropped.Broadcast(this, OtherWidget); //广播拖拽事件
+			return true;
+		}
+	}
+	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 }

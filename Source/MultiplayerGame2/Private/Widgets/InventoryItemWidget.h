@@ -8,6 +8,9 @@
 #include "InventoryItemWidget.generated.h"
 
 class UInventoryItem;
+class UInventoryItemWidget;
+
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnInventoryItemDropped, UInventoryItemWidget* /*DestinationWidget*/, UInventoryItemWidget* /*SourceWidget*/)
 
 /**
  * 库存物品控件原子类
@@ -19,6 +22,8 @@ class UInventoryItemWidget : public UItemWidget
 	GENERATED_BODY()
 	
 public:
+	FOnInventoryItemDropped OnInventoryItemDropped; //拖拽到目标位置委托事件
+	
 	virtual void NativeConstruct() override;
 	bool IsEmpty() const;
 	void UpdateInventoryItem(const UInventoryItem* Item); //更新槽位
@@ -27,6 +32,8 @@ public:
 	void SetSlotNumber(int NewSlotNumber); //设置插槽编号
 	void UpdateStackCount(); //更新堆叠数
 	UTexture2D* GetIconTexture() const; //查询Icon
+	FORCEINLINE const UInventoryItem* GetInventoryItem() const { return InventoryItem; }
+	FInventoryItemHandle GetInventoryItemHandle() const;
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Visual")
@@ -48,4 +55,14 @@ private:
 	const UInventoryItem* InventoryItem; //物品指针
 	
 	int SlotNumber; //槽位编号
+	
+	/******************************************************/
+	/*                     Drag Drop                      */
+	/******************************************************/
+private:
+	UPROPERTY(EditDefaultsOnly, Category="Drag Drop")
+	TSubclassOf<class UInventoryItemDragDropOp> DragDropOpClass;
+	
+	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override; //重写拖拽事件
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 };
