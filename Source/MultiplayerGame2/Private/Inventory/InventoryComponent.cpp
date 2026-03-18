@@ -80,6 +80,14 @@ bool UInventoryComponent::IsFullFor(const UPA_ShopItem* Item) const
 	return false;
 }
 
+void UInventoryComponent::TryActivateItem(const FInventoryItemHandle& ItemHandle)
+{
+	UInventoryItem* InventoryItem = GetInventoryItemByHandle(ItemHandle);
+	if (!InventoryItem) return;
+	
+	Server_ActivateItem(ItemHandle);
+}
+
 
 // Called when the game starts
 void UInventoryComponent::BeginPlay()
@@ -111,6 +119,59 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* NewItem)
 		Client_ItemAdded(NewHandle, NewItem); //客户端同步购买物品
 		InventoryItem->ApplyGASModifications(OwnerAbilitySystemComponent); //GAS应用变更
 	}
+}
+
+void UInventoryComponent::Server_ActivateItem_Implementation(FInventoryItemHandle ItemHandle)
+{
+	UInventoryItem* InventoryItem = GetInventoryItemByHandle(ItemHandle);
+	if (!InventoryItem) return;
+	
+	InventoryItem->TryActivateGrantedAbility(OwnerAbilitySystemComponent); //尝试激活能力
+	const UPA_ShopItem* Item = InventoryItem->GetShopItem();
+	if (Item->GetIsConsumable()) 
+		ConsumeItem(InventoryItem); //如果是消耗品，消耗该物品
+}
+
+bool UInventoryComponent::Server_ActivateItem_Validate(FInventoryItemHandle ItemHandle)
+{
+	return true;
+}
+
+void UInventoryComponent::ConsumeItem(UInventoryItem* Item)
+{
+	if (!GetOwner()->HasAuthority()) return;
+	if (!Item) return;
+	
+	Item->ApplyConsumeEffect(OwnerAbilitySystemComponent); //应用消耗效果器
+	if (!Item->ReduceStackCount()) //堆叠数减少成功？
+	{
+		RemoveItem(Item); //堆叠数耗尽，移除该物品
+	}
+	else //堆叠数未耗尽
+	{
+		OnItemStackCountChanged.Broadcast(Item->GetHandle(), Item->GetStackCount()); //广播堆叠数减少变更
+		Client_ItemStackCountChanged(Item->GetHandle(), Item->GetStackCount()); //客户端同步堆叠数减少
+	}
+}
+
+void UInventoryComponent::RemoveItem(UInventoryItem* Item)
+{
+	if (!GetOwner()->HasAuthority()) return;
+	Item->RemoveGASModifications(OwnerAbilitySystemComponent); //GAS移除效果器
+	OnItemRemoved.Broadcast(Item->GetHandle()); //广播移除事件
+	InventoryMap.Remove(Item->GetHandle()); //移除映射
+	Client_ItemRemoved(Item->GetHandle()); //client同步移除物品
+}
+
+void UInventoryComponent::Client_ItemRemoved_Implementation(FInventoryItemHandle ItemHandle)
+{
+	if (GetOwner()->HasAuthority()) return;
+	
+	UInventoryItem* InventoryItem = GetInventoryItemByHandle(ItemHandle);
+	if (!InventoryItem) return;
+	
+	OnItemRemoved.Broadcast(ItemHandle);
+	InventoryMap.Remove(ItemHandle);
 }
 
 void UInventoryComponent::Client_ItemStackCountChanged_Implementation(FInventoryItemHandle Handle, int NewCount)

@@ -15,8 +15,9 @@ void UInventoryWidget::NativeConstruct()
 		InventoryComponent = OwnerPawn->GetComponentByClass<UInventoryComponent>(); //加载组件
 		if (InventoryComponent)
 		{
-			InventoryComponent->OnItemAdded.AddUObject(this, &UInventoryWidget::ItemAdded); //订阅广播的委托
-			InventoryComponent->OnItemStackCountChanged.AddUObject(this, &UInventoryWidget::ItemStackCountChanged); //订阅广播的委托
+			InventoryComponent->OnItemAdded.AddUObject(this, &UInventoryWidget::ItemAdded); //订阅新增物品广播委托
+			InventoryComponent->OnItemRemoved.AddUObject(this, &UInventoryWidget::ItemRemoved); //订阅删除物品广播委托
+			InventoryComponent->OnItemStackCountChanged.AddUObject(this, &UInventoryWidget::ItemStackCountChanged); //订阅物品堆叠数变更广播委托
 			int Capacity = InventoryComponent->GetCapacity(); //装备栏数量
 			ItemList->ClearChildren(); //清除子节点
 			for (int i = 0; i < Capacity; ++i)
@@ -30,6 +31,7 @@ void UInventoryWidget::NativeConstruct()
 					ItemWidgets.Add(NewEmptyWidget); //将新装备格加入装备栏
 					
 					NewEmptyWidget->OnInventoryItemDropped.AddUObject(this, &UInventoryWidget::HandleItemDragDrop); //订阅拖拽事件委托
+					NewEmptyWidget->OnLeftButtonClick.AddUObject(InventoryComponent, &UInventoryComponent::TryActivateItem); //订阅左键点击使用物品事件委托
 				}
 			}
 		}
@@ -91,5 +93,15 @@ void UInventoryWidget::HandleItemDragDrop(UInventoryItemWidget* DestinationWidge
 		PopulatedItemEntryWidgets[SourceWidget->GetInventoryItemHandle()] = SourceWidget;
 		if (InventoryComponent)
 			InventoryComponent->ItemSlotChanged(SourceWidget->GetInventoryItemHandle(), SourceWidget->GetSlotNumber());
+	}
+}
+
+void UInventoryWidget::ItemRemoved(const FInventoryItemHandle& ItemHandle)
+{
+	UInventoryItemWidget** FoundWidget = PopulatedItemEntryWidgets.Find(ItemHandle);
+	if (FoundWidget && *FoundWidget)
+	{
+		(*FoundWidget)->EmptySlot();
+		PopulatedItemEntryWidgets.Remove(ItemHandle);
 	}
 }

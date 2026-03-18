@@ -11,6 +11,7 @@ class UAbilitySystemComponent;
 class UPA_ShopItem;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemAddedDelegate, const UInventoryItem* /*NewItem*/); //声明委托事件，用于广播
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemRemovedDelegate, const FInventoryItemHandle& /*ItemHandle*/); //声明委托事件，用于广播
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnItemStackCountChangedDelegate, const FInventoryItemHandle&, int /*NewCount*/); //声明委托事件，用于广播
 
 /**
@@ -24,6 +25,7 @@ class UInventoryComponent : public UActorComponent
 public:	
 	FOnItemAddedDelegate OnItemAdded; //新增物品事件
 	FOnItemStackCountChangedDelegate OnItemStackCountChanged; //物品堆叠数变更事件
+	FOnItemRemovedDelegate OnItemRemoved; //移除物品事件
 	
 	// Sets default values for this component's properties
 	UInventoryComponent();
@@ -36,6 +38,7 @@ public:
 	bool IsAllSlotOccupied() const; //装备栏已满？
 	UInventoryItem* GetAvailableStackForItem(const UPA_ShopItem* Item) const; //获得可堆叠的装备格
 	bool IsFullFor(const UPA_ShopItem* Item) const; //装备栏已满，且无法堆叠
+	void TryActivateItem(const FInventoryItemHandle& ItemHandle); //尝试使用物品
 	
 protected:
 	// Called when the game starts
@@ -57,6 +60,10 @@ private:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_Purchase(const UPA_ShopItem* ItemToPurchase); //server购买物品
 	void GrantItem(const UPA_ShopItem* NewItem); //购买物品，并向client同步
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_ActivateItem(FInventoryItemHandle ItemHandle); //server使用物品
+	void ConsumeItem(UInventoryItem* Item); //消耗物品，减少堆叠数，不完全移除物品
+	void RemoveItem(UInventoryItem* Item); //移除物品
 	
 /***********************************************************************************/
 /*                                      Client                                     */
@@ -67,4 +74,7 @@ private:
 	
 	UFUNCTION(Client, Reliable)
 	void Client_ItemStackCountChanged(FInventoryItemHandle Handle, int NewCount); //client响应物品堆叠数变更
+	
+	UFUNCTION(Client, Reliable)
+	void Client_ItemRemoved(FInventoryItemHandle ItemHandle); //client响应移除物品
 };

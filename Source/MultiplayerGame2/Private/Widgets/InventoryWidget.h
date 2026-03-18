@@ -36,5 +36,5 @@ private:
 	void ItemStackCountChanged(const FInventoryItemHandle& Handle, int NewCount); //订阅物品堆叠数变更事件委托
 	UInventoryItemWidget* GetNextAvailableSlot() const; //获得下一个空闲槽位
 	void HandleItemDragDrop(UInventoryItemWidget* DestinationWidget, UInventoryItemWidget* SourceWidget); //拖拽交换两个控件位置
-	
+	void ItemRemoved(const FInventoryItemHandle& ItemHandle); //移除物品
 };
