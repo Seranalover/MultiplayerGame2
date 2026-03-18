@@ -4,6 +4,8 @@
 #include "Widgets/InventoryWidget.h"
 
 #include "InventoryItemWidget.h"
+#include "Blueprint/SlateBlueprintLibrary.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/WrapBox.h"
 #include "Inventory/InventoryComponent.h"
 #include "Widgets/InventoryContextMenuWidget.h"
@@ -39,6 +41,14 @@ void UInventoryWidget::NativeConstruct()
 			SpawnContextMenu();
 		}
 	}
+}
+
+void UInventoryWidget::NativeOnFocusChanging(const FWeakWidgetPath& PreviousFocusPath, const FWidgetPath& NewWidgetPath,
+	const FFocusEvent& InFocusEvent)
+{
+	Super::NativeOnFocusChanging(PreviousFocusPath, NewWidgetPath, InFocusEvent);
+	if (!NewWidgetPath.ContainsWidget(ContextMenuWidget->GetCachedWidget().Get()))
+		ClearContextMenu();
 }
 
 void UInventoryWidget::ItemAdded(const UInventoryItem* InventoryItem)
@@ -141,5 +151,39 @@ void UInventoryWidget::SetContextMenuVisible(bool bVisible)
 
 void UInventoryWidget::ToggleContextMenu(const FInventoryItemHandle& ItemHandle)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Toggling ContextMenu"));
+	if (CurrentFocusedItemHandle == ItemHandle)
+	{
+		ClearContextMenu();
+		return;
+	}
+	
+	CurrentFocusedItemHandle = ItemHandle;
+	UInventoryItemWidget** FoundWidget = PopulatedItemEntryWidgets.Find(ItemHandle);
+	if (!FoundWidget) return;
+	UInventoryItemWidget* ItemWidget = *FoundWidget;
+	if (ItemWidget->IsEmpty()) return;
+	
+	SetContextMenuVisible(true);
+	FVector2D ItemAbsPosition = ItemWidget->GetCachedGeometry().GetAbsolutePositionAtCoordinates(FVector2D{1.f, 0.5f}); //获得物品控件的绝对位置
+	FVector2D ItemWidgetPixelPos, ItemWidgetViewportPos;
+	USlateBlueprintLibrary::AbsoluteToViewport(this, ItemAbsPosition, ItemWidgetPixelPos, ItemWidgetViewportPos); //计算不同分辨率下控件与视口的绝对位置
+	APlayerController* PlayerController = GetOwningPlayer();
+	if (PlayerController)
+	{
+		int ViewportSizeX, ViewportSizeY;
+		PlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY); //获得当前控制器的视口大小
+		float Scale = UWidgetLayoutLibrary::GetViewportScale(this); //获得视口缩放比例
+		int OverShoot = ItemWidgetPixelPos.Y + ContextMenuWidget->GetDesiredSize().Y * Scale - ViewportSizeY; //计算context menu控件超出视口（屏幕）尺寸
+		if (OverShoot > 0)
+		{
+			ItemWidgetPixelPos.Y -= OverShoot; //超出屏幕，context menu控件上移超出量，贴合屏幕
+		}
+	}
+	ContextMenuWidget->SetPositionInViewport(ItemWidgetPixelPos); //设置context menu控件位置
+}
+
+void UInventoryWidget::ClearContextMenu()
+{
+	ContextMenuWidget->SetVisibility(ESlateVisibility::Hidden);
+	CurrentFocusedItemHandle = FInventoryItemHandle::InvalidHandle();
 }

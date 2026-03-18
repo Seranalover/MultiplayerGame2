@@ -19,6 +19,7 @@ class UInventoryWidget : public UUserWidget
 	
 public:
 	virtual void NativeConstruct();
+	virtual void NativeOnFocusChanging(const FWeakWidgetPath& PreviousFocusPath, const FWidgetPath& NewWidgetPath, const FFocusEvent& InFocusEvent) override;
 	
 private:
 	UPROPERTY(meta=(BindWidget))
@@ -38,12 +39,14 @@ private:
 	
 	TArray<UInventoryItemWidget*> ItemWidgets; //装备格控件
 	TMap<FInventoryItemHandle, UInventoryItemWidget*> PopulatedItemEntryWidgets; //已装备的物品映射信息集合
+	FInventoryItemHandle CurrentFocusedItemHandle; //记录当前操作的Item
 	
 	void ItemAdded(const UInventoryItem* InventoryItem); //订阅新增物品事件委托
 	void ItemStackCountChanged(const FInventoryItemHandle& Handle, int NewCount); //订阅物品堆叠数变更事件委托
 	UInventoryItemWidget* GetNextAvailableSlot() const; //获得下一个空闲槽位
 	void HandleItemDragDrop(UInventoryItemWidget* DestinationWidget, UInventoryItemWidget* SourceWidget); //拖拽交换两个控件位置
 	void ItemRemoved(const FInventoryItemHandle& ItemHandle); //移除物品
+	
 	void SpawnContextMenu(); //生成上下文菜单控件
 	UFUNCTION()
 	void SellFocusedItem(); //出售物品
@@ -51,4 +54,5 @@ private:
 	void UseFocusedItem(); //使用物品
 	void SetContextMenuVisible(bool bVisible); //设置控件可见性
 	void ToggleContextMenu(const FInventoryItemHandle& ItemHandle); //开关控件
+	void ClearContextMenu(); //关闭控件
 };
