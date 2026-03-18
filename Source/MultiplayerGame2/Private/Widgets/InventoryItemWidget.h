@@ -11,6 +11,7 @@ class UInventoryItem;
 class UInventoryItemWidget;
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnInventoryItemDropped, UInventoryItemWidget* /*DestinationWidget*/, UInventoryItemWidget* /*SourceWidget*/)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnButtonClick, const FInventoryItemHandle& /*ItemHandle*/)
 
 /**
  * 库存物品控件原子类
@@ -23,6 +24,8 @@ class UInventoryItemWidget : public UItemWidget
 	
 public:
 	FOnInventoryItemDropped OnInventoryItemDropped; //拖拽到目标位置委托事件
+	FOnButtonClick OnLeftButtonClick; //左键点击委托事件
+	FOnButtonClick OnRightButtonClick; //右键点击委托事件
 	
 	virtual void NativeConstruct() override;
 	bool IsEmpty() const;
@@ -55,6 +58,9 @@ private:
 	const UInventoryItem* InventoryItem; //物品指针
 	
 	int SlotNumber; //槽位编号
+	
+	virtual void RightButtonClicked() override; //重写右键点击事件
+	virtual void LeftButtonClicked() override; //重写左键点击事件
 	
 	/******************************************************/
 	/*                     Drag Drop                      */

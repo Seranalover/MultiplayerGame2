@@ -43,7 +43,7 @@ public:
 	float GetPrice() const { return Price; }
 	float GetSellPrice() const {return Price / 2.f; }
 	TSubclassOf<class UGameplayEffect> GetEquippedEffect() const { return EquippedEffect; }
-	TSubclassOf<class UGameplayEffect> GetConsumableEffect() const { return ConsumableEffect; }
+	TSubclassOf<class UGameplayEffect> GetConsumeEffect() const { return ConsumeEffect; }
 	TSubclassOf<class UGameplayAbility> GetGrantedAbility() const { return GrantedAbility; }
 	bool GetIsStackable() const { return bIsStackable; }
 	bool GetIsConsumable() const { return bIsConsumable; }
@@ -70,7 +70,7 @@ private:
 	TSubclassOf<class UGameplayEffect> EquippedEffect; //装备效果
 	
 	UPROPERTY(EditDefaultsOnly, Category="ShopItem")
-	TSubclassOf<class UGameplayEffect> ConsumableEffect; //消耗效果
+	TSubclassOf<class UGameplayEffect> ConsumeEffect; //消耗效果
 	
 	UPROPERTY(EditDefaultsOnly, Category="ShopItem")
 	TSubclassOf<class UGameplayAbility> GrantedAbility; //赋予能力

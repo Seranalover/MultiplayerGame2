@@ -93,6 +93,32 @@ void UInventoryItem::ApplyGASModifications(UAbilitySystemComponent* AbilitySyste
 	}
 }
 
+bool UInventoryItem::TryActivateGrantedAbility(UAbilitySystemComponent* AbilitySystemComponent)
+{
+	if (!GrantedAbilitySpecHandle.IsValid()) return false;
+	if (AbilitySystemComponent && AbilitySystemComponent->TryActivateAbility(GrantedAbilitySpecHandle)) return true;
+	return false;
+}
+
+void UInventoryItem::ApplyConsumeEffect(UAbilitySystemComponent* AbilitySystemComponent)
+{
+	if (!ShopItem || !AbilitySystemComponent) return;
+	
+	TSubclassOf<UGameplayEffect> ConsumeEffect = ShopItem->GetConsumeEffect();
+	if (!ConsumeEffect) return;
+	
+	AbilitySystemComponent->BP_ApplyGameplayEffectToSelf(ConsumeEffect, 1, AbilitySystemComponent->MakeEffectContext());
+}
+
+void UInventoryItem::RemoveGASModifications(UAbilitySystemComponent* AbilitySystemComponent)
+{
+	if (!AbilitySystemComponent) return;
+	if (AppliedEquippedEffectHandle.IsValid())
+		AbilitySystemComponent->RemoveActiveGameplayEffect(AppliedEquippedEffectHandle); //移除效果器
+	if (GrantedAbilitySpecHandle.IsValid())
+		AbilitySystemComponent->SetRemoveAbilityOnEnd(GrantedAbilitySpecHandle); //等待技能结束时移除技能
+}
+
 bool UInventoryItem::IsValid() const
 {
 	return ShopItem != nullptr;
