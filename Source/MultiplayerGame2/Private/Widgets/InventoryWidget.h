@@ -8,6 +8,7 @@
 #include "InventoryWidget.generated.h"
 
 class UInventoryItemWidget;
+class UInventoryContextMenuWidget;
 /**
  * 库存/装备栏 控件类
  */
@@ -23,11 +24,17 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	class UWrapBox* ItemList;
 	
-	UPROPERTY(EditDefaultsOnly, Category="")
+	UPROPERTY(EditDefaultsOnly, Category="Inventory")
 	TSubclassOf<UInventoryItemWidget> ItemWidgetClass;
 	
 	UPROPERTY()
 	class UInventoryComponent* InventoryComponent;
+	
+	UPROPERTY(editDefaultsOnly, Category="Inventory")
+	TSubclassOf<UInventoryContextMenuWidget> ContextMenuWidgetClass;
+	
+	UPROPERTY()
+	UInventoryContextMenuWidget* ContextMenuWidget;
 	
 	TArray<UInventoryItemWidget*> ItemWidgets; //装备格控件
 	TMap<FInventoryItemHandle, UInventoryItemWidget*> PopulatedItemEntryWidgets; //已装备的物品映射信息集合
@@ -37,4 +44,11 @@ private:
 	UInventoryItemWidget* GetNextAvailableSlot() const; //获得下一个空闲槽位
 	void HandleItemDragDrop(UInventoryItemWidget* DestinationWidget, UInventoryItemWidget* SourceWidget); //拖拽交换两个控件位置
 	void ItemRemoved(const FInventoryItemHandle& ItemHandle); //移除物品
+	void SpawnContextMenu(); //生成上下文菜单控件
+	UFUNCTION()
+	void SellFocusedItem(); //出售物品
+	UFUNCTION()
+	void UseFocusedItem(); //使用物品
+	void SetContextMenuVisible(bool bVisible); //设置控件可见性
+	void ToggleContextMenu(const FInventoryItemHandle& ItemHandle); //开关控件
 };

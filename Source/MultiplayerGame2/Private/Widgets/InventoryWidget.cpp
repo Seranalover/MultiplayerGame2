@@ -6,6 +6,7 @@
 #include "InventoryItemWidget.h"
 #include "Components/WrapBox.h"
 #include "Inventory/InventoryComponent.h"
+#include "Widgets/InventoryContextMenuWidget.h"
 
 void UInventoryWidget::NativeConstruct()
 {
@@ -32,8 +33,10 @@ void UInventoryWidget::NativeConstruct()
 					
 					NewEmptyWidget->OnInventoryItemDropped.AddUObject(this, &UInventoryWidget::HandleItemDragDrop); //订阅拖拽事件委托
 					NewEmptyWidget->OnLeftButtonClick.AddUObject(InventoryComponent, &UInventoryComponent::TryActivateItem); //订阅左键点击使用物品事件委托
+					NewEmptyWidget->OnRightButtonClick.AddUObject(this, &UInventoryWidget::ToggleContextMenu);
 				}
 			}
+			SpawnContextMenu();
 		}
 	}
 }
@@ -104,4 +107,39 @@ void UInventoryWidget::ItemRemoved(const FInventoryItemHandle& ItemHandle)
 		(*FoundWidget)->EmptySlot();
 		PopulatedItemEntryWidgets.Remove(ItemHandle);
 	}
+}
+
+void UInventoryWidget::SpawnContextMenu()
+{
+	if (!ContextMenuWidgetClass) return;
+	
+	ContextMenuWidget = CreateWidget<UInventoryContextMenuWidget>(this, ContextMenuWidgetClass);
+	if (ContextMenuWidget)
+	{
+		ContextMenuWidget->GetSellButtonClickedEvent().AddDynamic(this, &UInventoryWidget::SellFocusedItem); //监听点击sell按钮事件，绑定到SellFocusedItem函数
+		ContextMenuWidget->GetUseButtonClickedEvent().AddDynamic(this, &UInventoryWidget::UseFocusedItem);
+		ContextMenuWidget->AddToViewport(1);
+		SetContextMenuVisible(false);
+	}
+}
+
+void UInventoryWidget::SellFocusedItem()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Selling Item"));
+}
+
+void UInventoryWidget::UseFocusedItem()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Using Item"));
+}
+
+void UInventoryWidget::SetContextMenuVisible(bool bVisible)
+{
+	if (ContextMenuWidget)
+		ContextMenuWidget->SetVisibility(bVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+}
+
+void UInventoryWidget::ToggleContextMenu(const FInventoryItemHandle& ItemHandle)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Toggling ContextMenu"));
 }
