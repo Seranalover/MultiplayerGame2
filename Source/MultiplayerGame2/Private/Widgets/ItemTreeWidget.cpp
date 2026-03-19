@@ -32,7 +32,7 @@ void UItemTreeWidget::DrawFromNode(const ITreeNodeInterface* NodeInterface)
 	
 	//向上绘制树状图
 	NextLeafXPosition = 0.f;
-	DrawStream(true, NodeInterface, CenterWidget, CenterWidgetPanelSlot, 0, NextLeafXPosition, LowerStreamSlots);
+	DrawStream(true, NodeInterface, CenterWidget, CenterWidgetPanelSlot, 0, NextLeafXPosition, UpperStreamSlots);
 	float  UpperStreamXMax = NextLeafXPosition - NodeSize.X - NodeGap.X;
 	float  UpperMoveAmt = 0.f -  UpperStreamXMax / 2.f;
 	for (UCanvasPanelSlot* StreamSlot :  UpperStreamSlots)

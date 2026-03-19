@@ -40,7 +40,10 @@ public:
 	bool IsFullFor(const UPA_ShopItem* Item) const; //装备栏已满，且无法堆叠
 	void TryActivateItem(const FInventoryItemHandle& ItemHandle); //尝试使用物品
 	void SellItem(const FInventoryItemHandle& ItemHandle); //出售物品
-	bool FoundIngredientForItem(const UPA_ShopItem* Item, TArray<UInventoryItem*>& OutIngredients); //是否找到所有合成材料？
+	bool FindIngredientForItem(const UPA_ShopItem* Item, 
+		TArray<UInventoryItem*>& OutIngredients, 
+		const TArray<const UPA_ShopItem*>& IngredientToIgnore = TArray<const UPA_ShopItem*>{} /*装备栏已满时，尝试购买的合成物品，无法添加到装备栏*/
+	); //是否找到所有合成材料？
 	UInventoryItem* TryGetItemForShopItem(const UPA_ShopItem* Item) const; //尝试在装备栏找到对应合成材料
 	
 protected:
@@ -69,7 +72,8 @@ private:
 	void RemoveItem(UInventoryItem* Item); //移除物品
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_SellItem(FInventoryItemHandle ItemHandle); //server出售物品
-	void CheckItemCombination(const UInventoryItem* NewItem); //检查并合成物品
+	// void CheckItemCombination(const UInventoryItem* NewItem); //检查并合成物品
+	bool TryItemCombination(const UPA_ShopItem* NewItem); //尝试合成物品
 	
 /***********************************************************************************/
 /*                                      Client                                     */

@@ -94,7 +94,8 @@ void UInventoryComponent::SellItem(const FInventoryItemHandle& ItemHandle)
 	Server_SellItem(ItemHandle);
 }
 
-bool UInventoryComponent::FoundIngredientForItem(const UPA_ShopItem* Item, TArray<UInventoryItem*>& OutIngredients)
+bool UInventoryComponent::FindIngredientForItem(const UPA_ShopItem* Item, TArray<UInventoryItem*>& OutIngredients,
+	const TArray<const UPA_ShopItem*>& IngredientToIgnore)
 {
 	const FItemCollection* Ingredients = UCAssetManager::Get().GetIngredientForItem(Item);
 	if (!Ingredients) return false; //未找到合成材料
@@ -102,6 +103,8 @@ bool UInventoryComponent::FoundIngredientForItem(const UPA_ShopItem* Item, TArra
 	bool bAllFound = true;
 	for (const UPA_ShopItem* Ingredient : Ingredients->GetItems())
 	{
+		if (IngredientToIgnore.Contains(Ingredient)) //如果是因装备已满，无法添加到装备栏的可购买合成物品
+			continue;
 		UInventoryItem* FoundItem = TryGetItemForShopItem(Ingredient); //在物品栏找到对应合成材料？
 		if (!FoundItem)
 		{
@@ -146,15 +149,15 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* NewItem)
 	}
 	else
 	{
+		if (TryItemCombination(NewItem)) return; //成功合成高级物品，无需添加
 		UInventoryItem* InventoryItem = NewObject<UInventoryItem>();
 		FInventoryItemHandle NewHandle = FInventoryItemHandle::CreateHandle();
 		InventoryItem->InitItem(NewHandle, NewItem);
 		InventoryMap.Add(NewHandle, InventoryItem);
 		OnItemAdded.Broadcast(InventoryItem); //广播事件
-		UE_LOG(LogTemp, Warning, TEXT("Server adding shop item: %s, with id: %d"), *(InventoryItem->GetShopItem()->GetItemName().ToString()), NewHandle.GetHandleId());
+		// UE_LOG(LogTemp, Warning, TEXT("Server adding shop item: %s, with id: %d"), *(InventoryItem->GetShopItem()->GetItemName().ToString()), NewHandle.GetHandleId());
 		Client_ItemAdded(NewHandle, NewItem); //客户端同步购买物品
 		InventoryItem->ApplyGASModifications(OwnerAbilitySystemComponent); //GAS应用变更
-		CheckItemCombination(InventoryItem);
 	}
 }
 
@@ -200,17 +203,17 @@ void UInventoryComponent::RemoveItem(UInventoryItem* Item)
 	Client_ItemRemoved(Item->GetHandle()); //client同步移除物品
 }
 
-void UInventoryComponent::CheckItemCombination(const UInventoryItem* NewItem)
+bool UInventoryComponent::TryItemCombination(const UPA_ShopItem* NewItem)
 {
-	if (!GetOwner()->HasAuthority()) return;
+	if (!GetOwner()->HasAuthority()) return false;
 	
-	const FItemCollection* CombinationItems = UCAssetManager::Get().GetCombinationForItem(NewItem->GetShopItem());
-	if (!CombinationItems) return; //不存在合成路线，直接返回
+	const FItemCollection* CombinationItems = UCAssetManager::Get().GetCombinationForItem(NewItem);
+	if (!CombinationItems) return false; //不存在合成路线，直接返回
 	
 	for (const UPA_ShopItem* CombinationItem : CombinationItems->GetItems())
 	{
 		TArray<UInventoryItem*> Ingredients;
-		if (!FoundIngredientForItem(CombinationItem, Ingredients))
+		if (!FindIngredientForItem(CombinationItem, Ingredients, TArray<const UPA_ShopItem*>{NewItem}))
 			continue;
 		
 		for (UInventoryItem* Ingredient : Ingredients) //找到合成材料后
@@ -218,8 +221,9 @@ void UInventoryComponent::CheckItemCombination(const UInventoryItem* NewItem)
 			RemoveItem(Ingredient); //移除所哟原材料
 		}
 		GrantItem(CombinationItem); //添加合成后物品
-		return;
+		return true;
 	}
+	return false;
 }
 
 void UInventoryComponent::Server_SellItem_Implementation(FInventoryItemHandle ItemHandle)
@@ -269,7 +273,7 @@ void UInventoryComponent::Client_ItemAdded_Implementation(FInventoryItemHandle A
 	InventoryItem->InitItem(AssignedHandle, Item);
 	InventoryMap.Add(AssignedHandle, InventoryItem);
 	OnItemAdded.Broadcast(InventoryItem); //广播事件
-	UE_LOG(LogTemp, Warning, TEXT("Client adding shop item: %s, with id: %d"), *(InventoryItem->GetShopItem()->GetItemName().ToString()), AssignedHandle.GetHandleId());
+	// UE_LOG(LogTemp, Warning, TEXT("Client adding shop item: %s, with id: %d"), *(InventoryItem->GetShopItem()->GetItemName().ToString()), AssignedHandle.GetHandleId());
 }
 
 void UInventoryComponent::Server_Purchase_Implementation(const UPA_ShopItem* ItemToPurchase)
@@ -278,10 +282,16 @@ void UInventoryComponent::Server_Purchase_Implementation(const UPA_ShopItem* Ite
 	
 	if (GetGold() < ItemToPurchase->GetPrice()) return; //金钱不足
 	
-	if (IsFullFor(ItemToPurchase)) return; //装备栏已满，且无法堆叠
-	
-	OwnerAbilitySystemComponent->ApplyModToAttribute(UCHeroAttributeSet::GetGoldAttribute(), EGameplayModOp::Additive, -ItemToPurchase->GetPrice()); //购买物品，消耗金币
-	GrantItem(ItemToPurchase);
+	if (!IsFullFor(ItemToPurchase)) //装备栏未满
+	{
+		OwnerAbilitySystemComponent->ApplyModToAttribute(UCHeroAttributeSet::GetGoldAttribute(), EGameplayModOp::Additive, -ItemToPurchase->GetPrice()); //购买物品，消耗金币
+		GrantItem(ItemToPurchase);
+		return;
+	}
+	//装备栏已满，且无法堆叠，但仍可以合成物品
+	if (TryItemCombination(ItemToPurchase))
+		OwnerAbilitySystemComponent->ApplyModToAttribute(UCHeroAttributeSet::GetGoldAttribute(), EGameplayModOp::Additive, -ItemToPurchase->GetPrice()); //购买物品，消耗金币
+
 }
 
 bool UInventoryComponent::Server_Purchase_Validate(const UPA_ShopItem* ItemToPurchase)
