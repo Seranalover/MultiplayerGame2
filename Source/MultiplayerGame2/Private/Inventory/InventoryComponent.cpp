@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "PA_ShopItem.h"
+#include "Framework/CAssetManager.h"
 #include "GAS/CHeroAttributeSet.h"
 
 // Sets default values for this component's properties
@@ -93,6 +94,37 @@ void UInventoryComponent::SellItem(const FInventoryItemHandle& ItemHandle)
 	Server_SellItem(ItemHandle);
 }
 
+bool UInventoryComponent::FoundIngredientForItem(const UPA_ShopItem* Item, TArray<UInventoryItem*>& OutIngredients)
+{
+	const FItemCollection* Ingredients = UCAssetManager::Get().GetIngredientForItem(Item);
+	if (!Ingredients) return false; //未找到合成材料
+	
+	bool bAllFound = true;
+	for (const UPA_ShopItem* Ingredient : Ingredients->GetItems())
+	{
+		UInventoryItem* FoundItem = TryGetItemForShopItem(Ingredient); //在物品栏找到对应合成材料？
+		if (!FoundItem)
+		{
+			bAllFound = false;
+			break;
+		}
+		OutIngredients.Add(FoundItem);
+	}
+	return bAllFound;
+}
+
+UInventoryItem* UInventoryComponent::TryGetItemForShopItem(const UPA_ShopItem* Item) const
+{
+	if (!Item) return nullptr;
+	
+	for (const TPair<FInventoryItemHandle, UInventoryItem*>& ItemHandlePair : InventoryMap)
+	{
+		if (ItemHandlePair.Value && ItemHandlePair.Value->GetShopItem() == Item)
+			return ItemHandlePair.Value;
+	}
+	return nullptr;
+}
+
 // Called when the game starts
 void UInventoryComponent::BeginPlay()
 {
@@ -122,6 +154,7 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* NewItem)
 		UE_LOG(LogTemp, Warning, TEXT("Server adding shop item: %s, with id: %d"), *(InventoryItem->GetShopItem()->GetItemName().ToString()), NewHandle.GetHandleId());
 		Client_ItemAdded(NewHandle, NewItem); //客户端同步购买物品
 		InventoryItem->ApplyGASModifications(OwnerAbilitySystemComponent); //GAS应用变更
+		CheckItemCombination(InventoryItem);
 	}
 }
 
@@ -165,6 +198,28 @@ void UInventoryComponent::RemoveItem(UInventoryItem* Item)
 	OnItemRemoved.Broadcast(Item->GetHandle()); //广播移除事件
 	InventoryMap.Remove(Item->GetHandle()); //移除映射
 	Client_ItemRemoved(Item->GetHandle()); //client同步移除物品
+}
+
+void UInventoryComponent::CheckItemCombination(const UInventoryItem* NewItem)
+{
+	if (!GetOwner()->HasAuthority()) return;
+	
+	const FItemCollection* CombinationItems = UCAssetManager::Get().GetCombinationForItem(NewItem->GetShopItem());
+	if (!CombinationItems) return; //不存在合成路线，直接返回
+	
+	for (const UPA_ShopItem* CombinationItem : CombinationItems->GetItems())
+	{
+		TArray<UInventoryItem*> Ingredients;
+		if (!FoundIngredientForItem(CombinationItem, Ingredients))
+			continue;
+		
+		for (UInventoryItem* Ingredient : Ingredients) //找到合成材料后
+		{
+			RemoveItem(Ingredient); //移除所哟原材料
+		}
+		GrantItem(CombinationItem); //添加合成后物品
+		return;
+	}
 }
 
 void UInventoryComponent::Server_SellItem_Implementation(FInventoryItemHandle ItemHandle)

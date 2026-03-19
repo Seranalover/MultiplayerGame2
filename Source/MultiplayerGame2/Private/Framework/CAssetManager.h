@@ -19,6 +19,8 @@ public:
 	static UCAssetManager& Get();
 	void LoadShopItems(const FStreamableDelegate& LoadFinishedCallback); //加载商店物品
 	bool GetLoadedShopItems(TArray<const UPA_ShopItem*>& OutItems) const; //是否加载到商店物品
+	const FItemCollection* GetCombinationForItem(const UPA_ShopItem* Item) const; //获得物品合成路线
+	const FItemCollection* GetIngredientForItem(const UPA_ShopItem* Item) const; //获得物品分解路线
 	
 private:
 	void ShopItemLoadFinished(FStreamableDelegate Callback); //商店物品加载完成时调用
