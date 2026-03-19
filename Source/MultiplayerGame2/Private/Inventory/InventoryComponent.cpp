@@ -88,6 +88,10 @@ void UInventoryComponent::TryActivateItem(const FInventoryItemHandle& ItemHandle
 	Server_ActivateItem(ItemHandle);
 }
 
+void UInventoryComponent::SellItem(const FInventoryItemHandle& ItemHandle)
+{
+	Server_SellItem(ItemHandle);
+}
 
 // Called when the game starts
 void UInventoryComponent::BeginPlay()
@@ -161,6 +165,21 @@ void UInventoryComponent::RemoveItem(UInventoryItem* Item)
 	OnItemRemoved.Broadcast(Item->GetHandle()); //广播移除事件
 	InventoryMap.Remove(Item->GetHandle()); //移除映射
 	Client_ItemRemoved(Item->GetHandle()); //client同步移除物品
+}
+
+void UInventoryComponent::Server_SellItem_Implementation(FInventoryItemHandle ItemHandle)
+{
+	UInventoryItem* InventoryItem = GetInventoryItemByHandle(ItemHandle);
+	if (!InventoryItem || !InventoryItem->IsValid()) return;
+	float SellPrice = InventoryItem->GetShopItem()->GetSellPrice();
+	OwnerAbilitySystemComponent->ApplyModToAttribute(UCHeroAttributeSet::GetGoldAttribute(), EGameplayModOp::Additive, 
+		SellPrice * InventoryItem->GetStackCount()); //出售物品
+	RemoveItem(InventoryItem);
+}
+
+bool UInventoryComponent::Server_SellItem_Validate(FInventoryItemHandle ItemHandle)
+{
+	return true;
 }
 
 void UInventoryComponent::Client_ItemRemoved_Implementation(FInventoryItemHandle ItemHandle)

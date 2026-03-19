@@ -39,6 +39,7 @@ public:
 	UInventoryItem* GetAvailableStackForItem(const UPA_ShopItem* Item) const; //获得可堆叠的装备格
 	bool IsFullFor(const UPA_ShopItem* Item) const; //装备栏已满，且无法堆叠
 	void TryActivateItem(const FInventoryItemHandle& ItemHandle); //尝试使用物品
+	void SellItem(const FInventoryItemHandle& ItemHandle); //出售物品
 	
 protected:
 	// Called when the game starts
@@ -64,6 +65,8 @@ private:
 	void Server_ActivateItem(FInventoryItemHandle ItemHandle); //server使用物品
 	void ConsumeItem(UInventoryItem* Item); //消耗物品，减少堆叠数，不完全移除物品
 	void RemoveItem(UInventoryItem* Item); //移除物品
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_SellItem(FInventoryItemHandle ItemHandle); //server出售物品
 	
 /***********************************************************************************/
 /*                                      Client                                     */
