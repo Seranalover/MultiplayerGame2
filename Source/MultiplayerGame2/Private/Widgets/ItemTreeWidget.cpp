@@ -7,6 +7,42 @@
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 
+void UItemTreeWidget::DrawFromNode(const ITreeNodeInterface* NodeInterface)
+{
+	if (!NodeInterface) return;
+	if (CurrentCenterItem == NodeInterface->GetItemObject()) return;
+	
+	ClearTree();
+	CurrentCenterItem = NodeInterface->GetItemObject(); //记录已绘制的中心节点，避免重复绘制
+	
+	//设置参数
+	float NextLeafXPosition = 0.f;
+	UCanvasPanelSlot* CenterWidgetPanelSlot = nullptr;
+	UUserWidget* CenterWidget = CreateWidgetForNode(NodeInterface, CenterWidgetPanelSlot);
+	TArray<UCanvasPanelSlot*> LowerStreamSlots, UpperStreamSlots;
+	
+	//向下绘制树状图
+	DrawStream(false, NodeInterface, CenterWidget, CenterWidgetPanelSlot, 0, NextLeafXPosition, LowerStreamSlots);
+	float LowerStreamXMax = NextLeafXPosition - NodeSize.X - NodeGap.X; //计算向下流向的，最右边叶子节点位置
+	float LowerMoveAmt = 0.f - LowerStreamXMax / 2.f; //计算下流向的，使整个树居中，需要向右移动的距离
+	for (UCanvasPanelSlot* StreamSlot : LowerStreamSlots) //遍历移动所有子节点，使树状图居中
+	{
+		StreamSlot->SetPosition(StreamSlot->GetPosition() + FVector2D{LowerMoveAmt, 0.f});
+	}
+	
+	//向上绘制树状图
+	NextLeafXPosition = 0.f;
+	DrawStream(true, NodeInterface, CenterWidget, CenterWidgetPanelSlot, 0, NextLeafXPosition, LowerStreamSlots);
+	float  UpperStreamXMax = NextLeafXPosition - NodeSize.X - NodeGap.X;
+	float  UpperMoveAmt = 0.f -  UpperStreamXMax / 2.f;
+	for (UCanvasPanelSlot* StreamSlot :  UpperStreamSlots)
+	{
+		StreamSlot->SetPosition(StreamSlot->GetPosition() + FVector2D{ UpperMoveAmt, 0.f});
+	}
+	
+	CenterWidgetPanelSlot->SetPosition(FVector2D::Zero());
+}
+
 void UItemTreeWidget::ClearTree()
 {
 	RootPanel->ClearChildren();
@@ -43,18 +79,18 @@ void UItemTreeWidget::CreateConnection(const UUserWidget* From, const UUserWidge
 		ConnectionPanelSlot->SetZOrder(0); //设置连线显示层级为 0
 	}
 	Connection->SetupSpline(From, To, SourcePortLocalPos, 
-		DestinationPortLocalPos, SourcePortDirection, DestinationPortLocalPos); //绘制连线
+		DestinationPortLocalPos, SourcePortDirection, DestinationPortDirection); //绘制连线
 	Connection->SetSplineStyle(ConnectionColor, ConnectionThickness); //设置连线样式
 }
 
-void UItemTreeWidget::DrawStream(bool bUpperStream, const ITreeNodeInterface* StartingNodeInterface, UUserWidget* StartingNodeWidget, 
-	class UCanvasPanelSlot* StartingNodeSlot, int StartingNodeDepth, float& NextLeafXPosition, TArray<UCanvasPanelSlot*>& OutStreamSlots)
+void UItemTreeWidget::DrawStream(bool bUpperStream, const ITreeNodeInterface* NodeInterface, UUserWidget* NodeWidget, 
+	class UCanvasPanelSlot* NodeSlot, int NodeDepth, float& NextLeafXPosition, TArray<UCanvasPanelSlot*>& OutStreamSlots)
 {
-	TArray<const ITreeNodeInterface*> NextTreeNodeInterfaces = bUpperStream ? StartingNodeInterface->GetInputs() : StartingNodeInterface->GetOutputs();
-	float StartingNodeYPos = (NodeSize.Y + NodeGap.Y) * StartingNodeDepth * (bUpperStream ? -1.0f : 1.0f); //计算节点的 Y-position
+	TArray<const ITreeNodeInterface*> NextTreeNodeInterfaces = bUpperStream ? NodeInterface->GetInputs() : NodeInterface->GetOutputs();
+	float StartingNodeYPos = (NodeSize.Y + NodeGap.Y) * NodeDepth * (bUpperStream ? -1.0f : 1.0f); //计算节点的 Y-position
 	if (NextTreeNodeInterfaces.Num() == 0) //如果是叶子节点
 	{
-		StartingNodeSlot->SetPosition(FVector2D{NextLeafXPosition, StartingNodeYPos}); //设置节点position
+		NodeSlot->SetPosition(FVector2D{NextLeafXPosition, StartingNodeYPos}); //设置节点position
 		NextLeafXPosition += NodeSize.X + NodeGap.X; //更新下一个叶子节点的 X-position
 		return; //叶子节点没有子节点，直接返回
 	}
@@ -67,17 +103,15 @@ void UItemTreeWidget::DrawStream(bool bUpperStream, const ITreeNodeInterface* St
 		OutStreamSlots.Add(NextWidgetSlot); //保存下一节点的槽位信息
 		if (bUpperStream)
 		{
-			CreateConnection(NextWidget, StartingNodeWidget); //创建下一节点与当前节点的连线
+			CreateConnection(NextWidget, NodeWidget); //创建下一节点与当前节点的连线
 		}
 		else
 		{
-			CreateConnection(StartingNodeWidget, NextWidget); //创建当前节点与下一节点的连线
+			CreateConnection(NodeWidget, NextWidget); //创建当前节点与下一节点的连线
 		}
-		//递归
-		DrawStream(bUpperStream, NextTreeNodeInterface, NextWidget, NextWidgetSlot, StartingNodeDepth + 1, NextLeafXPosition, OutStreamSlots);
-		
+		DrawStream(bUpperStream, NextTreeNodeInterface, NextWidget, NextWidgetSlot, NodeDepth + 1, NextLeafXPosition, OutStreamSlots); //递归
 		NextNodeXPositionSum += NextWidgetSlot->GetPosition().X; //更新NextNodeXPositionSum
 	}
 	float StartingNodeXPos = NextNodeXPositionSum / NextTreeNodeInterfaces.Num(); //计算节点X-position
-	StartingNodeSlot->SetPosition(FVector2D(StartingNodeXPos, StartingNodeYPos)); //设置节点位置
+	NodeSlot->SetPosition(FVector2D(StartingNodeXPos, StartingNodeYPos)); //设置节点位置
 }

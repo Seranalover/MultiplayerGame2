@@ -8,16 +8,21 @@
 #include "ItemTreeWidget.generated.h"
 
 /**
- * 商品树结构图控件
+ * 商品树状结构图控件
  */
 UCLASS()
 class UItemTreeWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	void DrawFromNode(const ITreeNodeInterface* NodeInterface); //从指定节点绘制树状图
+	
 private:
 	UPROPERTY(meta=(BindWidget))
 	class UCanvasPanel* RootPanel; //根面板
+	
+	const UObject* CurrentCenterItem; //当前中心节点，目的是记录已绘制内容，避免重复绘制
 	
 	UPROPERTY(EditDefaultsOnly, Category="Tree")
 	FVector2D NodeSize = FVector2D{60.f}; //节点尺寸大小
@@ -48,12 +53,12 @@ private:
 	void CreateConnection(const UUserWidget* From, const UUserWidget* To); //创建连线
 	
 	void DrawStream(
-		bool bUpperStream, //为真，从中心点开始，向上绘制节点流向，为假则向下绘制
-		const ITreeNodeInterface* StartingNodeInterface, //开始绘制节点
-		UUserWidget* StartingNodeWidget, //开始控件
-		class UCanvasPanelSlot* StartingNodeSlot, //开始节点槽位信息
-		int StartingNodeDepth, //开始节点深度，中心节点深度为0
+		bool bUpperStream, //从中心点开始，为真，向上绘制节点流向，为假，则向下绘制
+		const ITreeNodeInterface* NodeInterface, //当前节点
+		UUserWidget* NodeWidget, //节点控件
+		class UCanvasPanelSlot* NodeSlot, //节点槽位
+		int NodeDepth, //节点深度，中心节点深度为0
 		float& NextLeafXPosition, //下一个叶子节点的X方向位置
-		TArray<UCanvasPanelSlot*>& OutStreamSlots //记录每个节点槽位信息
+		TArray<UCanvasPanelSlot*>& OutStreamSlots //每个节点槽位信息集合
 	); //从中心点开始，绘制节点流向
 };

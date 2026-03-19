@@ -32,7 +32,11 @@ private:
 	UPROPERTY()
 	UInventoryComponent* OwnerInventoryComponent;
 	
-	void LoadShopItems();
-	void ShopItemLoadFinished();
-	void ShopItemWidgetGenerated(UUserWidget& NewWidget);
+	UPROPERTY(meta=(BindWidget))
+	class UItemTreeWidget* CombinationTree; //装备合成树
+	
+	void LoadShopItems(); //资源管理器加载商店物品
+	void ShopItemLoadFinished(); //加载完毕
+	void ShopItemWidgetGenerated(UUserWidget& NewWidget); //为商店物品生成控件
+	void ShowItemCombination(const UShopItemWidget* ItemWidget); //展示物品合成树
 };
