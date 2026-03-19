@@ -32,7 +32,7 @@ public:
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 	FORCEINLINE const UPA_ShopItem* GetShopItem() const { return ShopItem; }
 	
-	virtual UUserWidget* GetWidget() override; //获得节点控件
+	virtual UUserWidget* GetWidget() const override; //获得节点控件
 	virtual TArray<const ITreeNodeInterface*> GetInputs() const override; //连接到该节点的内容
 	virtual TArray<const ITreeNodeInterface*> GetOutputs() const override; //连接到下一个节点的内容
 	virtual const UObject* GetItemObject() const override; //当前节点的指针

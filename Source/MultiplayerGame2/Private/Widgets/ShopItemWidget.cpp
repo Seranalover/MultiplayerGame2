@@ -13,7 +13,7 @@ void UShopItemWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 	ParentListView = Cast<UListView>(IUserListEntry::GetOwningListView());
 }
 
-UUserWidget* UShopItemWidget::GetWidget()
+UUserWidget* UShopItemWidget::GetWidget() const
 {
 	UShopItemWidget* Copy = CreateWidget<UShopItemWidget>(GetOwningPlayer(), GetClass()); //创建当前商品控件的副本对象
 	Copy->CopyFromOther(this); //复制对象内容

@@ -22,7 +22,7 @@ class ITreeNodeInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual UUserWidget* GetWidget() = 0; //获得节点控件
+	virtual UUserWidget* GetWidget() const = 0; //获得节点控件
 	virtual TArray<const ITreeNodeInterface*> GetInputs() const = 0; //连接到该节点的内容
 	virtual TArray<const ITreeNodeInterface*> GetOutputs() const = 0; //连接到下一个节点的内容
 	virtual const UObject* GetItemObject() const = 0; //当前节点的指针
