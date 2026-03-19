@@ -46,4 +46,14 @@ private:
 	void ClearTree(); //清空树
 	UUserWidget* CreateWidgetForNode(const ITreeNodeInterface* Node, class UCanvasPanelSlot*& OutCanvasSlot); //为节点创建控件
 	void CreateConnection(const UUserWidget* From, const UUserWidget* To); //创建连线
+	
+	void DrawStream(
+		bool bUpperStream, //为真，从中心点开始，向上绘制节点流向，为假则向下绘制
+		const ITreeNodeInterface* StartingNodeInterface, //开始绘制节点
+		UUserWidget* StartingNodeWidget, //开始控件
+		class UCanvasPanelSlot* StartingNodeSlot, //开始节点槽位信息
+		int StartingNodeDepth, //开始节点深度，中心节点深度为0
+		float& NextLeafXPosition, //下一个叶子节点的X方向位置
+		TArray<UCanvasPanelSlot*>& OutStreamSlots //记录每个节点槽位信息
+	); //从中心点开始，绘制节点流向
 };
