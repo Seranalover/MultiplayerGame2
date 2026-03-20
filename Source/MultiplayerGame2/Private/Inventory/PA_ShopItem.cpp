@@ -3,6 +3,8 @@
 
 #include "Inventory/PA_ShopItem.h"
 
+#include "Abilities/GameplayAbility.h"
+
 FItemCollection::FItemCollection()
 	:Items{}
 {
@@ -44,4 +46,11 @@ FPrimaryAssetType UPA_ShopItem::GetShopItemAssetType()
 UTexture2D* UPA_ShopItem::GetIcon() const
 {
 	return Icon.LoadSynchronous(); //加载图标
+}
+
+class UGameplayAbility* UPA_ShopItem::GetGrantedAbilityCDO() const
+{
+	if (GrantedAbility)
+		return Cast<UGameplayAbility>(GrantedAbility->GetDefaultObject());
+	return nullptr;
 }

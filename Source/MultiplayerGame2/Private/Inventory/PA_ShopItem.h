@@ -49,6 +49,7 @@ public:
 	bool GetIsConsumable() const { return bIsConsumable; }
 	int GetMaxStackCount() const { return MaxStackCount; }
 	const TArray<TSoftObjectPtr<UPA_ShopItem>>& GetIngredients() const { return IngredientItems; }
+	class UGameplayAbility* GetGrantedAbilityCDO() const;
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="ShopItem")

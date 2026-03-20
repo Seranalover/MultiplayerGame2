@@ -54,11 +54,10 @@ public:
 	const UPA_ShopItem* GetShopItem() const { return ShopItem; }
 	FInventoryItemHandle GetHandle() const { return Handle; }
 	
-	void InitItem(const FInventoryItemHandle& NewHandle, const UPA_ShopItem* NewShopItem);
-	void ApplyGASModifications(UAbilitySystemComponent* AbilitySystemComponent); //GAS应用变更
-	bool TryActivateGrantedAbility(UAbilitySystemComponent* AbilitySystemComponent); //GAS尝试激活赋予的技能
-	void ApplyConsumeEffect(UAbilitySystemComponent* AbilitySystemComponent); //GAS应用消耗效果器
-	void RemoveGASModifications(UAbilitySystemComponent* AbilitySystemComponent); //移除GAS效果器修改
+	void InitItem(const FInventoryItemHandle& NewHandle, const UPA_ShopItem* NewShopItem, UAbilitySystemComponent* AbilitySystemComponent);
+	bool TryActivateGrantedAbility(); //GAS尝试激活赋予的技能
+	void ApplyConsumeEffect(); //GAS应用消耗效果器
+	void RemoveGASModifications(); //移除GAS效果器修改
 	bool IsValid() const;
 	FORCEINLINE int GetStackCount() const { return StackCount; } //获得堆叠数
 	void SetSlot(int NewSlot); //设置槽位编号
@@ -69,8 +68,12 @@ public:
 	bool SetStackCount(int NewStackCount); //设置堆叠数
 	bool IsGrantingAbility(TSubclassOf<class UGameplayAbility> AbilityClass) const; 
 	bool IsGrantedAnyAbility() const;
+	float GetAbilityCooldownTimeRemaining() const;
+	float GetAbilityCooldownDuration() const;
+	float GetAbilityManaCost() const;
 	
 private:
+	UAbilitySystemComponent* OwnerAbilitySystemComponent;
 	UPROPERTY()
 	const UPA_ShopItem* ShopItem;
 	int StackCount; //堆叠数量
@@ -79,4 +82,6 @@ private:
 	FInventoryItemHandle Handle;
 	FActiveGameplayEffectHandle AppliedEquippedEffectHandle;
 	FGameplayAbilitySpecHandle GrantedAbilitySpecHandle;
+	
+	void ApplyGASModifications(); //GAS应用变更
 };

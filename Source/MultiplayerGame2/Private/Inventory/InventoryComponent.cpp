@@ -177,12 +177,11 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* NewItem)
 		if (TryItemCombination(NewItem)) return; //成功合成高级物品，无需添加
 		UInventoryItem* InventoryItem = NewObject<UInventoryItem>();
 		FInventoryItemHandle NewHandle = FInventoryItemHandle::CreateHandle();
-		InventoryItem->InitItem(NewHandle, NewItem);
+		InventoryItem->InitItem(NewHandle, NewItem, OwnerAbilitySystemComponent);
 		InventoryMap.Add(NewHandle, InventoryItem);
 		OnItemAdded.Broadcast(InventoryItem); //广播事件
 		// UE_LOG(LogTemp, Warning, TEXT("Server adding shop item: %s, with id: %d"), *(InventoryItem->GetShopItem()->GetItemName().ToString()), NewHandle.GetHandleId());
 		Client_ItemAdded(NewHandle, NewItem); //客户端同步购买物品
-		InventoryItem->ApplyGASModifications(OwnerAbilitySystemComponent); //GAS应用变更
 	}
 }
 
@@ -191,7 +190,7 @@ void UInventoryComponent::Server_ActivateItem_Implementation(FInventoryItemHandl
 	UInventoryItem* InventoryItem = GetInventoryItemByHandle(ItemHandle);
 	if (!InventoryItem) return;
 	
-	InventoryItem->TryActivateGrantedAbility(OwnerAbilitySystemComponent); //尝试激活能力
+	InventoryItem->TryActivateGrantedAbility(); //尝试激活能力
 	const UPA_ShopItem* Item = InventoryItem->GetShopItem();
 	if (Item->GetIsConsumable()) 
 		ConsumeItem(InventoryItem); //如果是消耗品，消耗该物品
@@ -207,7 +206,7 @@ void UInventoryComponent::ConsumeItem(UInventoryItem* Item)
 	if (!GetOwner()->HasAuthority()) return;
 	if (!Item) return;
 	
-	Item->ApplyConsumeEffect(OwnerAbilitySystemComponent); //应用消耗效果器
+	Item->ApplyConsumeEffect(); //应用消耗效果器
 	if (!Item->ReduceStackCount()) //堆叠数减少成功？
 	{
 		RemoveItem(Item); //堆叠数耗尽，移除该物品
@@ -222,7 +221,7 @@ void UInventoryComponent::ConsumeItem(UInventoryItem* Item)
 void UInventoryComponent::RemoveItem(UInventoryItem* Item)
 {
 	if (!GetOwner()->HasAuthority()) return;
-	Item->RemoveGASModifications(OwnerAbilitySystemComponent); //GAS移除效果器
+	Item->RemoveGASModifications(); //GAS移除效果器
 	OnItemRemoved.Broadcast(Item->GetHandle()); //广播移除事件
 	InventoryMap.Remove(Item->GetHandle()); //移除映射
 	Client_ItemRemoved(Item->GetHandle()); //client同步移除物品
@@ -295,7 +294,7 @@ void UInventoryComponent::Client_ItemAdded_Implementation(FInventoryItemHandle A
 	if (GetOwner()->HasAuthority()) return;
 	
 	UInventoryItem* InventoryItem = NewObject<UInventoryItem>();
-	InventoryItem->InitItem(AssignedHandle, Item);
+	InventoryItem->InitItem(AssignedHandle, Item, OwnerAbilitySystemComponent);
 	InventoryMap.Add(AssignedHandle, InventoryItem);
 	OnItemAdded.Broadcast(InventoryItem); //广播事件
 	// UE_LOG(LogTemp, Warning, TEXT("Client adding shop item: %s, with id: %d"), *(InventoryItem->GetShopItem()->GetItemName().ToString()), AssignedHandle.GetHandleId());

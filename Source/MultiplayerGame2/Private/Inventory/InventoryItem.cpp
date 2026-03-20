@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "PA_ShopItem.h"
+#include "GAS/CAbilitySystemStatics.h"
 
 FInventoryItemHandle::FInventoryItemHandle()
 	:HandleId(GetInvalidId()) //确保只能通过工厂函数来获得有效的实例
@@ -58,65 +59,59 @@ UInventoryItem::UInventoryItem()
 {
 }
 
-void UInventoryItem::InitItem(const FInventoryItemHandle& NewHandle, const UPA_ShopItem* NewShopItem)
+void UInventoryItem::InitItem(const FInventoryItemHandle& NewHandle, const UPA_ShopItem* NewShopItem, UAbilitySystemComponent* AbilitySystemComponent)
 {
 	Handle = NewHandle;
 	ShopItem = NewShopItem;
+	OwnerAbilitySystemComponent = AbilitySystemComponent;
+	ApplyGASModifications();
 }
 
-void UInventoryItem::ApplyGASModifications(UAbilitySystemComponent* AbilitySystemComponent)
+void UInventoryItem::ApplyGASModifications()
 {
-	if (!GetShopItem() || !AbilitySystemComponent) return;
+	if (!GetShopItem() || !OwnerAbilitySystemComponent) return;
 	
-	if (!AbilitySystemComponent->GetOwner() || !AbilitySystemComponent->GetOwner()->HasAuthority()) return;
+	if (!OwnerAbilitySystemComponent->GetOwner() || !OwnerAbilitySystemComponent->GetOwner()->HasAuthority()) return;
 	
 	//应用effect
 	TSubclassOf<UGameplayEffect> EquipEffect = GetShopItem()->GetEquippedEffect();
 	if (EquipEffect)
 	{
-		AbilitySystemComponent->BP_ApplyGameplayEffectToSelf(EquipEffect, 1, AbilitySystemComponent->MakeEffectContext());
+		OwnerAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(EquipEffect, 1, OwnerAbilitySystemComponent->MakeEffectContext());
 	}
 	
 	//应用ability
 	TSubclassOf<UGameplayAbility> GrantedAbility = GetShopItem()->GetGrantedAbility();
 	if (GrantedAbility)
 	{
-		const FGameplayAbilitySpec* FoundSpec = AbilitySystemComponent->FindAbilitySpecFromClass(GrantedAbility);
-		if (FoundSpec) //能力已被赋予
-		{
-			GrantedAbilitySpecHandle = FoundSpec->Handle;
-		}
-		else //能力未被赋予，赋予能力
-		{
-			GrantedAbilitySpecHandle = AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(GrantedAbility)); 
-		}
+		GrantedAbilitySpecHandle = OwnerAbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(GrantedAbility)); 
 	}
 }
 
-bool UInventoryItem::TryActivateGrantedAbility(UAbilitySystemComponent* AbilitySystemComponent)
+bool UInventoryItem::TryActivateGrantedAbility()
 {
 	if (!GrantedAbilitySpecHandle.IsValid()) return false;
-	if (AbilitySystemComponent && AbilitySystemComponent->TryActivateAbility(GrantedAbilitySpecHandle)) return true;
+	if (OwnerAbilitySystemComponent && OwnerAbilitySystemComponent->TryActivateAbility(GrantedAbilitySpecHandle)) return true;
 	return false;
 }
 
-void UInventoryItem::ApplyConsumeEffect(UAbilitySystemComponent* AbilitySystemComponent)
+void UInventoryItem::ApplyConsumeEffect()
 {
-	if (!ShopItem || !AbilitySystemComponent) return;
+	if (!ShopItem || !OwnerAbilitySystemComponent) return;
 	
 	TSubclassOf<UGameplayEffect> ConsumeEffect = ShopItem->GetConsumeEffect();
 	if (!ConsumeEffect) return;
 	
-	AbilitySystemComponent->BP_ApplyGameplayEffectToSelf(ConsumeEffect, 1, AbilitySystemComponent->MakeEffectContext());
+	OwnerAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(ConsumeEffect, 1, OwnerAbilitySystemComponent->MakeEffectContext());
 }
 
-void UInventoryItem::RemoveGASModifications(UAbilitySystemComponent* AbilitySystemComponent)
+void UInventoryItem::RemoveGASModifications()
 {
-	if (!AbilitySystemComponent) return;
+	if (!OwnerAbilitySystemComponent) return;
 	if (AppliedEquippedEffectHandle.IsValid())
-		AbilitySystemComponent->RemoveActiveGameplayEffect(AppliedEquippedEffectHandle); //移除效果器
+		OwnerAbilitySystemComponent->RemoveActiveGameplayEffect(AppliedEquippedEffectHandle); //移除效果器
 	if (GrantedAbilitySpecHandle.IsValid())
-		AbilitySystemComponent->SetRemoveAbilityOnEnd(GrantedAbilitySpecHandle); //等待技能结束时移除技能
+		OwnerAbilitySystemComponent->SetRemoveAbilityOnEnd(GrantedAbilitySpecHandle); //等待技能结束时移除技能
 }
 
 bool UInventoryItem::IsValid() const
@@ -176,4 +171,22 @@ bool UInventoryItem::IsGrantedAnyAbility() const
 {
 	if (!ShopItem) return false;
 	return ShopItem->GetGrantedAbility() != nullptr;
+}
+
+float UInventoryItem::GetAbilityCooldownTimeRemaining() const
+{
+	if (!IsGrantedAnyAbility()) return 0.0f;
+	return UCAbilitySystemStatics::GetCooldownRemainingFor(GetShopItem()->GetGrantedAbilityCDO(), *OwnerAbilitySystemComponent);
+}
+
+float UInventoryItem::GetAbilityCooldownDuration() const
+{
+	if (!IsGrantedAnyAbility()) return 0.0f;
+	return UCAbilitySystemStatics::GetCooldownDurationFor(GetShopItem()->GetGrantedAbilityCDO(), *OwnerAbilitySystemComponent, 1);
+}
+
+float UInventoryItem::GetAbilityManaCost() const
+{
+	if (!IsGrantedAnyAbility()) return 0.0f;
+	return UCAbilitySystemStatics::GetManaCostFor(GetShopItem()->GetGrantedAbilityCDO(), *OwnerAbilitySystemComponent, 1);
 }
