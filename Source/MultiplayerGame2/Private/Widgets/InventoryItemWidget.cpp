@@ -4,6 +4,7 @@
 #include "Widgets/InventoryItemWidget.h"
 
 #include "InventoryItemDragDropOp.h"
+#include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Inventory/InventoryItem.h"
 
@@ -121,4 +122,46 @@ bool UInventoryItemWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 		}
 	}
 	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+}
+
+void UInventoryItemWidget::StartCooldown(float Duration, float TimeRemaining)
+{
+	CooldownRemaining = TimeRemaining;
+	CooldownDuration = Duration;
+	GetWorld()->GetTimerManager().SetTimer(CooldownDurationTimerHandle, this, &UInventoryItemWidget::CooldownFinished, CooldownRemaining);
+	GetWorld()->GetTimerManager().SetTimer(CooldownUpdateTimerHandle, this, &UInventoryItemWidget::UpdateCooldown, CooldownUpdateInterval, true);
+	CooldownCountText->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UInventoryItemWidget::CooldownFinished()
+{
+	GetWorld()->GetTimerManager().ClearTimer(CooldownUpdateTimerHandle);
+	CooldownCountText->SetVisibility(ESlateVisibility::Hidden);
+	if (GetItemIcon())
+		GetItemIcon()->GetDynamicMaterial()->SetScalarParameterValue(CooldownAmtDynamicMaterialParamName, 1.f); //设置动态材质-百分比参数为 1%，代表计时器关闭
+}
+
+void UInventoryItemWidget::UpdateCooldown()
+{
+	CooldownRemaining -= CooldownUpdateInterval;
+	float CooldownAmt = 1.f - CooldownRemaining / CooldownDuration;
+	CooldownFormattingOptions.MaximumFractionalDigits = CooldownRemaining > 1.f ? 0 : 2;
+	CooldownCountText->SetText(FText::AsNumber(CooldownRemaining, &CooldownFormattingOptions));
+	if (GetItemIcon())
+		GetItemIcon()->GetDynamicMaterial()->SetScalarParameterValue(CooldownAmtDynamicMaterialParamName, CooldownAmt);
+}
+
+void UInventoryItemWidget::ClearCooldown()
+{
+	CooldownFinished();
+}
+
+void UInventoryItemWidget::SetIcon(UTexture2D* IconTexture)
+{
+	if (GetItemIcon())
+	{
+		GetItemIcon()->GetDynamicMaterial()->SetTextureParameterValue(IconTextureDynamicMaterialParamName, IconTexture);
+		return;
+	}
+	Super::SetIcon(IconTexture);
 }

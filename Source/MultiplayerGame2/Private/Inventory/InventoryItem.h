@@ -67,6 +67,8 @@ public:
 	bool AddStackCount(); //堆叠数+1
 	bool ReduceStackCount(); //堆叠数-1
 	bool SetStackCount(int NewStackCount); //设置堆叠数
+	bool IsGrantingAbility(TSubclassOf<class UGameplayAbility> AbilityClass) const; 
+	bool IsGrantedAnyAbility() const;
 	
 private:
 	UPROPERTY()

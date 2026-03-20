@@ -164,3 +164,16 @@ bool UInventoryItem::SetStackCount(int NewStackCount)
 	}
 	return false;
 }
+
+bool UInventoryItem::IsGrantingAbility(TSubclassOf<class UGameplayAbility> AbilityClass) const
+{
+	if (!ShopItem) return false;
+	TSubclassOf<UGameplayAbility> GrantedAbility = ShopItem->GetGrantedAbility();
+	return GrantedAbility == AbilityClass;
+}
+
+bool UInventoryItem::IsGrantedAnyAbility() const
+{
+	if (!ShopItem) return false;
+	return ShopItem->GetGrantedAbility() != nullptr;
+}

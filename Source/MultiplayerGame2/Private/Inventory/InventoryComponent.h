@@ -13,6 +13,7 @@ class UPA_ShopItem;
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemAddedDelegate, const UInventoryItem* /*NewItem*/); //声明委托事件，用于广播
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemRemovedDelegate, const FInventoryItemHandle& /*ItemHandle*/); //声明委托事件，用于广播
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnItemStackCountChangedDelegate, const FInventoryItemHandle&, int /*NewCount*/); //声明委托事件，用于广播
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnItemAbilityCommitted, const FInventoryItemHandle&, float /*CooldownDuration*/, float /*CooldownTimeRemaining*/); //声明委托事件，用于广播
 
 /**
  * 库存组件类
@@ -26,6 +27,7 @@ public:
 	FOnItemAddedDelegate OnItemAdded; //新增物品事件
 	FOnItemStackCountChangedDelegate OnItemStackCountChanged; //物品堆叠数变更事件
 	FOnItemRemovedDelegate OnItemRemoved; //移除物品事件
+	FOnItemAbilityCommitted OnItemAbilityCommitted; //物品赋予装备者能力事件
 	
 	// Sets default values for this component's properties
 	UInventoryComponent();
@@ -59,6 +61,8 @@ private:
 	
 	UPROPERTY()
 	TMap<FInventoryItemHandle, UInventoryItem*> InventoryMap;
+	
+	void AbilityCommitted(class UGameplayAbility* CommittedAbility);
 	
 /***********************************************************************************/
 /*                                      Server                                     */

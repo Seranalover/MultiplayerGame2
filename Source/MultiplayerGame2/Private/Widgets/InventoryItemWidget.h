@@ -71,4 +71,32 @@ private:
 	
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override; //重写拖拽事件
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	
+	/******************************************************/
+	/*                        GAS                         */
+	/******************************************************/
+public:
+	void StartCooldown(float Duration, float TimeRemaining); //进入冷却
+	
+private:
+	UPROPERTY(EditDefaultsOnly, Category="Cooldown")
+	float CooldownUpdateInterval = 0.1f; //冷却更新间隔
+	UPROPERTY(EditDefaultsOnly, Category="Cooldown")
+	FName CooldownAmtDynamicMaterialParamName = "Percent"; //动态材质参数名-百分比
+	UPROPERTY(EditDefaultsOnly, Category="Cooldown")
+	FName IconTextureDynamicMaterialParamName = "Icon"; //动态材质参数名-图片
+	UPROPERTY(EditDefaultsOnly, Category="Cooldown")
+	FName CanCastDynamicMaterialParamName = "CanCast"; //动态材质参数名-可以施放
+	
+	FTimerHandle CooldownDurationTimerHandle; //总冷却时长计时器
+	FTimerHandle CooldownUpdateTimerHandle;
+	FNumberFormattingOptions CooldownFormattingOptions; //冷却时间格式器
+	
+	float CooldownRemaining = 0.0f;
+	float CooldownDuration = 0.0f;
+	
+	void CooldownFinished();
+	void UpdateCooldown();
+	void ClearCooldown();
+	virtual void SetIcon(UTexture2D* IconTexture) override; //重写方法，设置动态材质
 };

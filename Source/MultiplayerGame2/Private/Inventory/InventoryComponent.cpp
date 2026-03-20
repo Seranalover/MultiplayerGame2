@@ -135,6 +135,31 @@ void UInventoryComponent::BeginPlay()
 
 	// ...
 	OwnerAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner());
+	if (OwnerAbilitySystemComponent)
+		OwnerAbilitySystemComponent->AbilityCommittedCallbacks.AddUObject(this, &UInventoryComponent::AbilityCommitted);
+}
+
+void UInventoryComponent::AbilityCommitted(class UGameplayAbility* CommittedAbility)
+{
+	if (!CommittedAbility) return;
+	
+	float CooldownTimeRemaining = 0.f;
+	float CooldownDuration = 0.f;
+	CommittedAbility->GetCooldownTimeRemainingAndDuration(
+		CommittedAbility->GetCurrentAbilitySpecHandle(),
+		CommittedAbility->GetCurrentActorInfo(),
+		CooldownTimeRemaining,
+		CooldownDuration
+	);
+	
+	for (TPair<FInventoryItemHandle, UInventoryItem*>& ItemHandlePair : InventoryMap)
+	{
+		if (!ItemHandlePair.Value) continue;
+		if (ItemHandlePair.Value->IsGrantingAbility(CommittedAbility->GetClass()))
+		{
+			OnItemAbilityCommitted.Broadcast(ItemHandlePair.Key, CooldownDuration, CooldownTimeRemaining);
+		}
+	}
 }
 
 void UInventoryComponent::GrantItem(const UPA_ShopItem* NewItem)

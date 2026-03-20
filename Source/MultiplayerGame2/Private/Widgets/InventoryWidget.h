@@ -55,4 +55,6 @@ private:
 	void SetContextMenuVisible(bool bVisible); //设置控件可见性
 	void ToggleContextMenu(const FInventoryItemHandle& ItemHandle); //开关控件
 	void ClearContextMenu(); //关闭控件
+	
+	void ItemAbilityCommitted(const FInventoryItemHandle& ItemHandle, float CooldownDuration, float CooldownTimeRemaining); 
 };

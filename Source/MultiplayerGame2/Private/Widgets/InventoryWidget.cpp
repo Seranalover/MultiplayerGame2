@@ -21,6 +21,7 @@ void UInventoryWidget::NativeConstruct()
 			InventoryComponent->OnItemAdded.AddUObject(this, &UInventoryWidget::ItemAdded); //订阅新增物品广播委托
 			InventoryComponent->OnItemRemoved.AddUObject(this, &UInventoryWidget::ItemRemoved); //订阅删除物品广播委托
 			InventoryComponent->OnItemStackCountChanged.AddUObject(this, &UInventoryWidget::ItemStackCountChanged); //订阅物品堆叠数变更广播委托
+			InventoryComponent->OnItemAbilityCommitted.AddUObject(this, &UInventoryWidget::ItemAbilityCommitted);
 			int Capacity = InventoryComponent->GetCapacity(); //装备栏数量
 			ItemList->ClearChildren(); //清除子节点
 			for (int i = 0; i < Capacity; ++i)
@@ -188,4 +189,13 @@ void UInventoryWidget::ClearContextMenu()
 {
 	ContextMenuWidget->SetVisibility(ESlateVisibility::Hidden);
 	CurrentFocusedItemHandle = FInventoryItemHandle::InvalidHandle();
+}
+
+void UInventoryWidget::ItemAbilityCommitted(const FInventoryItemHandle& ItemHandle, float CooldownDuration, float CooldownTimeRemaining)
+{
+	UInventoryItemWidget** FoundWidget = PopulatedItemEntryWidgets.Find(ItemHandle);
+	if (FoundWidget && *FoundWidget)
+	{
+		(*FoundWidget)->StartCooldown(CooldownDuration, CooldownTimeRemaining);
+	}
 }
