@@ -54,6 +54,9 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	class UInventoryWidget* InventoryWidget; //装备栏控件
 	
+	UPROPERTY(meta=(BindWidget))
+	class USkeletalMeshRenderWidget* HeadshotWidget;
+	
 	UPROPERTY()
 	class UAbilitySystemComponent* OwnerAbilitySystemComponent;
 	

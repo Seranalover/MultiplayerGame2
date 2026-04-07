@@ -39,7 +39,7 @@ private:
 	float RenderTickInterval; //渲染间隔
 	FTimerHandle RenderTimerHandle; //渲染计时器
 	
-	UPROPERTY(EditDefaultsOnly, Category="Render Actor")
+	UPROPERTY()
 	UTextureRenderTarget2D* RenderTarget;
 	
 	// virtual void SpawnRenderActor() = 0; //改写法为纯C++语法，UE5中不支持这样定义纯虚函数
