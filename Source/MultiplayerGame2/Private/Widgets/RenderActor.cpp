@@ -37,5 +37,6 @@ void ARenderActor::BeginPlay()
 {
 	Super::BeginPlay();
 	CaptureComponent->ShowOnlyActorComponents(this); //使Capture Comp只渲染当前actor，忽视环境中的其他因素
+	SetActorLocation(FVector{0.f, 100000.f, 0.f}); //将渲染对象移到地图外，避免游戏中的元素产生任何交互
 }
 
