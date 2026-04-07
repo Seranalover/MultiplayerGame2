@@ -7,7 +7,7 @@
 #include "RenderActor.generated.h"
 
 /**
- * 特写渲染类
+ * 特写渲染基类
  */
 UCLASS()
 class ARenderActor : public AActor
