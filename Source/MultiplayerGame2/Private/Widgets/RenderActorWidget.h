@@ -28,7 +28,7 @@ private:
 	class USizeBox* RenderSizeBox;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Render Actor")
-	FName DisplayImageRenderTargetParamName = "Render Target";
+	FName DisplayImageRenderTargetParamName = "RenderTarget";
 	
 	UPROPERTY(EditDefaultsOnly, Category="Render Actor")
 	FVector2D RenderSize;
