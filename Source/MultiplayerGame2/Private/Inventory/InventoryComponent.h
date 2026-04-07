@@ -84,7 +84,7 @@ private:
 /***********************************************************************************/
 private:
 	UFUNCTION(Client, Reliable)
-	void Client_ItemAdded(FInventoryItemHandle AssignedHandle, const UPA_ShopItem* Item); //客户端同步添加购买的物品
+	void Client_ItemAdded(FInventoryItemHandle AssignedHandle, const UPA_ShopItem* Item, FGameplayAbilitySpecHandle GrantedAbilitySpecHandle); //客户端同步添加购买的物品
 	
 	UFUNCTION(Client, Reliable)
 	void Client_ItemStackCountChanged(FInventoryItemHandle Handle, int NewCount); //client响应物品堆叠数变更

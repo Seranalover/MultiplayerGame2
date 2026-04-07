@@ -181,7 +181,8 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* NewItem)
 		InventoryMap.Add(NewHandle, InventoryItem);
 		OnItemAdded.Broadcast(InventoryItem); //广播事件
 		// UE_LOG(LogTemp, Warning, TEXT("Server adding shop item: %s, with id: %d"), *(InventoryItem->GetShopItem()->GetItemName().ToString()), NewHandle.GetHandleId());
-		Client_ItemAdded(NewHandle, NewItem); //客户端同步购买物品
+		FGameplayAbilitySpecHandle GrantedAbilitySpecHandle = InventoryItem->GetGrantedAbilitySpecHandle();
+		Client_ItemAdded(NewHandle, NewItem, GrantedAbilitySpecHandle); //客户端同步购买物品
 	}
 }
 
@@ -272,6 +273,7 @@ void UInventoryComponent::Client_ItemRemoved_Implementation(FInventoryItemHandle
 	UInventoryItem* InventoryItem = GetInventoryItemByHandle(ItemHandle);
 	if (!InventoryItem) return;
 	
+	InventoryItem->RemoveGASModifications();
 	OnItemRemoved.Broadcast(ItemHandle);
 	InventoryMap.Remove(ItemHandle);
 }
@@ -288,13 +290,14 @@ void UInventoryComponent::Client_ItemStackCountChanged_Implementation(FInventory
 	}
 }
 
-void UInventoryComponent::Client_ItemAdded_Implementation(FInventoryItemHandle AssignedHandle, const UPA_ShopItem* Item)
+void UInventoryComponent::Client_ItemAdded_Implementation(FInventoryItemHandle AssignedHandle, const UPA_ShopItem* Item, FGameplayAbilitySpecHandle GrantedAbilitySpecHandle)
 {
 	
 	if (GetOwner()->HasAuthority()) return;
 	
 	UInventoryItem* InventoryItem = NewObject<UInventoryItem>();
 	InventoryItem->InitItem(AssignedHandle, Item, OwnerAbilitySystemComponent);
+	InventoryItem->SetGrantedAbilitySpecHandle(GrantedAbilitySpecHandle);
 	InventoryMap.Add(AssignedHandle, InventoryItem);
 	OnItemAdded.Broadcast(InventoryItem); //广播事件
 	// UE_LOG(LogTemp, Warning, TEXT("Client adding shop item: %s, with id: %d"), *(InventoryItem->GetShopItem()->GetItemName().ToString()), AssignedHandle.GetHandleId());

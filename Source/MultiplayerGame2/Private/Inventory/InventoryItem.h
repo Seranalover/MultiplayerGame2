@@ -5,11 +5,14 @@
 #include "CoreMinimal.h"
 #include "ActiveGameplayEffectHandle.h"
 #include "GameplayAbilitySpecHandle.h"
+#include "GAS/CAttributeSet.h"
 #include "UObject/NoExportTypes.h"
 #include "InventoryItem.generated.h"
 
 class UPA_ShopItem;
 class UAbilitySystemComponent;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnAbilityCanCastUpdatedDelegate, bool /*bCanCast*/);
 
 /**
  * 句柄结构体
@@ -50,6 +53,8 @@ class UInventoryItem : public UObject
 	GENERATED_BODY()
 	
 public:
+	FOnAbilityCanCastUpdatedDelegate OnAbilityCanCastUpdatedDelegate; //委托事件 - 更新是否能施放技能时的图标
+	
 	UInventoryItem();
 	const UPA_ShopItem* GetShopItem() const { return ShopItem; }
 	FInventoryItemHandle GetHandle() const { return Handle; }
@@ -72,6 +77,8 @@ public:
 	float GetAbilityCooldownDuration() const;
 	float GetAbilityManaCost() const;
 	bool CanCastAbility() const; //可以施放技能？
+	FGameplayAbilitySpecHandle GetGrantedAbilitySpecHandle() const { return GrantedAbilitySpecHandle; }
+	void SetGrantedAbilitySpecHandle(FGameplayAbilitySpecHandle SpecHandle) { GrantedAbilitySpecHandle = SpecHandle; }
 	
 private:
 	UAbilitySystemComponent* OwnerAbilitySystemComponent;
@@ -85,4 +92,5 @@ private:
 	FGameplayAbilitySpecHandle GrantedAbilitySpecHandle;
 	
 	void ApplyGASModifications(); //GAS应用变更
+	void ManaUpdated(const FOnAttributeChangeData& ChangeData); //角色蓝量变更
 };

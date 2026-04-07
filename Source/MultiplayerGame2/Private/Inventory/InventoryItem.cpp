@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "PA_ShopItem.h"
 #include "GAS/CAbilitySystemStatics.h"
+#include "GAS/CAttributeSet.h"
 
 FInventoryItemHandle::FInventoryItemHandle()
 	:HandleId(GetInvalidId()) //确保只能通过工厂函数来获得有效的实例
@@ -64,6 +65,8 @@ void UInventoryItem::InitItem(const FInventoryItemHandle& NewHandle, const UPA_S
 	Handle = NewHandle;
 	ShopItem = NewShopItem;
 	OwnerAbilitySystemComponent = AbilitySystemComponent;
+	if (OwnerAbilitySystemComponent)
+		OwnerAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UCAttributeSet::GetManaAttribute()).AddUObject(this, &UInventoryItem::ManaUpdated);
 	ApplyGASModifications();
 }
 
@@ -88,6 +91,11 @@ void UInventoryItem::ApplyGASModifications()
 	}
 }
 
+void UInventoryItem::ManaUpdated(const FOnAttributeChangeData& ChangeData)
+{
+	OnAbilityCanCastUpdatedDelegate.Broadcast(CanCastAbility());
+}
+
 bool UInventoryItem::TryActivateGrantedAbility()
 {
 	if (!GrantedAbilitySpecHandle.IsValid()) return false;
@@ -108,10 +116,14 @@ void UInventoryItem::ApplyConsumeEffect()
 void UInventoryItem::RemoveGASModifications()
 {
 	if (!OwnerAbilitySystemComponent) return;
-	if (AppliedEquippedEffectHandle.IsValid())
-		OwnerAbilitySystemComponent->RemoveActiveGameplayEffect(AppliedEquippedEffectHandle); //移除效果器
-	if (GrantedAbilitySpecHandle.IsValid())
-		OwnerAbilitySystemComponent->SetRemoveAbilityOnEnd(GrantedAbilitySpecHandle); //等待技能结束时移除技能
+	OwnerAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UCAttributeSet::GetManaAttribute()).RemoveAll(this); //移除物品监听的所有委托事件
+	if (OwnerAbilitySystemComponent->GetOwner()->HasAuthority())
+	{
+		if (AppliedEquippedEffectHandle.IsValid())
+			OwnerAbilitySystemComponent->RemoveActiveGameplayEffect(AppliedEquippedEffectHandle); //移除效果器
+		if (GrantedAbilitySpecHandle.IsValid())
+			OwnerAbilitySystemComponent->SetRemoveAbilityOnEnd(GrantedAbilitySpecHandle); //等待技能结束时移除技能
+	}
 }
 
 bool UInventoryItem::IsValid() const

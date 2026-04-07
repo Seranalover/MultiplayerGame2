@@ -21,6 +21,7 @@ bool UInventoryItemWidget::IsEmpty() const
 
 void UInventoryItemWidget::UpdateInventoryItem(const UInventoryItem* Item)
 {
+	UnbindCanCastAbilityDelegate();
 	InventoryItem = Item;
 	if (!InventoryItem || !InventoryItem->IsValid() || InventoryItem->GetStackCount() <= 0)
 	{
@@ -55,6 +56,7 @@ void UInventoryItemWidget::UpdateInventoryItem(const UInventoryItem* Item)
 		float AbilityCost = InventoryItem->GetAbilityManaCost();
 		ManaCostText->SetVisibility(AbilityCost == 0.f ? ESlateVisibility::Hidden : ESlateVisibility::Visible);
 		ManaCostText->SetText(FText::AsNumber(AbilityCost));
+		BindCanCastAbilityDelegate();
 	}
 	else
 	{
@@ -68,6 +70,7 @@ void UInventoryItemWidget::UpdateInventoryItem(const UInventoryItem* Item)
 void UInventoryItemWidget::EmptySlot()
 {
 	ClearCooldown();
+	UnbindCanCastAbilityDelegate();
 	InventoryItem = nullptr;
 	SetIcon(EmptyTexture);
 	SetToolTip(nullptr);
@@ -191,4 +194,16 @@ void UInventoryItemWidget::SetIcon(UTexture2D* IconTexture)
 		return;
 	}
 	Super::SetIcon(IconTexture);
+}
+
+void UInventoryItemWidget::BindCanCastAbilityDelegate()
+{
+	if (InventoryItem)
+		const_cast<UInventoryItem*>(InventoryItem)->OnAbilityCanCastUpdatedDelegate.AddUObject(this, &UInventoryItemWidget::UpdateCanCastDisplay);
+}
+
+void UInventoryItemWidget::UnbindCanCastAbilityDelegate()
+{
+	if (InventoryItem)
+		const_cast<UInventoryItem*>(InventoryItem)->OnAbilityCanCastUpdatedDelegate.RemoveAll(this);
 }

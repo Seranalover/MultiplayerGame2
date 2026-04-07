@@ -100,4 +100,6 @@ private:
 	void UpdateCooldown();
 	void ClearCooldown();
 	virtual void SetIcon(UTexture2D* IconTexture) override; //重写方法，设置动态材质
+	void BindCanCastAbilityDelegate(); //接收广播事件
+	void UnbindCanCastAbilityDelegate(); //停止接收广播事件
 };
