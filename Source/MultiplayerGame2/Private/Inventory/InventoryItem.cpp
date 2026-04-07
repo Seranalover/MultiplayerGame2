@@ -190,3 +190,14 @@ float UInventoryItem::GetAbilityManaCost() const
 	if (!IsGrantedAnyAbility()) return 0.0f;
 	return UCAbilitySystemStatics::GetManaCostFor(GetShopItem()->GetGrantedAbilityCDO(), *OwnerAbilitySystemComponent, 1);
 }
+
+bool UInventoryItem::CanCastAbility() const
+{
+	if (!IsGrantedAnyAbility() || !OwnerAbilitySystemComponent) return false;
+	
+	FGameplayAbilitySpec* Spec = OwnerAbilitySystemComponent->FindAbilitySpecFromHandle(GrantedAbilitySpecHandle);
+	if (Spec)
+		return UCAbilitySystemStatics::CheckAbilityCost(*Spec, *OwnerAbilitySystemComponent); //授予能力是在server执行的，所以这段代码在client不会执行
+	
+	return UCAbilitySystemStatics::CheckAbilityCostStatic(GetShopItem()->GetGrantedAbilityCDO(), *OwnerAbilitySystemComponent);
+}

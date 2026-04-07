@@ -61,6 +61,7 @@ private:
 	
 	virtual void RightButtonClicked() override; //重写右键点击事件
 	virtual void LeftButtonClicked() override; //重写左键点击事件
+	void UpdateCanCastDisplay(bool bCanCast); //魔力不足时更新技能施放图标
 	
 	/******************************************************/
 	/*                     Drag Drop                      */

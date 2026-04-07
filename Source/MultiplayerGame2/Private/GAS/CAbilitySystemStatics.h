@@ -45,6 +45,7 @@ public:
 	static bool IsHero(const AActor* Actor); //查询是否英雄单位
 	static bool IsAbilityAtMaxLevel(const FGameplayAbilitySpec& AbilitySpec); //技能等级已满？
 	static bool CheckAbilityCost(const FGameplayAbilitySpec& AbilitySpec, const UAbilitySystemComponent& ASC); //检查技能是否满足消耗
+	static bool CheckAbilityCostStatic(const UGameplayAbility* AbilityCDO, const UAbilitySystemComponent& ASC); //检查技能是否满足消耗
 	static float GetManaCostFor(const UGameplayAbility* AbilityCDO, const UAbilitySystemComponent& ASC, int AbilityLevel); //查询mana消耗
 	static float GetCooldownDurationFor(const UGameplayAbility* AbilityCDO, const UAbilitySystemComponent& ASC, int AbilityLevel); //查询冷却时间
 	static float GetCooldownRemainingFor(const UGameplayAbility* AbilityCDO, const UAbilitySystemComponent& ASC); //查询冷却剩余时间

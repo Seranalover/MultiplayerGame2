@@ -71,6 +71,7 @@ public:
 	float GetAbilityCooldownTimeRemaining() const;
 	float GetAbilityCooldownDuration() const;
 	float GetAbilityManaCost() const;
+	bool CanCastAbility() const; //可以施放技能？
 	
 private:
 	UAbilitySystemComponent* OwnerAbilitySystemComponent;

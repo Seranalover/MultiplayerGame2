@@ -42,10 +42,32 @@ void UInventoryItemWidget::UpdateInventoryItem(const UInventoryItem* Item)
 	{
 		StackCountText->SetVisibility(ESlateVisibility::Hidden);
 	}
+	ClearCooldown(); //清除冷却时间
+	if (InventoryItem->IsGrantedAnyAbility())
+	{
+		UpdateCanCastDisplay(InventoryItem->CanCastAbility());
+		float AbilityCooldownRemaining = InventoryItem->GetAbilityCooldownTimeRemaining();
+		float AbilityCooldownDuration = InventoryItem->GetAbilityCooldownDuration();
+		if (AbilityCooldownRemaining > 0) //剩余冷却时间大于0，说明物品技能处于冷却
+			StartCooldown(AbilityCooldownDuration, AbilityCooldownRemaining); //使同名的其他物品技能也进入冷却
+		CooldownDurationText->SetVisibility(AbilityCooldownDuration == 0.f ? ESlateVisibility::Hidden : ESlateVisibility::Visible);
+		CooldownDurationText->SetText(FText::AsNumber(AbilityCooldownDuration));
+		float AbilityCost = InventoryItem->GetAbilityManaCost();
+		ManaCostText->SetVisibility(AbilityCost == 0.f ? ESlateVisibility::Hidden : ESlateVisibility::Visible);
+		ManaCostText->SetText(FText::AsNumber(AbilityCost));
+	}
+	else
+	{
+		UpdateCanCastDisplay(true);
+		ManaCostText->SetVisibility(ESlateVisibility::Hidden);
+		CooldownDurationText->SetVisibility(ESlateVisibility::Hidden);
+		CooldownCountText->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
 
 void UInventoryItemWidget::EmptySlot()
 {
+	ClearCooldown();
 	InventoryItem = nullptr;
 	SetIcon(EmptyTexture);
 	SetToolTip(nullptr);
@@ -93,6 +115,11 @@ void UInventoryItemWidget::LeftButtonClicked()
 {
 	if (!IsEmpty())
 		OnLeftButtonClick.Broadcast(GetInventoryItemHandle());
+}
+
+void UInventoryItemWidget::UpdateCanCastDisplay(bool bCanCast)
+{
+	GetItemIcon()->GetDynamicMaterial()->SetScalarParameterValue(CanCastDynamicMaterialParamName, bCanCast ? 1.0f : 0.0f);
 }
 
 void UInventoryItemWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent,
