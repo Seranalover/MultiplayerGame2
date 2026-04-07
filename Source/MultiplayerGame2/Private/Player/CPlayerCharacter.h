@@ -58,6 +58,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TMap<ECAbilityInputID, class UInputAction*> GameplayAbilityInputActions; //所有技能id与IA的map集合
 	
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	class UInputAction* UseInventoryItemAction; //使用物品
+	
 	bool bIsLearnAbilityLeaderDown = false;
 	
 	void HandleLookInput(const FInputActionValue& InputActionValue); //视角旋转实现
@@ -72,6 +75,8 @@ private:
 	
 	void LearnAbilityLeaderDown(const FInputActionValue& InputActionValue); 
 	void LearnAbilityLeaderUp(const FInputActionValue& InputActionValue);
+	
+	void UseInventoryItem(const FInputActionValue& InputActionValue); //使用物品
 	
 	/*****************************************************************/
 	/*                        Death and Respawn                      */

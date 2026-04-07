@@ -66,6 +66,7 @@ public:
 	bool IsValid() const;
 	FORCEINLINE int GetStackCount() const { return StackCount; } //获得堆叠数
 	void SetSlot(int NewSlot); //设置槽位编号
+	int GetItemSlot() const { return SlotNumber; }
 	bool IsStackFull() const; //装备已满？
 	bool IsForItem(const UPA_ShopItem* Item) const;
 	bool AddStackCount(); //堆叠数+1

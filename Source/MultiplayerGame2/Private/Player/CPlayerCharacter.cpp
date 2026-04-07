@@ -69,6 +69,8 @@ void ACPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 				this, &ACPlayerCharacter::HandleAbilityInput, InputActionPair.Key); //绑定所有技能到IA
 
 		}
+		
+		EnhancedInputComponent->BindAction(UseInventoryItemAction, ETriggerEvent::Triggered, this, &ACPlayerCharacter::UseInventoryItem); //使用物品IA
 	}
 }
 
@@ -147,6 +149,12 @@ void ACPlayerCharacter::LearnAbilityLeaderDown(const FInputActionValue& InputAct
 void ACPlayerCharacter::LearnAbilityLeaderUp(const FInputActionValue& InputActionValue)
 {
 	bIsLearnAbilityLeaderDown = false;
+}
+
+void ACPlayerCharacter::UseInventoryItem(const FInputActionValue& InputActionValue)
+{
+	int Value = FMath::RoundToInt(InputActionValue.Get<float>());
+	InventoryComponent->TryActivateItemInSlot(Value-1);
 }
 
 void ACPlayerCharacter::OnDead()

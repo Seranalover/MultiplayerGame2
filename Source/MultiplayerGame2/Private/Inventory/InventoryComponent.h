@@ -47,6 +47,7 @@ public:
 		const TArray<const UPA_ShopItem*>& IngredientToIgnore = TArray<const UPA_ShopItem*>{} /*装备栏已满时，尝试购买的合成物品，无法添加到装备栏*/
 	); //是否找到所有合成材料？
 	UInventoryItem* TryGetItemForShopItem(const UPA_ShopItem* Item) const; //尝试在装备栏找到对应合成材料
+	void TryActivateItemInSlot(int SlotNumber); //尝试使用指定槽位的物品
 	
 protected:
 	// Called when the game starts
