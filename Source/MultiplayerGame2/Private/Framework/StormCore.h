@@ -29,4 +29,20 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+private:
+	UPROPERTY(VisibleDefaultsOnly, Category = "Detection")
+	class USphereComponent* InfluenceRange; //影响范围
+	
+	int TeamOneInfluenceCount = 0; //队伍1数量
+	int TeamTwoInfluenceCount = 0; //队伍2数量
+	float TeamWeight = 0.0f; //队伍数量统计
+	
+	UFUNCTION()
+	void NewInfluencerInRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult); //单位进入影响范围
+	
+	UFUNCTION()
+	void InfluencerLeftRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex); //单位离开影响范围
+	
+	void UpdateTeamWeight();
 };
