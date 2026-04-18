@@ -2,8 +2,11 @@
 
 
 #include "Framework/StormCore.h"
+
+#include "AIController.h"
 #include "GenericTeamAgentInterface.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AStormCore::AStormCore()
@@ -21,6 +24,12 @@ void AStormCore::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void AStormCore::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	OwnerAIC = Cast<AAIController>(NewController);
 }
 
 // Called every frame
@@ -82,6 +91,22 @@ void AStormCore::UpdateTeamWeight()
 		float TeamTotal = TeamOneInfluenceCount + TeamTwoInfluenceCount;
 		TeamWeight = TeamOffset / TeamTotal;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Team one count: %d, Team two count: %d, Weight: %f"), TeamOneInfluenceCount, TeamTwoInfluenceCount, TeamWeight);
+	// UE_LOG(LogTemp, Warning, TEXT("Team one count: %d, Team two count: %d, Weight: %f"), TeamOneInfluenceCount, TeamTwoInfluenceCount, TeamWeight);
+	UpdateGoal();
+}
+
+void AStormCore::UpdateGoal()
+{
+	if (!HasAuthority()) return;
+	if (!OwnerAIC) return;
+	if (!GetCharacterMovement()) return;
+	
+	if (TeamWeight > 0.f)
+		OwnerAIC->MoveToActor(TeamOneGoal);
+	else
+		OwnerAIC->MoveToActor(TeamTwoGoal);
+	
+	float Speed = MaxMoveSpeed * FMath::Abs(TeamWeight);
+	GetCharacterMovement()->MaxWalkSpeed = Speed;
 }
 

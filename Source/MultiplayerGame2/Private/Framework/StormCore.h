@@ -21,6 +21,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void PossessedBy(AController* NewController) override;
 
 public:	
 	// Called every frame
@@ -30,12 +31,23 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category="Move")
+	float MaxMoveSpeed = 500.f;
+	
 	UPROPERTY(VisibleDefaultsOnly, Category = "Detection")
 	class USphereComponent* InfluenceRange; //影响范围
 	
 	int TeamOneInfluenceCount = 0; //队伍1数量
 	int TeamTwoInfluenceCount = 0; //队伍2数量
 	float TeamWeight = 0.0f; //队伍数量统计
+	
+	UPROPERTY(EditAnywhere, Category="Team")
+	AActor* TeamOneGoal;
+	UPROPERTY(EditAnywhere, Category="Team")
+	AActor* TeamTwoGoal;
+	
+	UPROPERTY()
+	class AAIController* OwnerAIC;
 	
 	UFUNCTION()
 	void NewInfluencerInRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
@@ -45,4 +57,5 @@ private:
 	void InfluencerLeftRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex); //单位离开影响范围
 	
 	void UpdateTeamWeight();
+	void UpdateGoal();
 };
