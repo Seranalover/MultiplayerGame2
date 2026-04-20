@@ -5,6 +5,8 @@
 
 #include "AIController.h"
 #include "GenericTeamAgentInterface.h"
+#include "Camera/CameraComponent.h"
+#include "Components/DecalComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -15,8 +17,15 @@ AStormCore::AStormCore()
 	PrimaryActorTick.bCanEverTick = true;
 	InfluenceRange = CreateDefaultSubobject<USphereComponent>("Influence Range");
 	InfluenceRange->SetupAttachment(GetRootComponent());
+	
 	InfluenceRange->OnComponentBeginOverlap.AddDynamic(this, &AStormCore::NewInfluencerInRange); //单位进入影响范围
 	InfluenceRange->OnComponentEndOverlap.AddDynamic(this, &AStormCore::InfluencerLeftRange); //单位离开影响范围
+	
+	ViewCamera = CreateDefaultSubobject<UCameraComponent>("View Camera");
+	ViewCamera->SetupAttachment(GetRootComponent());
+	
+	GroundDecalComponent = CreateDefaultSubobject<UDecalComponent>("Ground Decal Component");
+	GroundDecalComponent->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned
@@ -44,6 +53,19 @@ void AStormCore::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AStormCore::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+	//InfluenceRadius变更时，动态变更InfluenceRange
+	FName PropertyName = PropertyChangedEvent.GetPropertyName();
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(AStormCore, InfluenceRadius))
+	{
+		InfluenceRange->SetSphereRadius(InfluenceRadius);
+		FVector DecalSize = GroundDecalComponent->DecalSize;
+		GroundDecalComponent->DecalSize = FVector{DecalSize.X, InfluenceRadius, InfluenceRadius};
+	}
 }
 
 void AStormCore::NewInfluencerInRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

@@ -29,13 +29,24 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category="Move")
+	float InfluenceRadius = 1000.f;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Move")
 	float MaxMoveSpeed = 500.f;
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = "Detection")
 	class USphereComponent* InfluenceRange; //影响范围
+	
+	UPROPERTY(VisibleDefaultsOnly, Category = "Detection")
+	class UDecalComponent* GroundDecalComponent; //影响范围贴花效果
+	
+	UPROPERTY(VisibleDefaultsOnly, Category = "Detection")
+	class UCameraComponent* ViewCamera; //摄像机组件，用于胜利结算界面
 	
 	int TeamOneInfluenceCount = 0; //队伍1数量
 	int TeamTwoInfluenceCount = 0; //队伍2数量
