@@ -9,6 +9,7 @@
 #include "Components/DecalComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AStormCore::AStormCore()
@@ -28,6 +29,12 @@ AStormCore::AStormCore()
 	GroundDecalComponent->SetupAttachment(GetRootComponent());
 }
 
+void AStormCore::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME_CONDITION_NOTIFY(AStormCore, CoreToCapture, COND_None, REPNOTIFY_Always);
+}
+
 // Called when the game starts or when spawned
 void AStormCore::BeginPlay()
 {
@@ -45,7 +52,12 @@ void AStormCore::PossessedBy(AController* NewController)
 void AStormCore::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
+	if (CoreToCapture)
+	{
+		FVector CoreMoveDir = (GetMesh()->GetComponentLocation() - CoreToCapture->GetActorLocation()).GetSafeNormal();
+		CoreToCapture->AddActorWorldOffset(CoreMoveDir * CoreCaptureSpeed * DeltaTime);
+	}
 }
 
 // Called to bind functionality to input
@@ -71,6 +83,10 @@ void AStormCore::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyCh
 void AStormCore::NewInfluencerInRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (OtherActor == TeamOneGoal)
+		GoalReached(0);
+	if (OtherActor == TeamTwoGoal)
+		GoalReached(1);
 	IGenericTeamAgentInterface* OtherTeamAgentInterface = Cast<IGenericTeamAgentInterface>(OtherActor);
 	if (OtherTeamAgentInterface)
 	{
@@ -105,6 +121,7 @@ void AStormCore::InfluencerLeftRange(UPrimitiveComponent* OverlappedComponent, A
 
 void AStormCore::UpdateTeamWeight()
 {
+	OnTeamInfluencerCountUpdatedDelegate.Broadcast(TeamOneInfluenceCount, TeamTwoInfluenceCount);
 	if (TeamOneInfluenceCount == TeamTwoInfluenceCount)
 		TeamWeight = 0.f;
 	else
@@ -130,5 +147,41 @@ void AStormCore::UpdateGoal()
 	
 	float Speed = MaxMoveSpeed * FMath::Abs(TeamWeight);
 	GetCharacterMovement()->MaxWalkSpeed = Speed;
+}
+
+void AStormCore::OnRep_CoreToCapture()
+{
+	if (CoreToCapture)
+	{
+		CaptureCore();
+	}
+}
+
+void AStormCore::GoalReached(int WiningTeam)
+{
+	OnGoalReachedDelegate.Broadcast(this, WiningTeam);
+	if (!HasAuthority()) return;
+	
+	MaxMoveSpeed = 0.f;
+	CoreToCapture = WiningTeam == 0 ? TeamTwoCore : TeamOneCore;
+	CaptureCore();
+}
+
+void AStormCore::CaptureCore()
+{
+	float ExpandDuration = GetMesh()->GetAnimInstance()->Montage_Play(ExpandMontage);
+	CoreCaptureSpeed = FVector::Distance(GetMesh()->GetComponentLocation(), CoreToCapture->GetActorLocation() / ExpandDuration);
+	
+	CoreToCapture->SetActorEnableCollision(false);
+	GetCharacterMovement()->MaxWalkSpeed = 0;
+	FTimerHandle ExpandTimerHandle;
+	GetWorldTimerManager().SetTimer(ExpandTimerHandle, this, &AStormCore::ExpandFinished, ExpandDuration);
+}
+
+void AStormCore::ExpandFinished()
+{
+	CoreToCapture->SetActorLocation(GetMesh()->GetComponentLocation());
+	CoreToCapture->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, "root");
+	GetMesh()->GetAnimInstance()->Montage_Play(CaptureMontage);
 }
 

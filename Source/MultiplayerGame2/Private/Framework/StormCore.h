@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "StormCore.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnGoalReachedDelegate, AActor* /*ViewTarget*/, int /*WiningTeam*/);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTeamInfluencerCountUpdatedDelegate, int /*TeamOneInfluencerCount*/, int /*TeamTwoInfluencerCount*/);
 /**
  * 风暴核心
  */
@@ -15,8 +17,13 @@ class AStormCore : public ACharacter
 	GENERATED_BODY()
 
 public:
+	FOnGoalReachedDelegate OnGoalReachedDelegate;
+	FOnTeamInfluencerCountUpdatedDelegate OnTeamInfluencerCountUpdatedDelegate;
+	
 	// Sets default values for this character's properties
 	AStormCore();
+	
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -33,6 +40,12 @@ public:
 	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category="Animation")
+	UAnimMontage* ExpandMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Animation")
+	UAnimMontage* CaptureMontage;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Move")
 	float InfluenceRadius = 1000.f;
 	
@@ -56,6 +69,15 @@ private:
 	AActor* TeamOneGoal;
 	UPROPERTY(EditAnywhere, Category="Team")
 	AActor* TeamTwoGoal;
+	UPROPERTY(EditAnywhere, Category="Team")
+	AActor* TeamOneCore;
+	UPROPERTY(EditAnywhere, Category="Team")
+	AActor* TeamTwoCore;
+	
+	UPROPERTY(ReplicatedUsing=OnRep_CoreToCapture)
+	AActor* CoreToCapture;
+	
+	float CoreCaptureSpeed = 0.f;
 	
 	UPROPERTY()
 	class AAIController* OwnerAIC;
@@ -69,4 +91,11 @@ private:
 	
 	void UpdateTeamWeight();
 	void UpdateGoal();
+	
+	UFUNCTION()
+	void OnRep_CoreToCapture();
+	
+	void GoalReached(int WiningTeam);
+	void CaptureCore();
+	void ExpandFinished();
 };
