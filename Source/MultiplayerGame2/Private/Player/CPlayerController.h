@@ -28,6 +28,8 @@ public:
 	
 	virtual void SetupInputComponent() override; //设置打开商店的输入映射
 	
+	void MatchFinished(AActor* ViewTarget, int WinningTeam); //server only
+	
 private:
 	UPROPERTY()
 	class ACPlayerCharacter* CPlayerCharacter;
@@ -50,6 +52,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	class UInputAction* ToggleGameplayMenuAction;
 	
+	UPROPERTY(EditDefaultsOnly, Category="View")
+	float MatchFinishViewBlendTimeDuration = 2.f;
+	
 	void SpawnGameplayWidget(); //生成GUI
 	
 	UFUNCTION()
@@ -57,4 +62,9 @@ private:
 	
 	UFUNCTION()
 	void ToggleGameplayMenu();
+	
+	UFUNCTION(Client, Reliable)
+	void Client_MatchFinished(AActor* ViewTarget, int WinningTeam);
+	
+	void ShowWinLoseState();
 };

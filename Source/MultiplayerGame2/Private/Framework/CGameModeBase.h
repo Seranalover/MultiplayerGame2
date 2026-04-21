@@ -17,6 +17,7 @@ class ACGameModeBase : public AGameModeBase
 	
 public:
 	virtual APlayerController* SpawnPlayerController(ENetRole InRemoteRole, const FString& Options) override;
+	virtual void StartPlay() override;
 
 private:
 	FGenericTeamId GetTeamIdForPlayer(const APlayerController* PlayerController) const; //生成team id
@@ -25,4 +26,7 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Team")
 	TMap<FGenericTeamId, FName> TeamStartSpotTagMap; //玩家出生点集合
+	
+	class AStormCore* GetStormCore() const;
+	void MatchFinished(AActor* ViewTarget, int WinningTeam);
 };

@@ -70,6 +70,14 @@ void ACPlayerController::SetupInputComponent()
 	}
 }
 
+void ACPlayerController::MatchFinished(AActor* ViewTarget, int WinningTeam)
+{
+	if (!HasAuthority()) return;
+	
+	CPlayerCharacter->DisableInput(this);
+	Client_MatchFinished(ViewTarget, WinningTeam);
+}
+
 //生成GUI，并添加到视口
 void ACPlayerController::SpawnGameplayWidget()
 {
@@ -97,4 +105,23 @@ void ACPlayerController::ToggleGameplayMenu()
 	{
 		GameplayWidget->ToggleGameplayMenu();
 	}
+}
+
+void ACPlayerController::ShowWinLoseState()
+{
+	if (GameplayWidget)
+	{
+		GameplayWidget->ShowGameplayMenu();
+	}
+}
+
+void ACPlayerController::Client_MatchFinished_Implementation(AActor* ViewTarget, int WinningTeam)
+{
+	SetViewTargetWithBlend(ViewTarget, MatchFinishViewBlendTimeDuration);
+	FString WinLoseMsg = "You Win!!!";
+	if (GetGenericTeamId().GetId() != WinningTeam)
+		WinLoseMsg = "You Lose...";
+	GameplayWidget->SetGameplayMenuTitle(WinLoseMsg);
+	FTimerHandle ShowWinLoseTimerHandle;
+	GetWorldTimerManager().SetTimer(ShowWinLoseTimerHandle, this, &ACPlayerController::ShowWinLoseState, MatchFinishViewBlendTimeDuration);
 }
