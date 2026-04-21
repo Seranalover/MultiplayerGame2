@@ -57,6 +57,9 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	class USkeletalMeshRenderWidget* HeadshotWidget;
 	
+	UPROPERTY(meta=(BindWidget))
+	class UMatchStatWidget* MatchStatWidget;
+	
 	UPROPERTY()
 	class UAbilitySystemComponent* OwnerAbilitySystemComponent;
 	
