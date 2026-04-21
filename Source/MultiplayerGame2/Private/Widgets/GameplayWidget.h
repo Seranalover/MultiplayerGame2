@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/CanvasPanel.h"
 #include "GAS/CGameplayAbilityTypes.h"
 #include "GameplayWidget.generated.h"
 
@@ -19,6 +20,11 @@ public:
 	virtual void NativeConstruct() override; 
 	void ConfigureAbilities(const TMap<ECAbilityInputID, TSubclassOf<class UGameplayAbility>>& Abilities);
 	void ToggleShop(); //开关商店
+	
+	UFUNCTION()
+	void ToggleGameplayMenu();
+	void ShowGameplayMenu();
+	void SetGameplayMenuTitle(const FString& NewTitle);
 	
 private:
 	UPROPERTY(meta=(BindWidget))
@@ -59,6 +65,18 @@ private:
 	
 	UPROPERTY(meta=(BindWidget))
 	class UMatchStatWidget* MatchStatWidget;
+	
+	UPROPERTY(meta=(BindWidget))
+	class UGameplayMenu* GameplayMenu;
+	
+	UPROPERTY(meta=(BindWidget))
+	class UWidgetSwitcher* MainSwitcher;
+	
+	UPROPERTY(meta=(BindWidget))
+	UCanvasPanel* GameplayWidgetRootPanel; //血条、背包、武器栏等游戏元素的根面板
+	
+	UPROPERTY(meta=(BindWidget))
+	UCanvasPanel* GameplayMenuRootPanel; //菜单按钮的根面板
 	
 	UPROPERTY()
 	class UAbilitySystemComponent* OwnerAbilitySystemComponent;

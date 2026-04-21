@@ -15,8 +15,10 @@ class UGameplayMenu : public UUserWidget
 {
 	GENERATED_BODY()
 
+public:
 	virtual void NativeConstruct() override;
 	FOnButtonClickedEvent& GetResumeBtnClickedEventDelegate();
+	void SetTitleText(const FString& NewTitle);
 	
 private:
 	UPROPERTY(meta=(BindWidget))
