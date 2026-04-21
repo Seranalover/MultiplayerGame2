@@ -24,6 +24,7 @@ public:
 	AStormCore();
 	
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	float GetProgress() const; //计算获胜进度
 
 protected:
 	// Called when the game starts or when spawned
@@ -78,6 +79,7 @@ private:
 	AActor* CoreToCapture;
 	
 	float CoreCaptureSpeed = 0.f;
+	float TravelLength = 0.f; //一队泉水到二队泉水的距离
 	
 	UPROPERTY()
 	class AAIController* OwnerAIC;
