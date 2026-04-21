@@ -176,7 +176,7 @@ void UCAbilitySystemComponent::HealthUpdated(const FOnAttributeChangeData& Chang
 		}
 		else
 		{
-			if (HasMatchingGameplayTag(UCAbilitySystemStatics::GetHealthFullStatTag()))
+			if (HasMatchingGameplayTag(UCAbilitySystemStatics::GetHealthEmptyStatTag()))
 				RemoveLooseGameplayTag(UCAbilitySystemStatics::GetHealthEmptyStatTag()); //local only
 		}
 	}
