@@ -27,6 +27,9 @@ public:
 		const FGameplayAbilityActivationInfo ActivationInfo) override;
 	
 private:
+	UPROPERTY(EditDefaultsOnly, Category="Anim")
+	UAnimMontage* ShootMontage;
+	
 	static FGameplayTag GetShootTag(); //内部tag，发射投射物
 	
 	UFUNCTION()

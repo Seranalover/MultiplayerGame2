@@ -41,6 +41,9 @@ protected:
 	
 	void ApplyGameplayEffectToHitResult(const FHitResult& HitResult, TSubclassOf<UGameplayEffect> GameplayEffect, int Level = 1); //对目标应用攻击效果
 	
+	void PlayMontageLocally(UAnimMontage* MontageToPlay); //client同步播放server的动画
+	void StopMontageAfterCurrentSection(UAnimMontage* MontageToStop); //当前动画片段播放后停止播放
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Debug")
 	bool bShouldDrawDebug = false;

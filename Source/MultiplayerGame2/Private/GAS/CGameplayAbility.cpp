@@ -136,3 +136,21 @@ void UCGameplayAbility::ApplyGameplayEffectToHitResult(const FHitResult& HitResu
 	ApplyGameplayEffectSpecToTarget(GetCurrentAbilitySpecHandle(), CurrentActorInfo, CurrentActivationInfo,
 		EffectSpecHandle, UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(HitResult.GetActor()));
 }
+
+void UCGameplayAbility::PlayMontageLocally(UAnimMontage* MontageToPlay)
+{
+	UAnimInstance* AnimInstance = GetOwnerAnimInstance();
+	if (AnimInstance && !AnimInstance->Montage_IsPlaying(MontageToPlay))
+		AnimInstance->Montage_Play(MontageToPlay);
+}
+
+void UCGameplayAbility::StopMontageAfterCurrentSection(UAnimMontage* MontageToStop)
+{
+	UAnimInstance* AnimInstance = GetOwnerAnimInstance();
+	if (AnimInstance)
+	{
+		FName CurrentSection = AnimInstance->Montage_GetCurrentSection(MontageToStop);
+		if (CurrentSection != NAME_None)
+			AnimInstance->Montage_SetNextSection(CurrentSection, NAME_None, MontageToStop);
+	}
+}
