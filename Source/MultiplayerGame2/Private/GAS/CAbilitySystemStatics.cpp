@@ -17,6 +17,11 @@ FGameplayTag UCAbilitySystemStatics::GetBasicAttackInputPressedTag()
 	return FGameplayTag::RequestGameplayTag("ability.basicattack.pressed");
 }
 
+FGameplayTag UCAbilitySystemStatics::GetBasicAttackInputReleasedTag()
+{
+	return FGameplayTag::RequestGameplayTag("ability.basicattack.released");
+}
+
 FGameplayTag UCAbilitySystemStatics::GetCameraShakeGameplayCueTag()
 {
 	return FGameplayTag::RequestGameplayTag("GameplayCue.CameraShake");

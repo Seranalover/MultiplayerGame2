@@ -37,8 +37,8 @@ public:
 	 * usage：上勾拳时按下攻击键，可以附加其他连招
 	 */
 	static FGameplayTag GetBasicAttackInputPressedTag();
-	//获得相机震动的GC tag，用于调用GC时使用
-	static FGameplayTag GetCameraShakeGameplayCueTag(); 
+	static FGameplayTag GetBasicAttackInputReleasedTag(); //释放攻击键
+	static FGameplayTag GetCameraShakeGameplayCueTag(); //获得相机震动的GC tag，用于调用GC时使用
 	
 	static float GetStaticCooldownDurationForAbility(const UGameplayAbility* Ability); //查询技能冷却时间
 	static float GetStaticCostForAbility(const UGameplayAbility* Ability); //查询技能消耗
