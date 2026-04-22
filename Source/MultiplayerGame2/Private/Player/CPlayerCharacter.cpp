@@ -124,9 +124,9 @@ void ACPlayerCharacter::HandleAbilityInput(const FInputActionValue& InputActionV
 	}
 	if (AbilityInputID == ECAbilityInputID::BasicAttack) //添加basic attack input tag事件到actor
 	{
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, 
-			UCAbilitySystemStatics::GetBasicAttackInputPressedTag(), FGameplayEventData()); //client only
-		Server_SendGameplayEventToSelf(UCAbilitySystemStatics::GetBasicAttackInputPressedTag(), FGameplayEventData()); //copy to server
+		FGameplayTag BasicAttackTag = bPressed ? UCAbilitySystemStatics::GetBasicAttackInputPressedTag() : UCAbilitySystemStatics::GetBasicAttackInputReleasedTag();
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, BasicAttackTag, FGameplayEventData()); //client only
+		Server_SendGameplayEventToSelf(BasicAttackTag, FGameplayEventData()); //copy to server
 	}
 }
 

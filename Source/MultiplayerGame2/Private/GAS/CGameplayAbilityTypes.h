@@ -16,6 +16,7 @@ enum class ECAbilityInputID : uint8
 	Confirm								UMETA(DisplayName = "Confirm"),
 	Cancel								UMETA(DisplayName = "Cancel"),
 	BasicAttack							UMETA(DisplayName = "Basic Attack"),
+	Aim									UMETA(DisplayName = "Aim"),
 	AbilityOne							UMETA(DisplayName = "Ability One"),
 	AbilityTwo							UMETA(DisplayName = "Ability Two"),
 	AbilityThree						UMETA(DisplayName = "Ability Three"),
