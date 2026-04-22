@@ -154,3 +154,13 @@ void UCGameplayAbility::StopMontageAfterCurrentSection(UAnimMontage* MontageToSt
 			AnimInstance->Montage_SetNextSection(CurrentSection, NAME_None, MontageToStop);
 	}
 }
+
+FGenericTeamId UCGameplayAbility::GetOwnerTeamId() const
+{
+	IGenericTeamAgentInterface* TeamAgentInterface = Cast<IGenericTeamAgentInterface>(GetAvatarActorFromActorInfo());
+	if (TeamAgentInterface)
+	{
+		return TeamAgentInterface->GetGenericTeamId();
+	}
+	return FGenericTeamId::NoTeam;
+}

@@ -4,6 +4,8 @@
 #include "GAS/GA_Shoot.h"
 
 #include "CAbilitySystemStatics.h"
+#include "GameplayTagsManager.h"
+#include "ProjectileActor.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 
@@ -77,5 +79,34 @@ void UGA_Shoot::StopShooting(FGameplayEventData Payload)
 
 void UGA_Shoot::ShootProjectile(FGameplayEventData Payload)
 {
-	UE_LOG(LogTemp, Warning, TEXT("shoot projectile"));
+	// UE_LOG(LogTemp, Warning, TEXT("shoot projectile"));
+	if (K2_HasAuthority())
+	{
+		AActor* OwnerAvatarActor = GetAvatarActorFromActorInfo();
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = OwnerAvatarActor;
+		SpawnParams.SpawnCollisionHandlingOverride  = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		
+		//获得socket
+		FVector SocketLocation = GetAvatarActorFromActorInfo()->GetActorLocation();
+		USkeletalMeshComponent* MeshComponent = GetOwningComponentFromActorInfo();
+		if (MeshComponent)
+		{
+			TArray<FName> OutNames;
+			UGameplayTagsManager::Get().SplitGameplayTagFName(Payload.EventTag, OutNames);
+			if (OutNames.Num() != 0)
+			{
+				FName SocketName = OutNames.Last();
+				SocketLocation = MeshComponent->GetSocketLocation(SocketName);
+			}
+		}
+		
+		AProjectileActor* ProjectileActor = 
+			GetWorld()->SpawnActor<AProjectileActor>(ProjectileClass, SocketLocation, OwnerAvatarActor->GetActorRotation(), SpawnParams);
+		if (ProjectileActor)
+		{
+			ProjectileActor->ShootProjectile(ShootProjectileSpeed, ShootProjectileRange, nullptr,
+				GetOwnerTeamId(), MakeOutgoingGameplayEffectSpec(ProjectileHitEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo)));
+		}
+	}
 }
