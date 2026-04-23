@@ -19,6 +19,7 @@ public:
 	ARenderActor();
 	void SetRenderTarget(class UTextureRenderTarget2D* RenderTarget); //设置渲染目标
 	void UpdateRenderTarget(); //更新渲染
+	FORCEINLINE class USceneCaptureComponent2D* GetCaptureComponent() const { return CaptureComponent; }
 	
 protected:
 	// Called when the game starts or when spawned

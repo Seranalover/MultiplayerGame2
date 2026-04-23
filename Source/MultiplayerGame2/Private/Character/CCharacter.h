@@ -8,6 +8,7 @@
 #include "GenericTeamAgentInterface.h"
 #include "Abilities/GameplayAbilityTypes.h"
 #include "GameFramework/Character.h"
+#include "Widgets/RenderActorTargetInterface.h"
 #include "CCharacter.generated.h"
 
 enum class ECAbilityInputID : uint8;
@@ -15,7 +16,7 @@ enum class ECAbilityInputID : uint8;
  * 角色基类
  */
 UCLASS()
-class ACCharacter : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface
+class ACCharacter : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface, public IRenderActorTargetInterface
 {
 	GENERATED_BODY()
 
@@ -27,6 +28,15 @@ public:
 	bool IsLocallyControlledByPlayer() const; //是否由本地玩家控制器操控
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override; //管理数据生命周期并同步到客户端
 	const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const; //获得附加技能，不包括基础技能
+	virtual FVector GetCaptureLocalPosition() const override; //捕捉相对位置
+	virtual FRotator GetCaptureLocalRotation() const override; //捕捉相对旋转
+	
+private:
+	UPROPERTY(EditDefaultsOnly, Category="Capture")
+	FVector HeadshotCaptureLocalPosition;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Capture")
+	FRotator HeadshotCaptureLocalRotation;
 
 protected:
 	// Called when the game starts or when spawned
