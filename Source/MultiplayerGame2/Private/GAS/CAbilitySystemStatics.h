@@ -43,6 +43,8 @@ public:
 	static float GetStaticCooldownDurationForAbility(const UGameplayAbility* Ability); //查询技能冷却时间
 	static float GetStaticCostForAbility(const UGameplayAbility* Ability); //查询技能消耗
 	static bool IsHero(const AActor* Actor); //查询是否英雄单位
+	static bool ActorHasTag(const AActor* ActorToCheck, const FGameplayTag& Tag); //actor携带指定标签？
+	static bool IsActorDead(const AActor* ActorToCheck); //actor死亡？
 	static bool IsAbilityAtMaxLevel(const FGameplayAbilitySpec& AbilitySpec); //技能等级已满？
 	static bool CheckAbilityCost(const FGameplayAbilitySpec& AbilitySpec, const UAbilitySystemComponent& ASC); //检查技能是否满足消耗
 	static bool CheckAbilityCostStatic(const UGameplayAbility* AbilityCDO, const UAbilitySystemComponent& ASC); //检查技能是否满足消耗

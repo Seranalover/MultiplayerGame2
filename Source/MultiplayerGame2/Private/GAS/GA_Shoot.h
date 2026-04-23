@@ -26,6 +26,9 @@ public:
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, 
 		const FGameplayAbilityActivationInfo ActivationInfo) override;
 	
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, 
+		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Shoot")
 	TSubclassOf<UGameplayEffect> ProjectileHitEffect;
@@ -52,4 +55,22 @@ private:
 	void ShootProjectile(FGameplayEventData Payload); //发射投射物
 	
 	AActor* GetAimTargetIfValid() const;
+	
+	UPROPERTY()
+	AActor* AimTarget;
+	
+	UPROPERTY()
+	UAbilitySystemComponent* AimTargetAbilitySystemComponent;
+	
+	FTimerHandle AimTargetCheckTimer;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Target")
+	float AimTargetCheckTimeInterval = 0.1f;
+	
+	void FindAimTarget();
+	void StartAimTargetCheckTimer();
+	void StopAimTargetCheckTimer();
+	bool HasValidTarget() const;
+	bool IsTargetInRange() const;
+	void TargetDeadTagUpdated(const FGameplayTag Tag, int32 NewCount);
 };

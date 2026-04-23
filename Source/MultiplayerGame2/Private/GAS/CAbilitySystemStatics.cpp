@@ -108,14 +108,24 @@ float UCAbilitySystemStatics::GetStaticCostForAbility(const UGameplayAbility* Ab
 
 bool UCAbilitySystemStatics::IsHero(const AActor* Actor)
 {
-	const IAbilitySystemInterface* ActorASI = Cast<IAbilitySystemInterface>(Actor);
+	return ActorHasTag(Actor, GetHeroRoleTag());
+}
+
+bool UCAbilitySystemStatics::ActorHasTag(const AActor* ActorToCheck, const FGameplayTag& Tag)
+{
+	const IAbilitySystemInterface* ActorASI = Cast<IAbilitySystemInterface>(ActorToCheck);
 	if (ActorASI)
 	{
 		UAbilitySystemComponent* ActorASC = ActorASI->GetAbilitySystemComponent();
 		if (ActorASC)
-			return ActorASC->HasMatchingGameplayTag(GetHeroRoleTag());
+			return ActorASC->HasMatchingGameplayTag(Tag);
 	}
 	return false;
+}
+
+bool UCAbilitySystemStatics::IsActorDead(const AActor* ActorToCheck)
+{
+	return ActorHasTag(ActorToCheck, GetDeadStatTag());
 }
 
 bool UCAbilitySystemStatics::IsAbilityAtMaxLevel(const FGameplayAbilitySpec& AbilitySpec)
