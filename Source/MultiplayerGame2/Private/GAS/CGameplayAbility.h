@@ -46,6 +46,9 @@ protected:
 	
 	FGenericTeamId GetOwnerTeamId() const;
 	
+	AActor* GetAimTarget(float AimDistance, ETeamAttitude::Type TeamAttitude) const; //获得瞄准目标
+	bool IsActorTeamAttitude(const AActor* OtherActor, ETeamAttitude::Type TeamAttitude) const; //瞄准目标是否由team attitude管理
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Debug")
 	bool bShouldDrawDebug = false;

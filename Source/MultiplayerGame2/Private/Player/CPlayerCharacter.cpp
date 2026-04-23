@@ -74,6 +74,12 @@ void ACPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	}
 }
 
+void ACPlayerCharacter::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
+{
+	OutLocation = ViewCamera->GetComponentLocation();
+	OutRotation = ViewCamera->GetComponentRotation();
+}
+
 //旋转视角方法实现
 void ACPlayerCharacter::HandleLookInput(const FInputActionValue& InputActionValue)
 {
@@ -180,8 +186,8 @@ void ACPlayerCharacter::OnRecoverFromStun()
 
 void ACPlayerCharacter::OnAimStateChanged(bool bIsAiming)
 {
-	if (IsLocallyControlledByPlayer())
-		LerpCameraToLocalOffsetLocation(bIsAiming ? CameraAimLocalOffset : FVector::ZeroVector);
+	// if (IsLocallyControlledByPlayer())
+	LerpCameraToLocalOffsetLocation(bIsAiming ? CameraAimLocalOffset : FVector::ZeroVector);
 }
 
 void ACPlayerCharacter::LerpCameraToLocalOffsetLocation(const FVector& Goal)

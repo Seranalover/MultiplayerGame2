@@ -50,4 +50,6 @@ private:
 	void StopShooting(FGameplayEventData Payload);
 	UFUNCTION()
 	void ShootProjectile(FGameplayEventData Payload); //发射投射物
+	
+	AActor* GetAimTargetIfValid() const;
 };

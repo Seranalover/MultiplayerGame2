@@ -20,6 +20,7 @@ public:
 	ACPlayerCharacter();
 	virtual void PawnClientRestart() override; //客户端生成pawn时调用
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;
 	
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category="View")

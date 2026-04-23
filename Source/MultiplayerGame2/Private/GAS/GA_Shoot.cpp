@@ -106,8 +106,14 @@ void UGA_Shoot::ShootProjectile(FGameplayEventData Payload)
 			GetWorld()->SpawnActor<AProjectileActor>(ProjectileClass, SocketLocation, OwnerAvatarActor->GetActorRotation(), SpawnParams);
 		if (ProjectileActor)
 		{
-			ProjectileActor->ShootProjectile(ShootProjectileSpeed, ShootProjectileRange, nullptr,
+			ProjectileActor->ShootProjectile(ShootProjectileSpeed, ShootProjectileRange, GetAimTargetIfValid(),
 				GetOwnerTeamId(), MakeOutgoingGameplayEffectSpec(ProjectileHitEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo)));
 		}
 	}
+}
+
+AActor* UGA_Shoot::GetAimTargetIfValid() const
+{
+	AActor* AimTarget = GetAimTarget(ShootProjectileRange, ETeamAttitude::Hostile);
+	return AimTarget;
 }

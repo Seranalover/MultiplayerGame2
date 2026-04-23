@@ -164,3 +164,44 @@ FGenericTeamId UCGameplayAbility::GetOwnerTeamId() const
 	}
 	return FGenericTeamId::NoTeam;
 }
+
+AActor* UCGameplayAbility::GetAimTarget(float AimDistance, ETeamAttitude::Type TeamAttitude) const
+{
+	AActor* OwnerAvatarActor = GetAvatarActorFromActorInfo();
+	if (OwnerAvatarActor)
+	{
+		FVector Location;
+		FRotator Rotation;
+		OwnerAvatarActor->GetActorEyesViewPoint(Location, Rotation);
+		FVector AimEnd = Location + Rotation.Vector() * AimDistance;
+		FCollisionQueryParams CollisionParams;
+		CollisionParams.AddIgnoredActor(OwnerAvatarActor);
+		FCollisionObjectQueryParams ObjectParams;
+		ObjectParams.AddObjectTypesToQuery(ECC_Pawn);
+		if (ShouldDrawDebug())
+		{
+			DrawDebugLine(GetWorld(), Location, AimEnd, FColor::Red, false, 2.f, 0U, 3.f);
+		}
+		TArray<FHitResult> HitResults;
+		if (GetWorld()->LineTraceMultiByObjectType(HitResults, Location, AimEnd, ObjectParams, CollisionParams))
+		{
+			for (FHitResult& HitResult : HitResults)
+			{
+				if (IsActorTeamAttitude(HitResult.GetActor(), TeamAttitude))
+					return HitResult.GetActor();
+			}
+		}
+	}
+	return nullptr;
+}
+
+bool UCGameplayAbility::IsActorTeamAttitude(const AActor* OtherActor, ETeamAttitude::Type TeamAttitude) const
+{
+	if (!OtherActor) return false;
+	IGenericTeamAgentInterface* OwnerTeamAgentInterface = Cast<IGenericTeamAgentInterface>(GetAvatarActorFromActorInfo());
+	if (OwnerTeamAgentInterface)
+	{
+		return OwnerTeamAgentInterface->GetTeamAttitudeTowards(*OtherActor) == TeamAttitude;
+	}
+	return false;
+}
