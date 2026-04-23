@@ -30,7 +30,6 @@ public:
 	static FGameplayTag GetHeroRoleTag(); //英雄角色标签
 	static FGameplayTag GetExperienceAttributeTag();
 	static FGameplayTag GetGoldAttributeTag();
-	
 	/*
 	 * 按下攻击键tag
 	 * 用于按下攻击键时，发送信号触发其他事件
@@ -39,6 +38,7 @@ public:
 	static FGameplayTag GetBasicAttackInputPressedTag();
 	static FGameplayTag GetBasicAttackInputReleasedTag(); //释放攻击键
 	static FGameplayTag GetCameraShakeGameplayCueTag(); //获得相机震动的GC tag，用于调用GC时使用
+	static FGameplayTag GetCrosshairTag(); //带有tag时显示准星
 	
 	static float GetStaticCooldownDurationForAbility(const UGameplayAbility* Ability); //查询技能冷却时间
 	static float GetStaticCostForAbility(const UGameplayAbility* Ability); //查询技能消耗

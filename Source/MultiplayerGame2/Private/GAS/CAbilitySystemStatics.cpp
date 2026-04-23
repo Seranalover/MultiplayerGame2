@@ -27,6 +27,11 @@ FGameplayTag UCAbilitySystemStatics::GetCameraShakeGameplayCueTag()
 	return FGameplayTag::RequestGameplayTag("GameplayCue.CameraShake");
 }
 
+FGameplayTag UCAbilitySystemStatics::GetCrosshairTag()
+{
+	return FGameplayTag::RequestGameplayTag("stats.crosshair");
+}
+
 FGameplayTag UCAbilitySystemStatics::GetDeadStatTag()
 {
 	return FGameplayTag::RequestGameplayTag("stats.dead");
