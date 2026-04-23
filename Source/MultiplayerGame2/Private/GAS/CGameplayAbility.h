@@ -49,6 +49,8 @@ protected:
 	AActor* GetAimTarget(float AimDistance, ETeamAttitude::Type TeamAttitude) const; //获得瞄准目标
 	bool IsActorTeamAttitude(const AActor* OtherActor, ETeamAttitude::Type TeamAttitude) const; //瞄准目标是否由team attitude管理
 	
+	void SendLocalGameplayEvent(const FGameplayTag& EventTag, const FGameplayEventData& EventData);
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Debug")
 	bool bShouldDrawDebug = false;

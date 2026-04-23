@@ -18,6 +18,7 @@ void UCrosshairWidget::NativeConstruct()
 	if (OwnerASC)
 	{
 		OwnerASC->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetCrosshairTag()).AddUObject(this, &UCrosshairWidget::CrosshairTagUpdated);
+		OwnerASC->GenericGameplayEventCallbacks.Add(UCAbilitySystemStatics::GetTargetUpdatedTag()).AddUObject(this, &UCrosshairWidget::TargetUpdated);
 	}
 	CachedPlayerController = GetOwningPlayer();
 	CrosshairCanvasPanelSlot = Cast<UCanvasPanelSlot>(Slot);
@@ -48,6 +49,22 @@ void UCrosshairWidget::UpdateCrosshairPosition()
 	float ViewportScale = UWidgetLayoutLibrary::GetViewportScale(this); //视口缩放系数
 	int32 SizeX, SizeY;
 	CachedPlayerController->GetViewportSize(SizeX, SizeY);
-	FVector2D ViewportSize = FVector2D{(float)SizeX, (float)SizeY};
-	CrosshairCanvasPanelSlot->SetPosition(ViewportSize / 2.f / ViewportScale);
+	//瞄准目标不存在准星居中
+	if (!AimTarget)
+	{
+		FVector2D ViewportSize = FVector2D{(float)SizeX, (float)SizeY};
+		CrosshairCanvasPanelSlot->SetPosition(ViewportSize / 2.f / ViewportScale);
+		return;
+	}
+	//瞄准目标存在准星跟随瞄准目标，因为widget超出屏幕显示，系统会停止widget的刷新，导致widget无法恢复显示
+	FVector2D TargetScreenPosition;
+	CachedPlayerController->ProjectWorldLocationToScreen(AimTarget->GetActorLocation(), TargetScreenPosition);
+	if (TargetScreenPosition.X > 0 && TargetScreenPosition.X < SizeX && TargetScreenPosition.Y > 0 && TargetScreenPosition.Y < SizeY)
+		CrosshairCanvasPanelSlot->SetPosition(TargetScreenPosition / ViewportScale);
+}
+
+void UCrosshairWidget::TargetUpdated(const FGameplayEventData* EventData)
+{
+	AimTarget = EventData->Target;
+	CrosshairImage->SetColorAndOpacity(AimTarget? HasTargetColor : NoTargetColor);
 }

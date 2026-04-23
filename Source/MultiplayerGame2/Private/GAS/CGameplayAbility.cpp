@@ -205,3 +205,12 @@ bool UCGameplayAbility::IsActorTeamAttitude(const AActor* OtherActor, ETeamAttit
 	}
 	return false;
 }
+
+void UCGameplayAbility::SendLocalGameplayEvent(const FGameplayTag& EventTag, const FGameplayEventData& EventData)
+{
+	UAbilitySystemComponent* OwnerASC = GetAbilitySystemComponentFromActorInfo();
+	if (OwnerASC)
+	{
+		OwnerASC->HandleGameplayEvent(EventTag, &EventData);
+	}
+}
