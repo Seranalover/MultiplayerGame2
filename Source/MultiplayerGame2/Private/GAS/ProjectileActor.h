@@ -20,6 +20,9 @@ public:
 	// Sets default values for this actor's properties
 	AProjectileActor();
 	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+	
 	void ShootProjectile(
 		float InSpeed,
 		float InMaxDistance,
@@ -31,8 +34,12 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const { return TeamId; }
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override; //与其他actor或component重叠时触发
 	
 private:
+	UPROPERTY(EditDefaultsOnly, Category="Gameplay Cue")
+	FGameplayTag HitGameplayCueTag;
+	
 	UPROPERTY(Replicated)
 	FGenericTeamId TeamId;
 	
@@ -47,14 +54,12 @@ private:
 	
 	FGameplayEffectSpecHandle HitEffectSpecHandle;
 	FTimerHandle ShootTimerHandle;
+	
+	void TravelMaxDistanceReached(); //子弹达到最大距离时的处理，例如销毁
+	void SendLocalGameplayCue(AActor* CueTargetActor, const FHitResult& HitResult);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	void TravelMaxDistanceReached(); //子弹达到最大距离时的处理，例如销毁
+	
 };
