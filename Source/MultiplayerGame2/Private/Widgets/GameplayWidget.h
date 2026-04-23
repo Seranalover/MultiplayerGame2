@@ -78,6 +78,9 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	UCanvasPanel* GameplayMenuRootPanel; //菜单按钮的根面板
 	
+	UPROPERTY(meta=(BindWidget))
+	class UCrosshairWidget* CrosshairWidget; //准星
+	
 	UPROPERTY()
 	class UAbilitySystemComponent* OwnerAbilitySystemComponent;
 	
