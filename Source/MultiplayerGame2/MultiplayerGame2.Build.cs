@@ -14,8 +14,9 @@ public class MultiplayerGame2 : ModuleRules
 		{
 			"EnhancedInput", 
 			"GameplayAbilities", "GameplayTasks", "GameplayTags", //GAS
-			"UMG",  "Slate", "SlateCore", //GUI
-			"AIModule" 
+			"UMG", "Slate", "SlateCore", //GUI
+			"AIModule", 
+			"Niagara" //Niagara粒子特效
 		});
 
 		// Uncomment if you are using Slate UI
