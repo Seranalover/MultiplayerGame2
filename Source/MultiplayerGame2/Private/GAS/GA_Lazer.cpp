@@ -8,6 +8,8 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Abilities/Tasks/AbilityTask_WaitCancel.h"
+#include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
+#include "GAS/TargetActor_Line.h"
 
 void UGA_Lazer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                 const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -63,6 +65,19 @@ void UGA_Lazer::ShootLazer(FGameplayEventData Payload)
 			OwnerASC->GetGameplayAttributeValueChangeDelegate(UCAttributeSet::GetManaAttribute()).AddUObject(this, &UGA_Lazer::ManaUpdated);
 		}
 	}
+	//生成目标选择器
+	UAbilityTask_WaitTargetData* WaitTargetDataTask =
+		UAbilityTask_WaitTargetData::WaitTargetData(this, NAME_None, EGameplayTargetingConfirmation::CustomMulti, LazerTargetActorClass);
+	WaitTargetDataTask->ValidData.AddDynamic(this, &UGA_Lazer::TargetReceived);
+	WaitTargetDataTask->ReadyForActivation();
+	AGameplayAbilityTargetActor* TargetActor;
+	WaitTargetDataTask->BeginSpawningActor(this, LazerTargetActorClass, TargetActor);
+	WaitTargetDataTask->FinishSpawningActor(this, TargetActor);
+	ATargetActor_Line* LineTargetActor = Cast<ATargetActor_Line>(TargetActor);
+	if (LineTargetActor)
+	{
+		LineTargetActor->AttachToComponent(GetOwningComponentFromActorInfo(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TargetActorAttachSocketName);
+	}
 }
 
 void UGA_Lazer::ManaUpdated(const FOnAttributeChangeData& ChangeData)
@@ -73,4 +88,8 @@ void UGA_Lazer::ManaUpdated(const FOnAttributeChangeData& ChangeData)
 	{
 		K2_EndAbility();
 	}
+}
+
+void UGA_Lazer::TargetReceived(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
+{
 }
