@@ -23,6 +23,15 @@ public:
 	static FGameplayTag GetShootTag();
 	
 private:
+	UPROPERTY(EditDefaultsOnly, Category="Targeting")
+	float TargetRange = 4000.f;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Targeting")
+	float DetectionCylinderRadius = 30.f;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Targeting")
+	float TargetingInterval = 0.3f;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Effects")
 	TSubclassOf<UGameplayEffect> OnGoingConsumtionEffect;
 	
