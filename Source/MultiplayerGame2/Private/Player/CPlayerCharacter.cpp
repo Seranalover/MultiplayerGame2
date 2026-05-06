@@ -77,7 +77,7 @@ void ACPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 void ACPlayerCharacter::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
 {
 	OutLocation = ViewCamera->GetComponentLocation();
-	OutRotation = ViewCamera->GetComponentRotation();
+	OutRotation = GetBaseAimRotation();
 }
 
 //旋转视角方法实现

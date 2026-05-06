@@ -5,6 +5,8 @@
 #include "Components/SphereComponent.h"
 #include "MultiplayerGame2/MultiplayerGame2.h"
 #include "NiagaraComponent.h"
+#include "Abilities/GameplayAbility.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 ATargetActor_Line::ATargetActor_Line()
@@ -48,4 +50,66 @@ void ATargetActor_Line::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(ATargetActor_Line, TargetRange);
 	DOREPLIFETIME(ATargetActor_Line, DetectionCylinderRadius);
 	DOREPLIFETIME(ATargetActor_Line, AvatarActor);
+}
+
+void ATargetActor_Line::StartTargeting(UGameplayAbility* Ability)
+{
+	Super::StartTargeting(Ability);
+	if (!OwningAbility) return;
+	AvatarActor = OwningAbility->GetAvatarActorFromActorInfo();
+	if (HasAuthority())
+	{
+		GetWorldTimerManager().SetTimer(PeriodicalTargetingTimer, this, &ATargetActor_Line::DoTargetCheckAndReport, TargetingInterval, true);
+	}
+}
+
+void ATargetActor_Line::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	UpdateTargetTrace();
+}
+
+void ATargetActor_Line::DoTargetCheckAndReport()
+{
+	
+}
+
+void ATargetActor_Line::UpdateTargetTrace()
+{
+	FVector ViewLocation = GetActorLocation();
+	FRotator ViewRotation = GetActorRotation();
+	if (AvatarActor)
+	{
+		AvatarActor->GetActorEyesViewPoint(ViewLocation, ViewRotation);
+	}
+	FVector LookEndPoint = ViewLocation + ViewRotation.Vector() * 100000;
+	FRotator LookEndRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), LookEndPoint);
+	SetActorRotation(LookEndRotation);
+	FVector SweepEndLocation = GetActorLocation() + LookEndRotation.Vector() * TargetRange;
+	TArray<FHitResult> HitResults;
+	FCollisionQueryParams CollisionQueryParams;
+	CollisionQueryParams.AddIgnoredActor(AvatarActor);
+	CollisionQueryParams.AddIgnoredActor(this);
+	FCollisionResponseParams CollisionResponseParams(ECR_Overlap);
+	GetWorld()->SweepMultiByChannel(HitResults, GetActorLocation(), SweepEndLocation, FQuat::Identity, 
+		ECC_WorldDynamic, FCollisionShape::MakeSphere(DetectionCylinderRadius), CollisionQueryParams, CollisionResponseParams);
+	FVector LineEndLocation = SweepEndLocation;
+	float LineLength = TargetRange;
+	for (FHitResult& HitResult : HitResults)
+	{
+		if (HitResult.GetActor())
+		{
+			if (GetTeamAttitudeTowards(*HitResult.GetActor()) != ETeamAttitude::Friendly)
+			{
+				LineEndLocation = HitResult.ImpactPoint;
+				LineLength = FVector::Distance(GetActorLocation(), LineEndLocation);
+				break;
+			}
+		}
+	}
+	TargetEndDetectionSphere->SetWorldLocation(LineEndLocation);
+	if (LazerVFX)
+	{
+		LazerVFX->SetVariableFloat(LazerFXLengthParamName, LineLength / 100.f);
+	}
 }
