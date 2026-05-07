@@ -79,8 +79,13 @@ private:
 	float YawSpeed;
 	float SmoothedYawSpeed; //平滑量
 	bool bIsJumping; //是否跳跃？
+	
 	UPROPERTY(EditAnywhere, Category="Animation")
 	float YawSpeedSmoothLerp = 1.0f; //平滑量插值
+	
+	UPROPERTY(EditAnywhere, Category="Animation")
+	float YawSpeedLerpToZeroSpeed = 30.f; //平滑量插值过渡到0的速度
+	
 	FRotator BodyPrevRotation; //上一帧身体旋转量
 	FRotator LookAtRotationOffset; //瞄准偏移旋转
 	bool bIsAiming;

@@ -48,7 +48,7 @@ void UGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 void UGA_Shoot::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo)
 {
-	UE_LOG(LogTemp, Warning, TEXT("shoot ability ended"));
+	// UE_LOG(LogTemp, Warning, TEXT("shoot ability ended"));
 	K2_EndAbility();
 }
 
