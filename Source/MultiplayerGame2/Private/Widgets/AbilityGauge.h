@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "GAS/CAttributeSet.h"
 #include "GameplayEffectTypes.h"
+#include "GameplayAbilitySpecHandle.h"
 #include "AbilityGauge.generated.h"
 
 class UAbilitySystemComponent;
@@ -97,7 +98,7 @@ private:
 	void UpdateCooldown();
 	
 	const UAbilitySystemComponent* OwnerAbilitySystemComponent; //ASC组件
-	const FGameplayAbilitySpec* CachedAbilitySpec; //Ability组件
+	FGameplayAbilitySpecHandle CachedAbilitySpecHandle; //Ability组件
 	
 	const FGameplayAbilitySpec* GetAbilitySpec(); //CachedAbilitySpec不存在时加载AbilitySpec
 	
