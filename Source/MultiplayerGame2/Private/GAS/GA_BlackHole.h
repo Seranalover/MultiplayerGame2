@@ -22,13 +22,22 @@ public:
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Targeting")
-	float TargetAreaRadius = 300.f; //目标范围
+	float TargetAreaRadius = 1000.f; //目标范围
+	
+	UPROPERTY(EditDefaultsOnly, Category="Targeting")
+	float BlackHolePullSpeed = 3000.f; //牵引敌人的速度
 	
 	UPROPERTY(EditDefaultsOnly, Category="Targeting")
 	float TargetTraceRange = 2000.f; //射程
 	
+	UPROPERTY(EditDefaultsOnly, Category="Targeting")
+	float BlackHoleDuration = 6.f; //持续时间
+	
 	UPROPERTY(EditDefaultsOnly, Category="Aimation")
 	UAnimMontage* TargetingMontage; //瞄准动画
+	
+	UPROPERTY(EditDefaultsOnly, Category="Aimation")
+	UAnimMontage* HoldBlackHoleMontage; //施放动画
 	
 	UPROPERTY(EditDefaultsOnly, Category="Targeting")
 	TSubclassOf<UGameplayEffect> AimEffect;
@@ -38,13 +47,21 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Targeting")
 	TSubclassOf<class ATargetActor_GroundPick> TargetActorClass;
 	
+	UPROPERTY(EditDefaultsOnly, Category="Targeting")
+	TSubclassOf<class ATA_BlackHole> BlackHoleTargetActorClass;
+	
 	UPROPERTY()
 	class UAbilityTask_PlayMontageAndWait* PlayCastBlackHoleMontageTask;
+	
+	UPROPERTY()
+	class UAbilityTask_WaitTargetData* BlackHoleTargetingTask;
 	
 	UFUNCTION()
 	void PlaceBlackHole(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
 	UFUNCTION()
 	void PlacementCancelled(const FGameplayAbilityTargetDataHandle& TargetDataHandle); 
+	UFUNCTION()
+	void FinalTargetsReceived(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
 	
 	void AddAimEffect();
 	void RemoveAimEffect();

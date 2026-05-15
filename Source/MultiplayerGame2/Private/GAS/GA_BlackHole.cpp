@@ -3,9 +3,11 @@
 
 #include "GAS/GA_BlackHole.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
 #include "GAS/TargetActor_GroundPick.h"
+#include "GAS/TA_BlackHole.h"
 
 void UGA_BlackHole::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                     const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -53,9 +55,60 @@ void UGA_BlackHole::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 
 void UGA_BlackHole::PlaceBlackHole(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
+	if (!K2_CommitAbility())
+	{
+		K2_EndAbility();
+		return;
+	}
+	
+	RemoveAimEffect();
+	
+	if (PlayCastBlackHoleMontageTask)
+	{
+		PlayCastBlackHoleMontageTask->OnBlendOut.RemoveAll(this);
+		PlayCastBlackHoleMontageTask->OnCancelled.RemoveAll(this);
+		PlayCastBlackHoleMontageTask->OnInterrupted.RemoveAll(this);
+		PlayCastBlackHoleMontageTask->OnCompleted.RemoveAll(this);
+	}
+	
+	//技能动画
+	if (HasAuthorityOrPredictionKey(CurrentActorInfo, &CurrentActivationInfo))
+	{
+		UAbilityTask_PlayMontageAndWait* PlayHoldBlackHoleMontage = 
+			UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, HoldBlackHoleMontage);
+		PlayHoldBlackHoleMontage->OnBlendOut.AddDynamic(this, &UGA_BlackHole::K2_EndAbility);
+		PlayHoldBlackHoleMontage->OnCancelled.AddDynamic(this, &UGA_BlackHole::K2_EndAbility);
+		PlayHoldBlackHoleMontage->OnInterrupted.AddDynamic(this, &UGA_BlackHole::K2_EndAbility);
+		PlayHoldBlackHoleMontage->OnCompleted.AddDynamic(this, &UGA_BlackHole::K2_EndAbility);
+		PlayHoldBlackHoleMontage->ReadyForActivation();
+	}
+	
+	//施法
+	BlackHoleTargetingTask = UAbilityTask_WaitTargetData::WaitTargetData(this, NAME_None, EGameplayTargetingConfirmation::UserConfirmed, BlackHoleTargetActorClass);
+	BlackHoleTargetingTask->ValidData.AddDynamic(this, &UGA_BlackHole::FinalTargetsReceived);
+	BlackHoleTargetingTask->Cancelled.AddDynamic(this, &UGA_BlackHole::FinalTargetsReceived);
+	BlackHoleTargetingTask->ReadyForActivation();
+	
+	//生成瞄准器
+	AGameplayAbilityTargetActor* TargetActor;
+	BlackHoleTargetingTask->BeginSpawningActor(this, BlackHoleTargetActorClass, TargetActor);
+	ATA_BlackHole* BlackHoleTargetActor = Cast<ATA_BlackHole>(TargetActor);
+	if (BlackHoleTargetActor)
+	{
+		BlackHoleTargetActor->ConfigureBlackHole(TargetAreaRadius, BlackHolePullSpeed, BlackHoleDuration, GetOwnerTeamId());
+	}
+	BlackHoleTargetingTask->FinishSpawningActor(this, TargetActor);
+	if (BlackHoleTargetActor)
+	{
+		BlackHoleTargetActor->SetActorLocation(UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(TargetDataHandle, 1).ImpactPoint);
+	}
 }
 
 void UGA_BlackHole::PlacementCancelled(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
+{
+}
+
+void UGA_BlackHole::FinalTargetsReceived(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
 }
 
