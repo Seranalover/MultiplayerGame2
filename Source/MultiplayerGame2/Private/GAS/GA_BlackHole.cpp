@@ -63,6 +63,7 @@ void UGA_BlackHole::PlaceBlackHole(const FGameplayAbilityTargetDataHandle& Targe
 	
 	RemoveAimEffect();
 	
+	//停止瞄准施法动画
 	if (PlayCastBlackHoleMontageTask)
 	{
 		PlayCastBlackHoleMontageTask->OnBlendOut.RemoveAll(this);
@@ -71,7 +72,7 @@ void UGA_BlackHole::PlaceBlackHole(const FGameplayAbilityTargetDataHandle& Targe
 		PlayCastBlackHoleMontageTask->OnCompleted.RemoveAll(this);
 	}
 	
-	//技能动画
+	//开始技能施法动画
 	if (HasAuthorityOrPredictionKey(CurrentActorInfo, &CurrentActivationInfo))
 	{
 		UAbilityTask_PlayMontageAndWait* PlayHoldBlackHoleMontage = 
@@ -89,7 +90,7 @@ void UGA_BlackHole::PlaceBlackHole(const FGameplayAbilityTargetDataHandle& Targe
 	BlackHoleTargetingTask->Cancelled.AddDynamic(this, &UGA_BlackHole::FinalTargetsReceived);
 	BlackHoleTargetingTask->ReadyForActivation();
 	
-	//生成瞄准器
+	//生成选择器
 	AGameplayAbilityTargetActor* TargetActor;
 	BlackHoleTargetingTask->BeginSpawningActor(this, BlackHoleTargetActorClass, TargetActor);
 	ATA_BlackHole* BlackHoleTargetActor = Cast<ATA_BlackHole>(TargetActor);

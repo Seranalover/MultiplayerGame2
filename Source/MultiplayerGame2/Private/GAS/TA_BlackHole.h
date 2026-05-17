@@ -24,6 +24,8 @@ public:
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const { return TeamId; }
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void StartTargeting(UGameplayAbility* Ability) override;
+	virtual void Tick(float DeltaSeconds) override;
 	
 private:
 	UPROPERTY(Replicated)
@@ -31,9 +33,16 @@ private:
 	
 	float PullSpeed;
 	float BlackHoleDuration;
+	FTimerHandle BlackHoleDurationTimerHandle;
 	
 	UPROPERTY(ReplicatedUsing = OnRep_BlackHoleRange)
 	float BlackHoleRange;
+	
+	UPROPERTY(EditDefaultsOnly, Category="VFX")
+	FName BlackHoleVFXOriginVariableName = "Origin";
+	
+	UPROPERTY(EditDefaultsOnly, Category="VFX")
+	class UNiagaraSystem* BlackHoleLinkVFX;
 	
 	UFUNCTION()
 	void OnRep_BlackHoleRange();
@@ -54,4 +63,11 @@ private:
 	UFUNCTION()
 	void ActorLeftBlackHoleRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	
+	void TryAddTarget(AActor* OtherTarget);
+	void RemoveTarget(AActor* OtherTarget);
+	
+	TMap<AActor*, class UNiagaraComponent*> ActorsInRangeMap;
+	
+	void StopBlackHole();
 };
