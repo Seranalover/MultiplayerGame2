@@ -57,6 +57,7 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UFUNCTION(Server, Reliable, WithValidation) //client调用该函数时，会通知server调用相同的函数
 	void Server_SendGameplayEventToSelf(const FGameplayTag& EventTag, const FGameplayEventData& EventData);
+	FORCEINLINE bool GetIsInFocusMode() const { return bIsInFocusMode; }
 	
 protected:
 	void UpgradeAbilityWithInputID(ECAbilityInputID InputID);
@@ -67,10 +68,13 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, Category="Gameplay Ability")
 	class UCAttributeSet* CAttributeSet;
 	
+	bool bIsInFocusMode = false;
+	
 	void BindGASChangeDelegates(); //绑定所有从GAS监听到的变更
 	void DeathTagUpdated(const FGameplayTag Tag, int32 NewCount); //死亡tag变更
 	void StunTagUpdated(const FGameplayTag Tag, int32 NewCount); //stun tag变更
 	void AimTagUpdated(const FGameplayTag Tag, int32 NewCount); //aim tag变更
+	void FocusTagUpdated(const FGameplayTag Tag, int32 NewCount); //focus tag变更
 	void SetIsAiming(bool bIsAiming); //瞄准时的处理
 	virtual void OnAimStateChanged(bool bIsAiming);
 	void MoveSpeedUpdated(const FOnAttributeChangeData& Data);

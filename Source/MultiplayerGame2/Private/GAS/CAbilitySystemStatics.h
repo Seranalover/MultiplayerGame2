@@ -23,6 +23,7 @@ public:
 	static FGameplayTag GetDeadStatTag(); //死亡状态tag
 	static FGameplayTag GetStunStatTag(); //眩晕tag
 	static FGameplayTag GetAimStatTag(); //瞄准状态tag
+	static FGameplayTag GetFocusStatTag(); //专注状态tag
 	static FGameplayTag GetHealthFullStatTag();
 	static FGameplayTag GetHealthEmptyStatTag();
 	static FGameplayTag GetManaFullStatTag();

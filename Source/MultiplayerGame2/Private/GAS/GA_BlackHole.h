@@ -48,6 +48,11 @@ private:
 	FActiveGameplayEffectHandle AimEffectHandle;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Targeting")
+	TSubclassOf<UGameplayEffect> FocusEffect;
+	
+	FActiveGameplayEffectHandle FocusEffectHandle;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Targeting")
 	TSubclassOf<class ATargetActor_GroundPick> TargetActorClass;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Targeting")
@@ -58,6 +63,9 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Effect")
 	float BlowPushSpeed = 3000.f; //爆炸击飞速度
+	
+	UPROPERTY(EditDefaultsOnly, Category="Effect")
+	FGameplayTag FinalBlowCueTag;
 	
 	UPROPERTY()
 	class UAbilityTask_PlayMontageAndWait* PlayCastBlackHoleMontageTask;
@@ -74,4 +82,6 @@ private:
 	
 	void AddAimEffect();
 	void RemoveAimEffect();
+	void AddFocusEffect();
+	void RemoveFocusEffect();
 };

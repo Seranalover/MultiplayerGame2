@@ -90,6 +90,7 @@ void ACPlayerCharacter::HandleLookInput(const FInputActionValue& InputActionValu
 
 void ACPlayerCharacter::HandleMoveInput(const FInputActionValue& InputActionValue)
 {
+	if (GetIsInFocusMode()) return; //专注模式禁用输入
 	FVector2D InputVector2D = InputActionValue.Get<FVector2D>(); //获得2d输入
 	InputVector2D.Normalize();
 	
