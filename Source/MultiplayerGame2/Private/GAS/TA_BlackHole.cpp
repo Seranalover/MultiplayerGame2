@@ -36,7 +36,7 @@ void ATA_BlackHole::ConfigureBlackHole(float InBlackHoleRange, float InPullSpeed
 	DetectionSphereComp->SetSphereRadius(InBlackHoleRange);
 	SetGenericTeamId(InTeamId);
 	BlackHoleDuration = InBlackHoleDuration;
-	BlackHoleDuration = InBlackHoleRange;
+	BlackHoleRange = InBlackHoleRange;
 }
 
 void ATA_BlackHole::SetGenericTeamId(const FGenericTeamId& TeamID)
