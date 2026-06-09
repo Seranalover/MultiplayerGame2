@@ -14,6 +14,9 @@ class ULobbyWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	virtual void NativeConstruct() override;
+	
 private:
 	UPROPERTY(meta=(BindWidget))
 	class UWidgetSwitcher* MainSwitcher;
@@ -26,4 +29,13 @@ private:
 	
 	UPROPERTY(meta=(BindWidget))
 	class UUniformGridPanel* TeamSelectionSlotGridPanel;
+	
+	UPROPERTY(EditDefaultsOnly, Category="TeamSelection")
+	TSubclassOf<class UTeamSelectionWidget> TeamSelectionWidgetClass;
+	
+	UPROPERTY()
+	TArray<class UTeamSelectionWidget*> TeamSelectionSlots;
+	
+	void ClearAndPopulateTeamSelectionSlots();
+	void SlotSelected(uint8 NewSlotId);
 };
