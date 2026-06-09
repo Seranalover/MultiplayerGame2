@@ -14,4 +14,6 @@ class ALobbyGameMode : public ACGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+	ALobbyGameMode();
 };
