@@ -10,7 +10,7 @@
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerSelectionUpdated, const TArray<FPlayerSelection>& /*NewPlayerSelection*/)
 /**
  * 游戏状态类
- * 作用是在大厅保存玩家的选择状态
+ * 作用是在大厅保存玩家的队伍选择状态
  */
 UCLASS()
 class ACGameState : public AGameStateBase

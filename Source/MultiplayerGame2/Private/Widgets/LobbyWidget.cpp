@@ -6,12 +6,16 @@
 #include "TeamSelectionWidget.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/UniformGridSlot.h"
+#include "Framework/CGameState.h"
 #include "Network/CNetStatics.h"
+#include "Player/LobbyPlayerController.h"
 
 void ULobbyWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	ClearAndPopulateTeamSelectionSlots();
+	LobbyPlayerController = GetOwningPlayer<ALobbyPlayerController>();
+	ConfigureGameState();
 }
 
 void ULobbyWidget::ClearAndPopulateTeamSelectionSlots()
@@ -40,5 +44,42 @@ void ULobbyWidget::ClearAndPopulateTeamSelectionSlots()
 
 void ULobbyWidget::SlotSelected(uint8 NewSlotId)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Trying to switch to slot: %d"), NewSlotId);
+	// UE_LOG(LogTemp, Warning, TEXT("Trying to switch to slot: %d"), NewSlotId);
+	if (LobbyPlayerController)
+	{
+		LobbyPlayerController->Server_RequestSlotSelectionChange(NewSlotId);
+	}
+}
+
+void ULobbyWidget::ConfigureGameState()
+{
+	UWorld* World = GetWorld();
+	if (!World) return;
+	
+	CGameState = World->GetGameState<ACGameState>();
+	if (!CGameState)
+	{
+		World->GetTimerManager().SetTimer(ConfigureGameStateTimer, this, &ULobbyWidget::ConfigureGameState, 1.f);
+	}
+	else
+	{
+		CGameState->OnPlayerSelectionUpdated.AddUObject(this, &ULobbyWidget::UpdatePlayerSelectionDisplay);
+		UpdatePlayerSelectionDisplay(CGameState->GetPlayerSelectionArray());
+	}
+}
+
+void ULobbyWidget::UpdatePlayerSelectionDisplay(const TArray<FPlayerSelection>& PlayerSelectionArray)
+{
+	for (UTeamSelectionWidget* SelectionSlot : TeamSelectionSlots)
+	{
+		SelectionSlot->UpdateSlotInfo("Empty");
+	}
+	
+	for (const FPlayerSelection& PlayerSelection : PlayerSelectionArray)
+	{
+		if (!PlayerSelection.IsValid()) 
+			continue;
+		
+		TeamSelectionSlots[PlayerSelection.GetPlayerSlot()]->UpdateSlotInfo(PlayerSelection.GetPlayerNickName());
+	}
 }
