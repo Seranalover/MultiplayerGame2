@@ -4,8 +4,10 @@
 #include "Widgets/LobbyWidget.h"
 
 #include "TeamSelectionWidget.h"
+#include "Components/Button.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/UniformGridSlot.h"
+#include "Components/WidgetSwitcher.h"
 #include "Framework/CGameState.h"
 #include "Network/CNetStatics.h"
 #include "Player/LobbyPlayerController.h"
@@ -14,8 +16,12 @@ void ULobbyWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	ClearAndPopulateTeamSelectionSlots();
-	LobbyPlayerController = GetOwningPlayer<ALobbyPlayerController>();
 	ConfigureGameState();
+	LobbyPlayerController = GetOwningPlayer<ALobbyPlayerController>();
+	if (LobbyPlayerController)
+		LobbyPlayerController->OnSwitchToHeroSelection.BindUObject(this, &ULobbyWidget::SwitchToHeroSelection);
+	StartHeroSelectionButton->SetIsEnabled(false);
+	StartHeroSelectionButton->OnClicked.AddDynamic(this, &ULobbyWidget::StartHeroSelectionButtonClicked);
 }
 
 void ULobbyWidget::ClearAndPopulateTeamSelectionSlots()
@@ -82,4 +88,22 @@ void ULobbyWidget::UpdatePlayerSelectionDisplay(const TArray<FPlayerSelection>& 
 		
 		TeamSelectionSlots[PlayerSelection.GetPlayerSlot()]->UpdateSlotInfo(PlayerSelection.GetPlayerNickName());
 	}
+	
+	if (CGameState)
+	{
+		StartHeroSelectionButton->SetIsEnabled(CGameState->CanStartHeroSelection());
+	}
+}
+
+void ULobbyWidget::StartHeroSelectionButtonClicked()
+{
+	if (LobbyPlayerController)
+	{
+		LobbyPlayerController->Server_StartHeroSelection();
+	}
+}
+
+void ULobbyWidget::SwitchToHeroSelection()
+{
+	MainSwitcher->SetActiveWidget(HeroSelectionRoot);
 }

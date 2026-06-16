@@ -40,6 +40,9 @@ private:
 	void ClearAndPopulateTeamSelectionSlots();
 	void SlotSelected(uint8 NewSlotId);
 	
+	UPROPERTY(meta=(BindWidget))
+	class UWidget* HeroSelectionRoot;
+	
 	UPROPERTY()
 	class ALobbyPlayerController* LobbyPlayerController;
 	
@@ -50,4 +53,9 @@ private:
 	
 	void ConfigureGameState();
 	void UpdatePlayerSelectionDisplay(const TArray<FPlayerSelection>& PlayerSelectionArray);
+	
+	UFUNCTION()
+	void StartHeroSelectionButtonClicked();
+	
+	void SwitchToHeroSelection();
 };
