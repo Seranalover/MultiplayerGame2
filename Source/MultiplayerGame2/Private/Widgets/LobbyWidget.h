@@ -43,6 +43,9 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	class UWidget* HeroSelectionRoot;
 	
+	UPROPERTY(meta=(BindWidget))
+	class UTileView* CharacterSelectionTileView;
+	
 	UPROPERTY()
 	class ALobbyPlayerController* LobbyPlayerController;
 	
