@@ -7,6 +7,7 @@
 #include "Inventory/PA_ShopItem.h"
 #include "CAssetManager.generated.h"
 
+class UPA_CharacterDefination;
 /**
  * 资产管理器类
  */
@@ -17,6 +18,9 @@ class UCAssetManager : public UAssetManager
 	
 public:
 	static UCAssetManager& Get();
+	void LoadCharacterDefinations(const FStreamableDelegate& LoadFinishedCallback); //加载角色
+	bool GetLoadedCharacterDefinaions(TArray<UPA_CharacterDefination*>& LoadedCharacterDefinations) const; //是否加载角色
+	
 	void LoadShopItems(const FStreamableDelegate& LoadFinishedCallback); //加载商店物品
 	bool GetLoadedShopItems(TArray<const UPA_ShopItem*>& OutItems) const; //是否加载到商店物品
 	const FItemCollection* GetCombinationForItem(const UPA_ShopItem* Item) const; //获得物品合成路线

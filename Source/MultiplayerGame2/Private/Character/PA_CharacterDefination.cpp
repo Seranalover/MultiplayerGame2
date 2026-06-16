@@ -11,7 +11,7 @@ FPrimaryAssetId UPA_CharacterDefination::GetPrimaryAssetId() const
 
 FPrimaryAssetType UPA_CharacterDefination::GetCharacterDefinationAssetType()
 {
-	return FPrimaryAssetType("CharacterDefination");
+	return FPrimaryAssetType("CharacterDefinition");
 }
 
 UTexture2D* UPA_CharacterDefination::LoadIcon() const

@@ -3,6 +3,8 @@
 
 #include "Framework/CAssetManager.h"
 
+#include "Character/PA_CharacterDefination.h"
+
 UCAssetManager& UCAssetManager::Get()
 {
 	UCAssetManager* Singleton = Cast<UCAssetManager>(GEngine->AssetManager.Get());
@@ -10,6 +12,25 @@ UCAssetManager& UCAssetManager::Get()
 	
 	UE_LOG(LogLoad, Fatal, TEXT("Asset Manager Singleton is NULL"));
 	return *NewObject<UCAssetManager>();
+}
+
+void UCAssetManager::LoadCharacterDefinations(const FStreamableDelegate& LoadFinishedCallback)
+{
+	LoadPrimaryAssetsWithType(UPA_CharacterDefination::GetCharacterDefinationAssetType(), TArray<FName>(), LoadFinishedCallback);
+}
+
+bool UCAssetManager::GetLoadedCharacterDefinaions(TArray<UPA_CharacterDefination*>& LoadedCharacterDefinations) const
+{
+	TArray<UObject*> LoadedObjects;
+	bool bLoaded = GetPrimaryAssetObjectList(UPA_CharacterDefination::GetCharacterDefinationAssetType(), LoadedObjects);
+	if (bLoaded)
+	{
+		for (UObject* LoadedObject : LoadedObjects)
+		{
+			LoadedCharacterDefinations.Add(Cast<UPA_CharacterDefination>(LoadedObject));
+		}
+	}
+	return bLoaded;
 }
 
 void UCAssetManager::LoadShopItems(const FStreamableDelegate& LoadFinishedCallback)
