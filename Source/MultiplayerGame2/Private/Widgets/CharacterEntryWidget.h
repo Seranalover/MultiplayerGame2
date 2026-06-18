@@ -9,7 +9,7 @@
 
 class UPA_CharacterDefination;
 /**
- * 
+ * 英雄选择界面
  */
 UCLASS()
 class UCharacterEntryWidget : public UUserWidget, public IUserObjectListEntry

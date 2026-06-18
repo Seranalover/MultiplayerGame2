@@ -22,7 +22,9 @@ void ULobbyWidget::NativeConstruct()
 	ConfigureGameState();
 	LobbyPlayerController = GetOwningPlayer<ALobbyPlayerController>();
 	if (LobbyPlayerController)
+	{
 		LobbyPlayerController->OnSwitchToHeroSelection.BindUObject(this, &ULobbyWidget::SwitchToHeroSelection);
+	}
 	StartHeroSelectionButton->SetIsEnabled(false);
 	StartHeroSelectionButton->OnClicked.AddDynamic(this, &ULobbyWidget::StartHeroSelectionButtonClicked);
 	UCAssetManager::Get().LoadCharacterDefinations(FStreamableDelegate::CreateUObject(this, &ULobbyWidget::CharacterDefinitionLoaded));
@@ -117,6 +119,10 @@ void ULobbyWidget::CharacterDefinitionLoaded()
 	TArray<UPA_CharacterDefination*> LoadedCharacterDefs; 
 	if (UCAssetManager::Get().GetLoadedCharacterDefinaions(LoadedCharacterDefs))
 	{
+		/*for (UPA_CharacterDefination* CharacterDef : LoadedCharacterDefs)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Loaded Character: %s"), *(CharacterDef->GetCharacterDisplayName()));
+		}*/
 		CharacterSelectionTileView->SetListItems(LoadedCharacterDefs);
 	}
 }
