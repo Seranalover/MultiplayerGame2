@@ -7,6 +7,7 @@
 #include "Player/PlayerInfoTypes.h"
 #include "CGameState.generated.h"
 
+class UPA_CharacterDefination;
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerSelectionUpdated, const TArray<FPlayerSelection>& /*NewPlayerSelection*/)
 /**
  * 游戏状态类
@@ -26,6 +27,9 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	bool CanStartHeroSelection() const;
+	void SetCharacterSelected(const APlayerState* SelectingPlayer, const UPA_CharacterDefination* SelectedDefinition);
+	bool IsDefinitionSelected(const UPA_CharacterDefination* SelectedDefinition) const;
+	void SetCharacterDeselected(const UPA_CharacterDefination* DeselectedDefinition);
 	
 private:
 	UPROPERTY(ReplicatedUsing = OnRep_PlayerSelectionArray)
