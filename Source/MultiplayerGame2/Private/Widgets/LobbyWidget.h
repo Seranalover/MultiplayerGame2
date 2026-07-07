@@ -52,6 +52,9 @@ private:
 	UPROPERTY()
 	class ACGameState* CGameState;
 	
+	UPROPERTY()
+	class ACPlayerState* CPlayerState;
+	
 	FTimerHandle ConfigureGameStateTimer;
 	
 	void ConfigureGameState();
@@ -62,4 +65,6 @@ private:
 	
 	void SwitchToHeroSelection();
 	void CharacterDefinitionLoaded();
+	
+	void CharacterSelected(UObject* SelectedUObject);
 };

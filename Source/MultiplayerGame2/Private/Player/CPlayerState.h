@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerState.h"
 #include "CPlayerState.generated.h"
 
+class UPA_CharacterDefination;
 /**
  * 玩家状态类
  * 作用是从游戏大厅传递状态数据到游戏场景中
