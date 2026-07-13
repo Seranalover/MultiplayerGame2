@@ -43,3 +43,8 @@ void ALobbyPlayerController::Client_StartHeroSelection_Implementation()
 {
 	OnSwitchToHeroSelection.ExecuteIfBound();
 }
+
+ALobbyPlayerController::ALobbyPlayerController()
+{
+	bAutoManageActiveCameraTarget = false; //无论切换到哪个控制实体，现在都不会更改为新的实体
+}

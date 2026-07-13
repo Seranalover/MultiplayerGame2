@@ -18,6 +18,8 @@ class ALobbyPlayerController : public AMenuPlayerController
 public:
 	FOnSwitchToHeroSelection OnSwitchToHeroSelection;
 	
+	ALobbyPlayerController();
+	
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_RequestSlotSelectionChange(uint8 NewSlotId);
 	

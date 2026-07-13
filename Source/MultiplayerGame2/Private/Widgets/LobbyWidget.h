@@ -67,4 +67,13 @@ private:
 	void CharacterDefinitionLoaded();
 	
 	void CharacterSelected(UObject* SelectedUObject);
+	
+	UPROPERTY(EditDefaultsOnly, Category="Character Display")
+	TSubclassOf<class ACharacterDisplay> CharacterDisplayClass;
+	
+	UPROPERTY()
+	class ACharacterDisplay* CharacterDisplay;
+	
+	void SpawnCharacterDisplay();
+	void UpdateCharacterDisplay(const FPlayerSelection& PlayerSelection); //切换角色模型时调用
 };
