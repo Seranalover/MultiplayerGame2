@@ -3,6 +3,7 @@
 
 #include "Widgets/LobbyWidget.h"
 
+#include "AbilitiesListView.h"
 #include "CharacterDisplay.h"
 #include "CharacterEntryWidget.h"
 #include "TeamSelectionWidget.h"
@@ -183,4 +184,10 @@ void ULobbyWidget::UpdateCharacterDisplay(const FPlayerSelection& PlayerSelectio
 	if (!PlayerSelection.GetCharacterDefinition()) return;
 	
 	CharacterDisplay->ConfigureWithCharacterDefinition(PlayerSelection.GetCharacterDefinition());
+	AbilityListView->ClearListItems();
+	const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>* Abilities = PlayerSelection.GetCharacterDefinition()->GetAbilities();
+	if (Abilities)
+	{
+		AbilityListView->ConfigureAbilities(*Abilities);
+	}
 }
