@@ -108,4 +108,9 @@ private:
 	void UpdateCanCast();
 	void UpgradePointUpdated(const FOnAttributeChangeData& ChangeData);
 	void ManaUpdated(const FOnAttributeChangeData& ChangeData);
+	
+	UPROPERTY(EditDefaultsOnly, Category="Tool Tip")
+	TSubclassOf<class UAbilityToolTip> AbilityToolTipClass;
+	
+	void createToolTipWidget(const FAbilityWidgetData* AbilityWidgetData);
 };

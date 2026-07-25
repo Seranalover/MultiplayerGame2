@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AbilityToolTip.h"
 #include "Abilities/GameplayAbility.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -55,6 +56,7 @@ void UAbilityGauge::ConfigureWithWidgetData(const FAbilityWidgetData* WidgetData
 	if (Icon && WidgetData)
 	{
 		Icon->GetDynamicMaterial()->SetTextureParameterValue(IconMaterialParamName, WidgetData->Icon.LoadSynchronous());
+		createToolTipWidget(WidgetData);
 	}
 }
 
@@ -155,4 +157,20 @@ void UAbilityGauge::UpgradePointUpdated(const FOnAttributeChangeData& ChangeData
 void UAbilityGauge::ManaUpdated(const FOnAttributeChangeData& ChangeData)
 {
 	UpdateCanCast();
+}
+
+void UAbilityGauge::createToolTipWidget(const FAbilityWidgetData* AbilityWidgetData)
+{
+	if (!AbilityWidgetData || !AbilityToolTipClass) return;
+	
+	UAbilityToolTip* InstantiatedToolTip = CreateWidget<UAbilityToolTip>(GetOwningPlayer(), AbilityToolTipClass);
+	if (InstantiatedToolTip)
+	{
+		float CooldownDuration = UCAbilitySystemStatics::GetStaticCooldownDurationForAbility(AbilityCDO); //获得技能冷却
+		float Cost = UCAbilitySystemStatics::GetStaticCostForAbility(AbilityCDO); //获得技能消耗
+		InstantiatedToolTip->SetAbilityInfo(AbilityWidgetData->AbilityName, AbilityWidgetData->Icon.LoadSynchronous(), 
+			AbilityWidgetData->Description, CooldownDuration, Cost);
+		
+		SetToolTip(InstantiatedToolTip);
+	}
 }
