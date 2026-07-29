@@ -8,7 +8,7 @@
 
 class UPA_CharacterDefination;
 /**
- * 大厅顶部 玩家英雄选择展示
+ * 大厅顶部 玩家选择英雄展示
  */
 UCLASS()
 class UPlayerTeamSlotWidget : public UUserWidget

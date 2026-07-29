@@ -79,4 +79,7 @@ private:
 	
 	void SpawnCharacterDisplay();
 	void UpdateCharacterDisplay(const FPlayerSelection& PlayerSelection); //切换角色模型时调用
+	
+	UPROPERTY(meta=(BindWidget))
+	class UPlayerTeamLayoutWidget* PlayerTeamLayoutWidget;
 };
