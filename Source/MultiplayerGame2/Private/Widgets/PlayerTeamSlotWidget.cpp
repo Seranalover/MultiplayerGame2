@@ -37,14 +37,14 @@ void UPlayerTeamSlotWidget::NativeOnMouseEnter(const FGeometry& InGeometry, cons
 {
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
 	NameText->SetText(FText::FromString(CachedCharacterNameStr));
-	PlayAnimationForward(HoverAnim);
+	PlayAnimationForward(HoverAnimation);
 }
 
 void UPlayerTeamSlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseLeave(InMouseEvent);
 	NameText->SetText(FText::FromString(CachedPlayerNameStr));
-	PlayAnimationReverse(HoverAnim);
+	PlayAnimationReverse(HoverAnimation);
 }
 
 void UPlayerTeamSlotWidget::UpdateNameText()

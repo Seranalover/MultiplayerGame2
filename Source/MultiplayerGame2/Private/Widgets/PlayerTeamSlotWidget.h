@@ -23,8 +23,8 @@ public:
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 	
 private:
-	UPROPERTY(Transient, meta=(BindWidget))
-	class UWidgetAnimation* HoverAnim; //悬停时的角色动画
+	UPROPERTY(Transient, meta=(BindWidgetAnim))
+	class UWidgetAnimation* HoverAnimation; //悬停时的角色动画
 	
 	UPROPERTY(meta=(BindWidget))
 	class UImage* PlayerCharacterIcon;
