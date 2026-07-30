@@ -28,4 +28,7 @@ public:
 	
 	UFUNCTION(Client, Reliable)
 	void Client_StartHeroSelection();
+	
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_RequestStartMatch();
 };

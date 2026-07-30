@@ -82,4 +82,10 @@ private:
 	
 	UPROPERTY(meta=(BindWidget))
 	class UPlayerTeamLayoutWidget* PlayerTeamLayoutWidget;
+	
+	UPROPERTY(meta=(BindWidget))
+	class UButton* StartMatchButton;
+	
+	UFUNCTION()
+	void StartMatchButtonClicked();
 };

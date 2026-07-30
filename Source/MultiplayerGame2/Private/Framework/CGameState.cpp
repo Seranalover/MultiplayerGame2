@@ -3,6 +3,7 @@
 
 #include "Framework/CGameState.h"
 
+#include "Character/PA_CharacterDefination.h"
 #include "Net/UnrealNetwork.h"
 
 void ACGameState::RequestPlayerSelectionChange(const APlayerState* RequestingPlayer, uint8 DesiredSlot)
@@ -67,6 +68,19 @@ void ACGameState::SetCharacterDeselected(const UPA_CharacterDefination* Deselect
 		FoundPlayerSelection->SetCharacterDefinition(nullptr);
 		OnPlayerSelectionUpdated.Broadcast(PlayerSelectionArray);
 	}
+}
+
+bool ACGameState::CanStartMatch() const
+{
+	for (const FPlayerSelection& PlayerSelection : PlayerSelectionArray)
+	{
+		if (PlayerSelection.GetCharacterDefinition() == nullptr)
+		{
+			return false;
+		}
+		UE_LOG(LogTemp, Warning, TEXT("111 %s"), *PlayerSelection.GetCharacterDefinition()->GetName());
+	}
+	return true;
 }
 
 bool ACGameState::IsSlotOccupied(uint8 SlotId) const

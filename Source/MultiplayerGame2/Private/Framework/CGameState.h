@@ -31,6 +31,8 @@ public:
 	bool IsDefinitionSelected(const UPA_CharacterDefination* SelectedDefinition) const;
 	void SetCharacterDeselected(const UPA_CharacterDefination* DeselectedDefinition);
 	
+	bool CanStartMatch() const;
+	
 private:
 	UPROPERTY(ReplicatedUsing = OnRep_PlayerSelectionArray)
 	TArray<FPlayerSelection> PlayerSelectionArray;

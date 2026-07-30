@@ -11,7 +11,7 @@ void UCGameInstance::StartMatch()
 
 void UCGameInstance::LoadLevelAndListen(TSoftObjectPtr<UWorld> Level)
 {
-	const FName LevelURL = FName(FPackageName::ObjectPathToPackageName(Level.ToString()));
+	const FName LevelURL = FName(*FPackageName::ObjectPathToPackageName(Level.ToString()));
 	
 	if (LevelURL != "")
 		GetWorld()->ServerTravel(LevelURL.ToString() + "?listen");
