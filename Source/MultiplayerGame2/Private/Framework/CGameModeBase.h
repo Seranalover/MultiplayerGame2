@@ -18,9 +18,11 @@ class ACGameModeBase : public AGameModeBase
 public:
 	virtual APlayerController* SpawnPlayerController(ENetRole InRemoteRole, const FString& Options) override;
 	virtual void StartPlay() override;
+	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
+	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 
 private:
-	FGenericTeamId GetTeamIdForPlayer(const APlayerController* PlayerController) const; //生成team id
+	FGenericTeamId GetTeamIdForPlayer(const AController* InController) const; //生成team id
 	
 	AActor* FindNextStartSpotForTeam(const FGenericTeamId& TeamId) const; //获得出生点信息
 	
@@ -29,4 +31,7 @@ private:
 	
 	class AStormCore* GetStormCore() const;
 	void MatchFinished(AActor* ViewTarget, int WinningTeam);
+	
+	UPROPERTY(EditDefaultsOnly, Category="Team")
+	TSubclassOf<APawn> BackupPawn;
 };
