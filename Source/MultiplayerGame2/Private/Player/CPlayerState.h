@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "PlayerInfoTypes.h"
 #include "GameFramework/PlayerState.h"
 #include "CPlayerState.generated.h"
@@ -21,6 +22,9 @@ public:
 	ACPlayerState();
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void BeginPlay() override;
+	virtual void CopyProperties(APlayerState* PlayerState) override; //在关卡中复制和传递玩家状态信息
+	TSubclassOf<APawn> GetSelectedPawnClass() const;
+	FGenericTeamId GetTeamIdBasedOnSlot() const; //根据slot位置获得team id
 	
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_SetSelectedCharacterDefinition(const UPA_CharacterDefination* NewDefinition);

@@ -78,7 +78,7 @@ bool ACGameState::CanStartMatch() const
 		{
 			return false;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("111 %s"), *PlayerSelection.GetCharacterDefinition()->GetName());
+		// UE_LOG(LogTemp, Warning, TEXT("111 %s"), *PlayerSelection.GetCharacterDefinition()->GetName());
 	}
 	return true;
 }
