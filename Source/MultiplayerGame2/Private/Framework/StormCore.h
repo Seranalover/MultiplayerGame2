@@ -38,8 +38,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
+#if WITH_EDITOR //编辑器模式下才执行以下函数
 	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
-
+#endif
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Animation")
 	UAnimMontage* ExpandMontage;

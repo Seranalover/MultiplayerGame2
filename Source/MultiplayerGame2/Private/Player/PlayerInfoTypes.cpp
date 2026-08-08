@@ -35,16 +35,16 @@ bool FPlayerSelection::IsForPlayer(const APlayerState* PlayerState) const
 
 bool FPlayerSelection::IsValid() const
 {
-	#if WITH_EDITOR
+	#if WITH_EDITOR //编辑模式下执行
 		return true;
-	#else
+	#else //非编辑模式下执行，例如服务器模式
 		if (!PlayerUniqueId.IsValid()) 
 			return false;
 	
-		if (slot == GetInvalidSlot()) 
+		if (Slot == GetInvalidSlot()) 
 			return false;
 	
-		if (slot >= UCNetStatics::GetPlayerCountPerTeam() * 2)	
+		if (Slot >= UCNetStatics::GetPlayerCountPerTeam() * 2)	
 			return false;
 	
 		return false;
