@@ -16,7 +16,8 @@ public class MultiplayerGame2 : ModuleRules
 			"GameplayAbilities", "GameplayTasks", "GameplayTags", //GAS
 			"UMG", "Slate", "SlateCore", //GUI
 			"AIModule", 
-			"Niagara" //Niagara粒子特效
+			"Niagara", //Niagara粒子特效
+			"OnlineSubsystem", "OnlineSubsystemEOS", "OnlineSubsystemUtils", "Networking", "HTTP", "Json" //联网组件
 		});
 
 		// Uncomment if you are using Slate UI
