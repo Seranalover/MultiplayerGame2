@@ -19,6 +19,15 @@ class UCGameInstance : public UGameInstance
 	
 public:
 	void StartMatch(); //点击 开始游戏 时加载游戏关卡
+	virtual void Init() override; //游戏启动时调用
+
+/*****************************************************/
+/*                  Session Server                   */
+/*****************************************************/
+private:
+	FString ServerSessionName;
+	int ServerSessionPort;
+	void CreateSession();
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Map")
