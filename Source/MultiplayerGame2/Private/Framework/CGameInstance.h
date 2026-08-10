@@ -20,22 +20,6 @@ class UCGameInstance : public UGameInstance
 public:
 	void StartMatch(); //点击 开始游戏 时加载游戏关卡
 	virtual void Init() override; //游戏启动时调用
-
-/*****************************************************/
-/*                  Session Server                   */
-/*****************************************************/
-private:
-	FString ServerSessionName;
-	int ServerSessionPort;
-	FTimerHandle WaitPlayerJoinTimeoutHandle; //等待玩家计时器，没有玩家加入时关闭会话
-	UPROPERTY(EditDefaultsOnly, Category = "Session")
-	float WaitPlayerJoinTimeoutDuration = 60.f;
-	
-	void CreateSession();
-	void OnSessionCreated(FName SessionName, bool bWasSuccessful);
-	void TerminateSessionServer(); //当无法创建会话时，关闭会话避免占用资源
-	void EndSessionCompleted(FName SessionName, bool bWasSuccessful);
-	void WaitPlayerJoinTimeoutReached();
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Map")
@@ -48,4 +32,25 @@ private:
 	TSoftObjectPtr<UWorld> GameLevel;
 	
 	void LoadLevelAndListen(TSoftObjectPtr<UWorld> Level);
+	
+	/*****************************************************/
+	/*                  Session Server                   */
+	/*****************************************************/
+public:
+	void PlayerJoined(const FUniqueNetIdRepl& UniqueId); //当有玩家加入会话
+	void PlayerLeft(const FUniqueNetIdRepl& UniqueId); //当有玩家离开会话
+	
+private:
+	FString ServerSessionName;
+	int ServerSessionPort;
+	FTimerHandle WaitPlayerJoinTimeoutHandle; //等待玩家计时器，没有玩家加入时关闭会话
+	UPROPERTY(EditDefaultsOnly, Category = "Session")
+	float WaitPlayerJoinTimeoutDuration = 60.f;
+	TSet<FUniqueNetIdRepl> PlayerRecord; //当前登陆的玩家集合
+	
+	void CreateSession();
+	void OnSessionCreated(FName SessionName, bool bWasSuccessful);
+	void TerminateSessionServer(); //当无法创建会话时，关闭会话避免占用资源
+	void EndSessionCompleted(FName SessionName, bool bWasSuccessful); //关闭会话
+	void WaitPlayerJoinTimeoutReached(); //计时器任务 - 等待结束
 };

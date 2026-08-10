@@ -42,7 +42,11 @@ void UCGameInstance::CreateSession()
 			TerminateSessionServer();
 		}
 	}
-	
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Can't find session ptr, terminating..."));
+		TerminateSessionServer();
+	}
 }
 
 void UCGameInstance::OnSessionCreated(FName SessionName, bool bWasSuccessful)
@@ -104,5 +108,22 @@ void UCGameInstance::LoadLevelAndListen(TSoftObjectPtr<UWorld> Level)
 		FString TravelStr = FString::Printf(TEXT("%s?listen?port=%d"), *LevelURL.ToString(), ServerSessionPort);
 		UE_LOG(LogTemp, Warning, TEXT("Server Traveling to: %s"), *TravelStr);
 		GetWorld()->ServerTravel(TravelStr);
+	}
+}
+
+void UCGameInstance::PlayerJoined(const FUniqueNetIdRepl& UniqueId)
+{
+	if (WaitPlayerJoinTimeoutHandle.IsValid())
+		GetWorld()->GetTimerManager().ClearTimer(WaitPlayerJoinTimeoutHandle);
+	PlayerRecord.Add(UniqueId);
+}
+
+void UCGameInstance::PlayerLeft(const FUniqueNetIdRepl& UniqueId)
+{
+	PlayerRecord.Remove(UniqueId);
+	if (PlayerRecord.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("All player left the session, terminating..."));
+		TerminateSessionServer();
 	}
 }
