@@ -1,1 +1,1 @@
-%UNREAL_EDITOR% "%~dp0../MultiplayerGame2.uproject" -server -log -epicapp="ServerClient" -SESSION_NAMW="TestSession" -SESSION_SEARCH_ID="dsadfkuhdfaskdjhffdik" -PORT=7779
+%UNREAL_EDITOR% "%~dp0../MultiplayerGame2.uproject" -server -log -epicapp="ServerClient" -SESSION_NAME="TestSession" -SESSION_SEARCH_ID="dsadfkuhdfaskdjhffdik" -PORT=7779
