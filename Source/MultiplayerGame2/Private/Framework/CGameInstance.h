@@ -27,7 +27,15 @@ public:
 private:
 	FString ServerSessionName;
 	int ServerSessionPort;
+	FTimerHandle WaitPlayerJoinTimeoutHandle; //等待玩家计时器，没有玩家加入时关闭会话
+	UPROPERTY(EditDefaultsOnly, Category = "Session")
+	float WaitPlayerJoinTimeoutDuration = 60.f;
+	
 	void CreateSession();
+	void OnSessionCreated(FName SessionName, bool bWasSuccessful);
+	void TerminateSessionServer(); //当无法创建会话时，关闭会话避免占用资源
+	void EndSessionCompleted(FName SessionName, bool bWasSuccessful);
+	void WaitPlayerJoinTimeoutReached();
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Map")
