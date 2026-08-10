@@ -1,0 +1,1 @@
+%UNREAL_EDITOR% "%~dp0../MultiplayerGame2.uproject" -game -log -epicapp="GameClient"
