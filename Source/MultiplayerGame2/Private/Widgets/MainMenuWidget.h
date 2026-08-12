@@ -14,4 +14,31 @@ class UMainMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	virtual void NativeConstruct() override;
+	
+/******************************************/
+/*                  Main                  */
+/******************************************/
+private:
+	UPROPERTY(meta=(BindWidget))
+	class UWidgetSwitcher* MainSwitcher;
+	
+	UPROPERTY()
+	class UCGameInstance* CGameInstance;
+
+/******************************************/
+/*                 Login                  */
+/******************************************/
+private:
+	UPROPERTY(meta=(BindWidget))
+	class UWidget* LoginWidgetRoot;
+	
+	UPROPERTY(meta=(BindWidget))
+	class UButton* LoginButton;
+	
+	UFUNCTION()
+	void LoginBtnClicked();
+	
+	void LoginCompleted(bool bWasSuccessful, const FString& PlayerNickName, const FString& ErrorMsg);
 };
