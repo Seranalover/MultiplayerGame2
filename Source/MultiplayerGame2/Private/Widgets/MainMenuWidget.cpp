@@ -20,7 +20,7 @@ void UMainMenuWidget::NativeConstruct()
 void UMainMenuWidget::LoginBtnClicked()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Logining In!"));
-	if (CGameInstance)
+	if (CGameInstance && !CGameInstance->IsLoggedIn() && !CGameInstance->IsLoggingIn())
 	{
 		CGameInstance->ClientAccountPortalLogin();
 	}
