@@ -99,6 +99,73 @@ void UCGameInstance::WaitPlayerJoinTimeoutReached()
 	TerminateSessionServer();
 }
 
+bool UCGameInstance::IsLoggedIn()
+{
+	if (IOnlineIdentityPtr IdentityPtr = UCNetStatics::GetIdentityPtr())
+		return IdentityPtr->GetLoginStatus(0) == ELoginStatus::LoggedIn;
+	return false;
+}
+
+bool UCGameInstance::IsLoggingIn()
+{
+	return LoggingDelegateHandle.IsValid();
+}
+
+void UCGameInstance::ClientAccountPortalLogin()
+{
+	ClientLogin("AccountPortal", "", "");
+}
+
+void UCGameInstance::ClientLogin(const FString& Type, const FString& Id, const FString& Token)
+{
+	if (IOnlineIdentityPtr IdentityPtr = UCNetStatics::GetIdentityPtr())
+	{
+		if (LoggingDelegateHandle.IsValid())
+		{
+			IdentityPtr->OnLoginCompleteDelegates->Remove(LoggingDelegateHandle);
+			LoggingDelegateHandle.Reset();
+		}
+		LoggingDelegateHandle = IdentityPtr->OnLoginCompleteDelegates->AddUObject(this, &UCGameInstance::LoginCompleted);
+		if (!IdentityPtr->Login(0, FOnlineAccountCredentials(Type, Id, Token)))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Login Failed Right Away!"));
+			if (LoggingDelegateHandle.IsValid())
+			{
+				IdentityPtr->OnLoginCompleteDelegates->Remove(LoggingDelegateHandle);
+				LoggingDelegateHandle.Reset();
+			}
+			OnLoginCompleted.Broadcast(false, "", "Login Failed Right Away!");
+		}
+	}
+}
+
+void UCGameInstance::LoginCompleted(int NumOfLocalPlayer, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& Error)
+{
+	if (IOnlineIdentityPtr IdentityPtr = UCNetStatics::GetIdentityPtr())
+	{
+		if (LoggingDelegateHandle.IsValid())
+		{
+			IdentityPtr->OnLoginCompleteDelegates->Remove(LoggingDelegateHandle);
+			LoggingDelegateHandle.Reset();
+		}
+		FString PlayerNickname = "";
+		if (bWasSuccessful)
+		{
+			PlayerNickname = IdentityPtr->GetPlayerNickname(UserId);
+			UE_LOG(LogTemp, Warning, TEXT("Logged in successfully as: %s"), *PlayerNickname);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Logged in Failed: %s"), *Error);
+		}
+		OnLoginCompleted.Broadcast(bWasSuccessful, PlayerNickname, Error);
+	}
+	else
+	{
+		OnLoginCompleted.Broadcast(false, "", "Can't find the Identity Pointer");
+	}
+}
+
 void UCGameInstance::LoadLevelAndListen(TSoftObjectPtr<UWorld> Level)
 {
 	const FName LevelURL = FName(*FPackageName::ObjectPathToPackageName(Level.ToString()));

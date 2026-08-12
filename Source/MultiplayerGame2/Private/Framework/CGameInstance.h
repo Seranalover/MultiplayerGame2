@@ -6,6 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "CGameInstance.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnLoginCompleted, bool /*bWasSuccessful*/, const FString& /*PlayerNickName*/, const FString& /*ErrorMsg*/);
 /**
  * 游戏实例类
  * 在游戏运行期间持续存在，伴随整个游戏进程
@@ -53,4 +54,18 @@ private:
 	void TerminateSessionServer(); //当无法创建会话时，关闭会话避免占用资源
 	void EndSessionCompleted(FName SessionName, bool bWasSuccessful); //关闭会话
 	void WaitPlayerJoinTimeoutReached(); //计时器任务 - 等待结束
+	
+	/*****************************************************/
+	/*                       Login                       */
+	/*****************************************************/
+public:
+	FOnLoginCompleted OnLoginCompleted;
+	bool IsLoggedIn(); //已登录？
+	bool IsLoggingIn(); //登陆中？
+	void ClientAccountPortalLogin();
+	
+private:
+	FDelegateHandle LoggingDelegateHandle; //登录句柄
+	void ClientLogin(const FString& Type, const FString& Id, const FString& Token);
+	void LoginCompleted(int NumOfLocalPlayer, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& Error);
 };
