@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Button.h"
 #include "MainMenuWidget.generated.h"
 
 /**
@@ -17,19 +18,24 @@ class UMainMenuWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 	
-/******************************************/
-/*                  Main                  */
-/******************************************/
+	/******************************************/
+	/*                  Main                  */
+	/******************************************/
 private:
 	UPROPERTY(meta=(BindWidget))
 	class UWidgetSwitcher* MainSwitcher;
 	
 	UPROPERTY()
 	class UCGameInstance* CGameInstance;
+	
+	UPROPERTY(meta=(BindWidget))
+	class UWidget* MainWidgetRoot;
+	
+	void SwitchToMainMenuWidget(); //切换到主菜单
 
-/******************************************/
-/*                 Login                  */
-/******************************************/
+	/******************************************/
+	/*                 Login                  */
+	/******************************************/
 private:
 	UPROPERTY(meta=(BindWidget))
 	class UWidget* LoginWidgetRoot;
@@ -41,4 +47,13 @@ private:
 	void LoginBtnClicked();
 	
 	void LoginCompleted(bool bWasSuccessful, const FString& PlayerNickName, const FString& ErrorMsg);
+	
+	/******************************************/
+	/*                 Waiting                */
+	/******************************************/
+private:
+	UPROPERTY(meta=(BindWidget))
+	class UWaitingWidget* WaitingWidget;
+	
+	FOnButtonClickedEvent& SwitchToWaitingWidget(const FText& WaitInfo, bool bAllowCancel = false);
 };

@@ -4,6 +4,8 @@
 #include "Widgets/MainMenuWidget.h"
 #include "Framework/CGameInstance.h"
 #include "Components/Button.h"
+#include "Components/WidgetSwitcher.h"
+#include "Widgets/WaitingWidget.h"
 
 void UMainMenuWidget::NativeConstruct()
 {
@@ -12,9 +14,21 @@ void UMainMenuWidget::NativeConstruct()
 	if (CGameInstance)
 	{
 		CGameInstance->OnLoginCompleted.AddUObject(this, &UMainMenuWidget::LoginCompleted);
+		if (CGameInstance->IsLoggedIn())
+		{
+			SwitchToMainMenuWidget();
+		}
 	}
 	
 	LoginButton->OnClicked.AddDynamic(this, &UMainMenuWidget::LoginBtnClicked);
+}
+
+void UMainMenuWidget::SwitchToMainMenuWidget()
+{
+	if (MainSwitcher)
+	{
+		MainSwitcher->SetActiveWidget(MainWidgetRoot);
+	}
 }
 
 void UMainMenuWidget::LoginBtnClicked()
@@ -23,6 +37,7 @@ void UMainMenuWidget::LoginBtnClicked()
 	if (CGameInstance && !CGameInstance->IsLoggedIn() && !CGameInstance->IsLoggingIn())
 	{
 		CGameInstance->ClientAccountPortalLogin();
+		SwitchToWaitingWidget(FText::FromString("Logging In"));
 	}
 }
 
@@ -36,4 +51,12 @@ void UMainMenuWidget::LoginCompleted(bool bWasSuccessful, const FString& PlayerN
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Login Failed"));
 	}
+	SwitchToMainMenuWidget();
+}
+
+FOnButtonClickedEvent& UMainMenuWidget::SwitchToWaitingWidget(const FText& WaitInfo, bool bAllowCancel)
+{
+	MainSwitcher->SetActiveWidget(WaitingWidget);
+	WaitingWidget->SetWaitInfo(WaitInfo, bAllowCancel);
+	return WaitingWidget->ClearAndGetButtonClickedEvent();
 }
