@@ -96,3 +96,26 @@ FOnlineSessionSettings UCNetStatics::GenerateOnlineSessionSettings(const FName& 
 	
 	return OnlineSessionSettings;
 }
+
+FName UCNetStatics::GetCoordinatorURLKey()
+{
+	return FName("COORDINATOR_URL");
+}
+
+FString UCNetStatics::GetCoordinatorURL()
+{
+	FString CoordinatorURL = GetCommandLineArgsAsString(GetCoordinatorURLKey());
+	if (CoordinatorURL != "")
+	{
+		return CoordinatorURL;
+	}
+	return GetDefaultCoordinatorURL(); 
+}
+
+FString UCNetStatics::GetDefaultCoordinatorURL()
+{
+	FString CoordinatorURL = "";
+	GConfig->GetString(TEXT("MultiplayerGame2.Net"), TEXT("CoordinatorURL"), CoordinatorURL, GGameIni); //从DefaultGame.ini配置文件中获得CoordinatorURL
+	UE_LOG(LogTemp, Warning, TEXT("Getting default Coordinator URL as: %s"), *CoordinatorURL);
+	return CoordinatorURL;
+}

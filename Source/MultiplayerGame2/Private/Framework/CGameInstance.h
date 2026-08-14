@@ -38,7 +38,7 @@ private:
 	/*        Client Session Creation and Search         */
 	/*****************************************************/
 public:
-	void RequestCreateAndJoinSession(const FName& NewSessionName);
+	void RequestCreateAndJoinSession(const FName& NewSessionName); //创建并加入会话
 	void CancelSessionCreation();
 	
 	/*****************************************************/

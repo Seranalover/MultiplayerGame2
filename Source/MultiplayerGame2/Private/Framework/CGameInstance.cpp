@@ -2,6 +2,9 @@
 
 
 #include "Framework/CGameInstance.h"
+
+#include "HttpModule.h"
+#include "Interfaces/IHttpRequest.h"
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Network/CNetStatics.h"
@@ -181,6 +184,12 @@ void UCGameInstance::LoadLevelAndListen(TSoftObjectPtr<UWorld> Level)
 void UCGameInstance::RequestCreateAndJoinSession(const FName& NewSessionName)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Requesting create and join session: %s"), *(NewSessionName.ToString()));
+	
+	FHttpRequestRef Request = FHttpModule::Get().CreateRequest(); //创建请求
+	FGuid SessionSearchId = FGuid::NewGuid(); //创建GUID
+	
+	FString CoordinatorURL = UCNetStatics::GetCoordinatorURL(); //获得协调器地址
+	UE_LOG(LogTemp, Warning, TEXT("Sending request session creation to URL: %s"), *CoordinatorURL);
 }
 
 void UCGameInstance::CancelSessionCreation()
