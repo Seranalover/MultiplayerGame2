@@ -178,6 +178,16 @@ void UCGameInstance::LoadLevelAndListen(TSoftObjectPtr<UWorld> Level)
 	}
 }
 
+void UCGameInstance::RequestCreateAndJoinSession(const FName& NewSessionName)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Requesting create and join session: %s"), *(NewSessionName.ToString()));
+}
+
+void UCGameInstance::CancelSessionCreation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Canceling session creation"));
+}
+
 void UCGameInstance::PlayerJoined(const FUniqueNetIdRepl& UniqueId)
 {
 	if (WaitPlayerJoinTimeoutHandle.IsValid())

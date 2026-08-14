@@ -32,6 +32,25 @@ private:
 	class UWidget* MainWidgetRoot;
 	
 	void SwitchToMainMenuWidget(); //切换到主菜单
+	
+	/******************************************/
+	/*                Session                 */
+	/******************************************/
+private:
+	UPROPERTY(meta=(BindWidget))
+	class UButton* CreateSessionBtn;
+	
+	UPROPERTY(meta=(BindWidget))
+	class UEditableText* NewSessionNameText;
+	
+	UFUNCTION()
+	void CreateSessionBtnClicked();
+	
+	UFUNCTION()
+	void NewSessionNameTextChanged(const FText& NewText);
+	
+	UFUNCTION()
+	void CancelSessionCreation();
 
 	/******************************************/
 	/*                 Login                  */
