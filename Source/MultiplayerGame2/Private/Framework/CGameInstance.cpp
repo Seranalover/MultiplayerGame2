@@ -187,14 +187,46 @@ void UCGameInstance::RequestCreateAndJoinSession(const FName& NewSessionName)
 	
 	FHttpRequestRef Request = FHttpModule::Get().CreateRequest(); //创建请求
 	FGuid SessionSearchId = FGuid::NewGuid(); //创建GUID
-	
 	FString CoordinatorURL = UCNetStatics::GetCoordinatorURL(); //获得协调器地址
-	UE_LOG(LogTemp, Warning, TEXT("Sending request session creation to URL: %s"), *CoordinatorURL);
+	FString URL = FString::Printf(TEXT("%s/Sessions"), *CoordinatorURL);
+	UE_LOG(LogTemp, Warning, TEXT("Sending request session creation to URL: %s"), *URL);
+	
+	Request->SetURL(URL); //设置请求地址
+	Request->SetVerb("POST"); //设置为POST请求
+	Request->SetHeader("Content-Type", "application/json"); //设置请求头
+	
+	//设置Json请求对象
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject()); //创建Json对象的共享指针，共享指针好处是可以自动管理内存
+	JsonObject->SetStringField(UCNetStatics::GetSessionNameKey().ToString(), NewSessionName.ToString());
+	JsonObject->SetStringField(UCNetStatics::GetSessionSearchIdKey().ToString(), SessionSearchId.ToString());
+	
+	//设置请求体
+	FString RequestBody;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&RequestBody);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer); //序列化Json Object
+	Request->SetContentAsString(RequestBody);
+	
+	Request->OnProcessRequestComplete().BindUObject(this, &UCGameInstance::SessionCreationRequestCompleted, SessionSearchId); //发送请求，创建会话，并绑定事件
+	if (!Request->ProcessRequest())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Session Creation Request Failed right away!"));
+	}
 }
 
 void UCGameInstance::CancelSessionCreation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Canceling session creation"));
+}
+
+void UCGameInstance::SessionCreationRequestCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response,
+	bool bWasSuccessful, FGuid SessionSearchId)
+{
+	if (!bWasSuccessful)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Connection responded with connection was not successful!"));
+		return;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Connection to Coordinator successfully"));
 }
 
 void UCGameInstance::PlayerJoined(const FUniqueNetIdRepl& UniqueId)

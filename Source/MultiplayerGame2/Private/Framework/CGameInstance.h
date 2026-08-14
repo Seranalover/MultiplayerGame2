@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "Interfaces/IHttpRequest.h"
 #include "CGameInstance.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnLoginCompleted, bool /*bWasSuccessful*/, const FString& /*PlayerNickName*/, const FString& /*ErrorMsg*/);
@@ -40,6 +41,9 @@ private:
 public:
 	void RequestCreateAndJoinSession(const FName& NewSessionName); //创建并加入会话
 	void CancelSessionCreation();
+	
+private:
+	void SessionCreationRequestCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, FGuid SessionSearchId);
 	
 	/*****************************************************/
 	/*                  Session Server                   */
