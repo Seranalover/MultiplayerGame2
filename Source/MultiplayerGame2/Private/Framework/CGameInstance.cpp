@@ -5,6 +5,7 @@
 
 #include "HttpModule.h"
 #include "Interfaces/IHttpRequest.h"
+#include "Interfaces/IHttpResponse.h"
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Network/CNetStatics.h"
@@ -226,7 +227,79 @@ void UCGameInstance::SessionCreationRequestCompleted(FHttpRequestPtr Request, FH
 		UE_LOG(LogTemp, Warning, TEXT("Connection responded with connection was not successful!"));
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Connection to Coordinator successfully"));
+	UE_LOG(LogTemp, Warning, TEXT("Connection to Coordinator successfully!"));
+	
+	//处理response
+	int32 ResponseCode = Response->GetResponseCode(); //获得返回code
+	if (ResponseCode != 200)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Session creation failed with code: %d"), ResponseCode);
+		return;
+	}
+	FString ResponseStr = Response->GetContentAsString(); //获得返回体
+	TSharedPtr<FJsonObject> JsonObject;
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(ResponseStr); 
+	int32 Port = 0;
+	if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid()) //反序列化请求体
+	{
+		Port = JsonObject->GetIntegerField(*(UCNetStatics::GetPortKey().ToString()));
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Connected to Coordinator successfully and the new session created is on port: %d"), Port);
+	StartFindingCreatedSession(SessionSearchId);
+}
+
+void UCGameInstance::StartFindingCreatedSession(const FGuid& SessionSearchId)
+{
+	if (!SessionSearchId.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Session Search Id is invalid, can't start finding!"));
+		return;
+	}
+	
+	StopAllSessionFindings();
+	UE_LOG(LogTemp, Warning, TEXT("Starting finding created session with ID: %s"), *(SessionSearchId.ToString()));
+	
+	GetWorld()->GetTimerManager().SetTimer(
+		FindCreatedSessionHandle,
+		FTimerDelegate::CreateUObject(this, &UCGameInstance::FindCreatedSession, SessionSearchId),
+		FindCreatedSessionSearchInterval,
+		true,
+		0.f
+		);
+	GetWorld()->GetTimerManager().SetTimer(
+		FindCreatedSessionTimeoutHandle,
+		this,
+		&UCGameInstance::FindCreatedSessionTimeout,
+		FindCreatedSessionTimeoutDuration
+		);
+}
+
+void UCGameInstance::StopAllSessionFindings()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Stoping all Session Search"));
+	StopFindingCreatedSession();
+	StopGlobalSessionSearch();
+}
+
+void UCGameInstance::StopFindingCreatedSession()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Stop finding Created Session"));
+}
+
+void UCGameInstance::StopGlobalSessionSearch()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Stop global Session Search"));
+}
+
+void UCGameInstance::FindCreatedSession(FGuid SessionSearchId)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Trying to find created session..."));
+}
+
+void UCGameInstance::FindCreatedSessionTimeout()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Finding created session timeout!"));
+	StopFindingCreatedSession();
 }
 
 void UCGameInstance::PlayerJoined(const FUniqueNetIdRepl& UniqueId)
