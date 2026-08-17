@@ -6,9 +6,11 @@
 #include "Engine/GameInstance.h"
 #include "Interfaces/IHttpRequest.h"
 #include "OnlineSessionSettings.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "CGameInstance.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnLoginCompleted, bool /*bWasSuccessful*/, const FString& /*PlayerNickName*/, const FString& /*ErrorMsg*/);
+DECLARE_MULTICAST_DELEGATE(FOnJoinSessionFailed);
 /**
  * 游戏实例类
  * 在游戏运行期间持续存在，伴随整个游戏进程
@@ -44,6 +46,8 @@ public:
 	void CancelSessionCreation();
 	void StartGlobalSessionSearch();
 	
+	FOnJoinSessionFailed OnJoinSessionFailed;
+	
 private:
 	void SessionCreationRequestCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, FGuid SessionSearchId);
 	
@@ -63,6 +67,7 @@ private:
 	void FindCreatedSessionTimeout();
 	void FindCreatedSessionCompleted(bool bWasSuccessful);
 	void JoinSessionWithSearchResult(const class FOnlineSessionSearchResult& SearchResult);
+	void JoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type JoinResult, int Port);
 	
 	/*****************************************************/
 	/*                  Session Server                   */

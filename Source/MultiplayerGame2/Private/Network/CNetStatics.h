@@ -43,4 +43,9 @@ public:
 	static FName GetCoordinatorURLKey(); //获得协调器url key
 	static FString GetCoordinatorURL(); //获得协调器url
 	static FString GetDefaultCoordinatorURL(); //协调器url为空时，从配置文件获得默认协调器url
+	
+	static FString GetTestingURL(); //获得测试url
+	static FName GetTestingURLKey();
+	
+	static void ReplacePort(FString& OutURL, int NewPort); //重设url端口
 };

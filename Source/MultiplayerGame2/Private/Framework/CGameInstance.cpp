@@ -353,19 +353,65 @@ void UCGameInstance::FindCreatedSessionCompleted(bool bWasSuccessful)
 
 void UCGameInstance::JoinSessionWithSearchResult(const FOnlineSessionSearchResult& SearchResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Joining session with Search Result."))
+	UE_LOG(LogTemp, Warning, TEXT("Joining session with Search Result..."))
+	
 	IOnlineSessionPtr SessionPtr = UCNetStatics::GetSessionPtr();
 	if (!SessionPtr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Can't find Session Ptr, cancel joining..."))
 		return;
 	}
+	
 	FString SessionName = "";
 	SearchResult.Session.SessionSettings.Get<FString>(UCNetStatics::GetSessionNameKey(), SessionName);
 	const FOnlineSessionSetting* PortSetting = SearchResult.Session.SessionSettings.Settings.Find(UCNetStatics::GetPortKey());
 	int64 Port = 7777;
 	PortSetting->Data.GetValue(Port);
 	UE_LOG(LogTemp, Warning, TEXT("Trying to join Session: %s, at Port: %d"), *SessionName, Port);
+	
+	SessionPtr->OnJoinSessionCompleteDelegates.RemoveAll(this);
+	SessionPtr->OnJoinSessionCompleteDelegates.AddUObject(this, &UCGameInstance::JoinSessionCompleted, (int)Port);
+	if (!SessionPtr->JoinSession(0, FName(SessionName), SearchResult))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Joining session failed right away."));
+		SessionPtr->OnJoinSessionCompleteDelegates.RemoveAll(this);
+		OnJoinSessionFailed.Broadcast();
+	}
+}
+
+void UCGameInstance::JoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type JoinResult, int Port)
+{
+	IOnlineSessionPtr SessionPtr = UCNetStatics::GetSessionPtr();
+	
+	if (!SessionPtr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Join Session completed, but can't find session pointer!"))
+		OnJoinSessionFailed.Broadcast();
+		return;
+	}
+	
+	if (JoinResult == EOnJoinSessionCompleteResult::Success)
+	{
+		StopAllSessionFindings();
+		UE_LOG(LogTemp, Warning, TEXT("Joining Session: %s successful, the port is: %d"), *(SessionName.ToString()), Port);
+		
+		FString TravelURL = "";
+		SessionPtr->GetResolvedConnectString(SessionName, TravelURL);
+		
+		FString TestingURL = UCNetStatics::GetTestingURL();
+		if (!TestingURL.IsEmpty())
+		{
+			TravelURL = TestingURL;
+		}
+		UCNetStatics::ReplacePort(TravelURL, Port);
+		UE_LOG(LogTemp, Warning, TEXT("Traveling to Session at: %s"), *TravelURL);
+		GetFirstLocalPlayerController(GetWorld())->ClientTravel(TravelURL, TRAVEL_Absolute);
+	}
+	else
+	{
+		OnJoinSessionFailed.Broadcast();
+	}
+	SessionPtr->OnJoinSessionCompleteDelegates.RemoveAll(this);
 }
 
 void UCGameInstance::PlayerJoined(const FUniqueNetIdRepl& UniqueId)

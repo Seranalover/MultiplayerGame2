@@ -119,3 +119,22 @@ FString UCNetStatics::GetDefaultCoordinatorURL()
 	UE_LOG(LogTemp, Warning, TEXT("Getting default Coordinator URL as: %s"), *CoordinatorURL);
 	return CoordinatorURL;
 }
+
+FString UCNetStatics::GetTestingURL()
+{
+	FString TestingURL = GetCommandLineArgsAsString(GetTestingURLKey());
+	UE_LOG(LogTemp, Warning, TEXT("Get Testing URL: %s"), *TestingURL);
+	return TestingURL;
+}
+
+FName UCNetStatics::GetTestingURLKey()
+{
+	return FName("TESTING_URL");
+}
+
+void UCNetStatics::ReplacePort(FString& OutURL, int NewPort)
+{
+	FURL URL(nullptr, *OutURL, TRAVEL_Absolute);
+	URL.Port = NewPort;
+	OutURL = URL.ToString();
+}

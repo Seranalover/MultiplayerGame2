@@ -1,1 +1,1 @@
-%UNREAL_EDITOR% "%~dp0../MultiplayerGame2.uproject" -game -log -epicapp="GameClient"
+%UNREAL_EDITOR% "%~dp0../MultiplayerGame2.uproject" -game -log -epicapp="GameClient" -TESTING_URL="127.0.0.1:7777"
