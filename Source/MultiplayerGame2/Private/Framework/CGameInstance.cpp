@@ -229,6 +229,7 @@ void UCGameInstance::CancelSessionCreation()
 void UCGameInstance::StartGlobalSessionSearch()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Starting global session search..."));
+	GetWorld()->GetTimerManager().SetTimer(GlobalSessionSearchHandle, this, &UCGameInstance::FindGlobalSessions, GlobalSessionSearchInterval, 0.f);
 }
 
 void UCGameInstance::SessionCreationRequestCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, FGuid SessionSearchId)
@@ -307,6 +308,15 @@ void UCGameInstance::StopFindingCreatedSession()
 void UCGameInstance::StopGlobalSessionSearch()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Stop global Session Search"));
+	if (GlobalSessionSearchHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(GlobalSessionSearchHandle);
+	}
+	IOnlineSessionPtr SessionPtr = UCNetStatics::GetSessionPtr();
+	if (SessionPtr)
+	{
+		SessionPtr->OnFindSessionsCompleteDelegates.RemoveAll(this);
+	}
 }
 
 void UCGameInstance::FindCreatedSession(FGuid SessionSearchId)
@@ -412,6 +422,50 @@ void UCGameInstance::JoinSessionCompleted(FName SessionName, EOnJoinSessionCompl
 		OnJoinSessionFailed.Broadcast();
 	}
 	SessionPtr->OnJoinSessionCompleteDelegates.RemoveAll(this);
+}
+
+void UCGameInstance::FindGlobalSessions()
+{
+	UE_LOG(LogTemp, Warning, TEXT("-------------Retrying Global Session Search-------------"))
+	IOnlineSessionPtr SessionPtr = UCNetStatics::GetSessionPtr();
+	if (!SessionPtr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Can't find Session Interface, Wait for the next Global Session Search"));
+		return;
+	}
+	SessionSearchPtr = MakeShareable(new FOnlineSessionSearch);
+	SessionSearchPtr->bIsLanQuery = false;
+	SessionSearchPtr->MaxSearchResults = 20;
+	SessionPtr->OnFindSessionsCompleteDelegates.RemoveAll(this);
+	SessionPtr->OnFindSessionsCompleteDelegates.AddUObject(this, &UCGameInstance::GlobalSessionSearchCompleted);
+	if (!SessionPtr->FindSessions(0, SessionSearchPtr.ToSharedRef()))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Find Global Session failed right away."));
+		SessionPtr->OnFindSessionsCompleteDelegates.RemoveAll(this);
+	}
+}
+
+void UCGameInstance::GlobalSessionSearchCompleted(bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnGlobalSessionSearchCompleted.Broadcast(SessionSearchPtr->SearchResults);
+		for (const FOnlineSessionSearchResult& SearchResult : SessionSearchPtr->SearchResults)
+		{
+			FString SessionName = "Name_None";
+			SearchResult.Session.SessionSettings.Get<FString>(UCNetStatics::GetSessionNameKey(), SessionName);
+			UE_LOG(LogTemp, Warning, TEXT("Found Session %s after global session search"), *SessionName);
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Global Session Search failed."));
+	}
+	IOnlineSessionPtr SessionPtr = UCNetStatics::GetSessionPtr();
+	if (SessionPtr)
+	{
+		SessionPtr->OnFindSessionsCompleteDelegates.RemoveAll(this);
+	}
 }
 
 void UCGameInstance::PlayerJoined(const FUniqueNetIdRepl& UniqueId)

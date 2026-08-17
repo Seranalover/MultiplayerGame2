@@ -10,6 +10,7 @@
 #include "CGameInstance.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnLoginCompleted, bool /*bWasSuccessful*/, const FString& /*PlayerNickName*/, const FString& /*ErrorMsg*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalSessionSearchCompleted, const TArray<FOnlineSessionSearchResult>& /*SearchResults*/);
 DECLARE_MULTICAST_DELEGATE(FOnJoinSessionFailed);
 /**
  * 游戏实例类
@@ -43,16 +44,20 @@ private:
 	/*****************************************************/
 public:
 	void RequestCreateAndJoinSession(const FName& NewSessionName); //创建并加入会话
-	void CancelSessionCreation();
+	void CancelSessionCreation(); //取消创建会话
 	void StartGlobalSessionSearch();
 	
-	FOnJoinSessionFailed OnJoinSessionFailed;
+	FOnJoinSessionFailed OnJoinSessionFailed; //加入session失败委托事件
+	FOnGlobalSessionSearchCompleted OnGlobalSessionSearchCompleted; //查找Global session完成委托事件
 	
 private:
 	void SessionCreationRequestCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, FGuid SessionSearchId);
 	
 	FTimerHandle FindCreatedSessionHandle;
 	FTimerHandle FindCreatedSessionTimeoutHandle;
+	FTimerHandle GlobalSessionSearchHandle;
+	UPROPERTY(EditDefaultsOnly, Category = "Session Search")
+	float GlobalSessionSearchInterval = 2.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Session Search")
 	float FindCreatedSessionSearchInterval = 1.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Session Search")
@@ -60,14 +65,16 @@ private:
 	TSharedPtr<class FOnlineSessionSearch> SessionSearchPtr; //搜索到的session容器
 	
 	void StartFindingCreatedSession(const FGuid& SessionSearchId); //开始通过id查询session
-	void StopAllSessionFindings(); //停止查找session
-	void StopFindingCreatedSession();
-	void StopGlobalSessionSearch();
-	void FindCreatedSession(FGuid SessionSearchId);
-	void FindCreatedSessionTimeout();
-	void FindCreatedSessionCompleted(bool bWasSuccessful);
-	void JoinSessionWithSearchResult(const class FOnlineSessionSearchResult& SearchResult);
-	void JoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type JoinResult, int Port);
+	void StopAllSessionFindings(); //停止所有session查找
+	void StopFindingCreatedSession(); //停止查找创建的session
+	void StopGlobalSessionSearch(); //停止查找所有session
+	void FindCreatedSession(FGuid SessionSearchId); //搜索会话
+	void FindCreatedSessionTimeout(); //搜索会话超时
+	void FindCreatedSessionCompleted(bool bWasSuccessful); //将搜索会话结果加入结果集
+	void JoinSessionWithSearchResult(const class FOnlineSessionSearchResult& SearchResult); //根据搜索结果加入会话
+	void JoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type JoinResult, int Port); //最终加入会话
+	void FindGlobalSessions(); //查找全部session
+	void GlobalSessionSearchCompleted(bool bWasSuccessful); //global session搜索完成，保存结果集
 	
 	/*****************************************************/
 	/*                  Session Server                   */
@@ -94,7 +101,7 @@ private:
 	/*                       Login                       */
 	/*****************************************************/
 public:
-	FOnLoginCompleted OnLoginCompleted;
+	FOnLoginCompleted OnLoginCompleted; //登录完成委托事件
 	bool IsLoggedIn(); //已登录？
 	bool IsLoggingIn(); //登陆中？
 	void ClientAccountPortalLogin();
