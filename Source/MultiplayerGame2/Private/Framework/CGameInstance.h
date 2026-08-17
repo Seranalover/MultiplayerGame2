@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "Interfaces/IHttpRequest.h"
+#include "OnlineSessionSettings.h"
 #include "CGameInstance.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnLoginCompleted, bool /*bWasSuccessful*/, const FString& /*PlayerNickName*/, const FString& /*ErrorMsg*/);
@@ -51,6 +52,7 @@ private:
 	float FindCreatedSessionSearchInterval = 1.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Session Search")
 	float FindCreatedSessionTimeoutDuration = 60.f;
+	TSharedPtr<class FOnlineSessionSearch> SessionSearchPtr; //搜索到的session容器
 	
 	void StartFindingCreatedSession(const FGuid& SessionSearchId); //开始通过id查询session
 	void StopAllSessionFindings(); //停止查找session
@@ -58,6 +60,8 @@ private:
 	void StopGlobalSessionSearch();
 	void FindCreatedSession(FGuid SessionSearchId);
 	void FindCreatedSessionTimeout();
+	void FindCreatedSessionCompleted(bool bWasSuccessful);
+	void JoinSessionWithSearchResult(const class FOnlineSessionSearchResult& SearchResult);
 	
 	/*****************************************************/
 	/*                  Session Server                   */

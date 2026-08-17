@@ -294,12 +294,48 @@ void UCGameInstance::StopGlobalSessionSearch()
 void UCGameInstance::FindCreatedSession(FGuid SessionSearchId)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Trying to find created session..."));
+	IOnlineSessionPtr SessionPtr = UCNetStatics::GetSessionPtr();
+	if (!SessionPtr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Could not find session Ptr, canceling session search!"));
+		return;
+	}
+	SessionSearchPtr = MakeShareable(new FOnlineSessionSearch);
+	if (!SessionSearchPtr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Unable to create session search, canceling session search"));
+		return;
+	}
+	SessionSearchPtr->bIsLanQuery = false; //不搜索本地局域网
+	SessionSearchPtr->MaxSearchResults = 1;
+	SessionSearchPtr->QuerySettings.Set(UCNetStatics::GetSessionSearchIdKey(), SessionSearchId.ToString(), EOnlineComparisonOp::Equals);
+	SessionPtr->OnFindSessionsCompleteDelegates.RemoveAll(this);
+	SessionPtr->OnFindSessionsCompleteDelegates.AddUObject(this, &UCGameInstance::FindCreatedSessionCompleted);
+	if (!SessionPtr->FindSessions(0, SessionSearchPtr.ToSharedRef()))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Find session failed right away."));
+		SessionPtr->OnFindSessionsCompleteDelegates.RemoveAll(this);
+	}
 }
 
 void UCGameInstance::FindCreatedSessionTimeout()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Finding created session timeout!"));
 	StopFindingCreatedSession();
+}
+
+void UCGameInstance::FindCreatedSessionCompleted(bool bWasSuccessful)
+{
+	if (!bWasSuccessful || !SessionSearchPtr->SearchResults.Num() == 0)
+		return;
+	
+	StopFindingCreatedSession();
+	JoinSessionWithSearchResult(SessionSearchPtr->SearchResults[0]);
+}
+
+void UCGameInstance::JoinSessionWithSearchResult(const FOnlineSessionSearchResult& SearchResult)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Joining session with Search Result."))
 }
 
 void UCGameInstance::PlayerJoined(const FUniqueNetIdRepl& UniqueId)
