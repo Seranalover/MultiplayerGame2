@@ -42,6 +42,7 @@ private:
 public:
 	void RequestCreateAndJoinSession(const FName& NewSessionName); //创建并加入会话
 	void CancelSessionCreation();
+	void StartGlobalSessionSearch();
 	
 private:
 	void SessionCreationRequestCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, FGuid SessionSearchId);
