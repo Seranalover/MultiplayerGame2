@@ -232,6 +232,25 @@ void UCGameInstance::StartGlobalSessionSearch()
 	GetWorld()->GetTimerManager().SetTimer(GlobalSessionSearchHandle, this, &UCGameInstance::FindGlobalSessions, GlobalSessionSearchInterval, true, 0.f);
 }
 
+bool UCGameInstance::JoinSessionWithId(const FString& SessionId)
+{
+	if (SessionSearchPtr.IsValid())
+	{
+		const FOnlineSessionSearchResult* SessionSearchResult = SessionSearchPtr->SearchResults.FindByPredicate(
+			[=](const FOnlineSessionSearchResult& Result)
+			{
+				return Result.GetSessionIdStr() == SessionId;
+			}
+		);
+		if (SessionSearchResult)
+		{
+			JoinSessionWithSearchResult(*SessionSearchResult);
+			return true;
+		}
+	}
+	return false;
+}
+
 void UCGameInstance::SessionCreationRequestCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, FGuid SessionSearchId)
 {
 	if (!bWasSuccessful)

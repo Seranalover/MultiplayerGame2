@@ -45,7 +45,8 @@ private:
 public:
 	void RequestCreateAndJoinSession(const FName& NewSessionName); //创建并加入会话
 	void CancelSessionCreation(); //取消创建会话
-	void StartGlobalSessionSearch();
+	void StartGlobalSessionSearch(); //开始搜索全部会话
+	bool JoinSessionWithId(const FString& SessionId); //根据session id加入会话
 	
 	FOnJoinSessionFailed OnJoinSessionFailed; //加入session失败委托事件
 	FOnGlobalSessionSearchCompleted OnGlobalSessionSearchCompleted; //查找Global session完成委托事件

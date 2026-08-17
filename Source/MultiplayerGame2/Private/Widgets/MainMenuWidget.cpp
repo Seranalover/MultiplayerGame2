@@ -70,9 +70,13 @@ void UMainMenuWidget::CancelSessionCreation()
 
 void UMainMenuWidget::JoinSessionBtnClicked()
 {
-	if (!CurrentSelectedSessionId.IsEmpty())
+	if (CGameInstance && !CurrentSelectedSessionId.IsEmpty())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Trying to join Session with id: %s"), *CurrentSelectedSessionId);
+		if (CGameInstance->JoinSessionWithId(CurrentSelectedSessionId))
+		{
+			SwitchToWaitingWidget(FText::FromString("Joining"), false);
+		}
 	}
 	else
 	{
