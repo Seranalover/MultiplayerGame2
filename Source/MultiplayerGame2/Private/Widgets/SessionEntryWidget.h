@@ -8,7 +8,7 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnSessionEntrySelected, const FString& /*SelectedSessionId*/)
 /**
- * 会话列表界面类
+ * 会话选择控件类
  */
 UCLASS()
 class USessionEntryWidget : public UUserWidget

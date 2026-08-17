@@ -2,10 +2,14 @@
 
 
 #include "Widgets/MainMenuWidget.h"
+
+#include "SessionEntryWidget.h"
 #include "Framework/CGameInstance.h"
 #include "Components/Button.h"
 #include "Components/EditableText.h"
+#include "Components/ScrollBox.h"
 #include "Components/WidgetSwitcher.h"
+#include "Network/CNetStatics.h"
 #include "Widgets/WaitingWidget.h"
 
 void UMainMenuWidget::NativeConstruct()
@@ -19,12 +23,18 @@ void UMainMenuWidget::NativeConstruct()
 		{
 			SwitchToMainMenuWidget();
 		}
+		CGameInstance->OnJoinSessionFailed.AddUObject(this, &UMainMenuWidget::JoinSessionFailed);
+		CGameInstance->OnGlobalSessionSearchCompleted.AddUObject(this, &UMainMenuWidget::UpdateLobbyList);
+		CGameInstance->StartGlobalSessionSearch();
 	}
 	LoginButton->OnClicked.AddDynamic(this, &UMainMenuWidget::LoginBtnClicked);
 	
 	CreateSessionBtn->OnClicked.AddDynamic(this, &UMainMenuWidget::CreateSessionBtnClicked);
 	CreateSessionBtn->SetIsEnabled(false);
 	NewSessionNameText->OnTextChanged.AddDynamic(this, &UMainMenuWidget::NewSessionNameTextChanged);
+	
+	JoinSessionBtn->OnClicked.AddDynamic(this, &UMainMenuWidget::JoinSessionBtnClicked);
+	JoinSessionBtn->SetIsEnabled(false);
 }
 
 void UMainMenuWidget::SwitchToMainMenuWidget()
@@ -56,6 +66,57 @@ void UMainMenuWidget::CancelSessionCreation()
 		CGameInstance->CancelSessionCreation();
 	}
 	SwitchToMainMenuWidget();
+}
+
+void UMainMenuWidget::JoinSessionBtnClicked()
+{
+	if (!CurrentSelectedSessionId.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Trying to join Session with id: %s"), *CurrentSelectedSessionId);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Can't join session, no session seleted"));
+	}
+}
+
+void UMainMenuWidget::JoinSessionFailed()
+{
+	SwitchToMainMenuWidget();
+}
+
+void UMainMenuWidget::UpdateLobbyList(const TArray<FOnlineSessionSearchResult>& SearchResults)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Updating Session Search Results"));
+	SessionScrollBox->ClearChildren();
+	
+	bool bCurrentSelectedSessionValid = false;
+	for (const FOnlineSessionSearchResult& SearchResult : SearchResults)
+	{
+		USessionEntryWidget* NewSessionEntryWidget = CreateWidget<USessionEntryWidget>(GetOwningPlayer(), SessionEntryWidgetClass);
+		if (NewSessionEntryWidget)
+		{
+			FString SessionName = "Name_None";
+			SearchResult.Session.SessionSettings.Get<FString>(UCNetStatics::GetSessionNameKey(), SessionName);
+			
+			FString SessionId = SearchResult.Session.GetSessionIdStr();
+			NewSessionEntryWidget->InitializeEntry(SessionName, SessionId);
+			
+			NewSessionEntryWidget->OnSessionEntrySelected.AddUObject(this, &UMainMenuWidget::SessionEntrySelected);
+			SessionScrollBox->AddChild(NewSessionEntryWidget);
+			if (CurrentSelectedSessionId == SessionId)
+			{
+				bCurrentSelectedSessionValid = true;
+			}
+		}
+	}
+	CurrentSelectedSessionId = bCurrentSelectedSessionValid ? CurrentSelectedSessionId : "";
+	JoinSessionBtn->SetIsEnabled(bCurrentSelectedSessionValid);
+}
+
+void UMainMenuWidget::SessionEntrySelected(const FString& SelectedEntryId)
+{
+	CurrentSelectedSessionId = SelectedEntryId;
 }
 
 void UMainMenuWidget::LoginBtnClicked()

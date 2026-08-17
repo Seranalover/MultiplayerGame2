@@ -229,7 +229,7 @@ void UCGameInstance::CancelSessionCreation()
 void UCGameInstance::StartGlobalSessionSearch()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Starting global session search..."));
-	GetWorld()->GetTimerManager().SetTimer(GlobalSessionSearchHandle, this, &UCGameInstance::FindGlobalSessions, GlobalSessionSearchInterval, 0.f);
+	GetWorld()->GetTimerManager().SetTimer(GlobalSessionSearchHandle, this, &UCGameInstance::FindGlobalSessions, GlobalSessionSearchInterval, true, 0.f);
 }
 
 void UCGameInstance::SessionCreationRequestCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, FGuid SessionSearchId)
