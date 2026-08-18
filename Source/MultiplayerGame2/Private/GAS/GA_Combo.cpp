@@ -14,6 +14,7 @@ UGA_Combo::UGA_Combo()
 {
 	AbilityTags.AddTag(UCAbilitySystemStatics::GetBasicAttackAbilityTag()); //添加ability tag
 	BlockAbilitiesWithTag.AddTag(UCAbilitySystemStatics::GetBasicAttackAbilityTag()); //添加block tag
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
 void UGA_Combo::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -61,6 +62,7 @@ void UGA_Combo::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 		WaitTargetingEventTask->ReadyForActivation();
 	}
 	
+	NextComboName = NAME_None;
 	SetupWaitComboInputPress(); //尝试切换到下一段连招
 }
 

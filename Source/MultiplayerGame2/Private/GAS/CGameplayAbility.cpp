@@ -39,7 +39,7 @@ TArray<FHitResult> UCGameplayAbility::GetHitResultsFromSweepLocationTargetData(
 	
 	IGenericTeamAgentInterface* OwnerTeamInterface = Cast<IGenericTeamAgentInterface>(GetAvatarActorFromActorInfo());
 	
-	for (const TSharedPtr<FGameplayAbilityTargetData> TargetData : TargetDataHandle.Data)
+	for (const TSharedPtr<FGameplayAbilityTargetData>& TargetData : TargetDataHandle.Data)
 	{
 		FVector SourceLocation = TargetData->GetOrigin().GetTranslation(); //扫描开始位置
 		FVector TargetLocation = TargetData->GetEndPoint(); //扫描结束位置
