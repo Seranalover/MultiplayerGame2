@@ -47,7 +47,7 @@ bool FPlayerSelection::IsValid() const
 		if (Slot >= UCNetStatics::GetPlayerCountPerTeam() * 2)	
 			return false;
 	
-		return false;
+		return true;
 	#endif
 }
 
