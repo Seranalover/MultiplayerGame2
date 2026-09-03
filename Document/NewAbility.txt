@@ -1,0 +1,55 @@
+创建新技能
+
+1. 新建技能c++类，以GA_Freeze为例，新建GA_Freeze类
+
+    定义瞄准montag、施法montage、选择器范围、技能射程
+    定义选择器类、伤害效果effect类、技能特效CueTag类
+    
+    构造方法
+        定义技能激活、中断时的tag
+        
+    重写ActivateAbility()方法
+        HasAuthorityOrPredictionKey权限检查
+        播放瞄准动画
+        选择目标任务
+        生成选择器
+        结束生成选择器
+        
+    定义TargetConfirmed()确认选择方法
+        K2_CommitAbility检查
+        K2_HasAuthority检查
+        生成技能特效
+        播放施法动画
+        结束技能
+        
+    定义TargetCanceled()取消瞄准方法
+        结束技能
+
+2. 导入icon资产、导入VFX自查
+
+3. 在编辑器>Tools>GameplayCueEditor中
+    新建GameplayCue.freeze，以创建对应GC蓝图和cue tag
+        在GC_Freeze蓝图类中实现生成冰山特效
+    新建GameplayCue.freeze.hit，以创建对应GC蓝图和cue tag
+        在GC_Freeze_hit蓝图类中实现生成冰冻粒子特效
+
+4. 创建AM_Freeze_Targeting、AM_Freeze_Casting蒙太奇蓝图类
+    放入动画资产
+    取消自动混出
+    修改slot插槽为上半身upper
+    
+5. 创建GE_Freeze_Slow、GE_Freeze_Damage蓝图类
+    在GE_Freeze_Damage中应用额外GE：GE_Freeze_Slow，以添加减速效果
+    应用伤害
+    应用GameplayCue.freeze以生成冰山
+    在GE_Freeze_Slow中应用减速
+    在创建GE_Freeze_Slow中应用GameplayCue.freeze.hit以实现生成冰冻粒子特效
+    
+6. 创建GE_Freeze_Cost、GE_Freeze_Cooldown蓝图类
+
+7. 创建GA_Freeze_BP技能蓝图类，将所有GE应用到技能蓝图类中
+
+8. 在AbilityWidgetData_DT中添加技能描述
+
+9. 在角色蓝图BP_Phase中配置input映射和GameplayAbility
+    
