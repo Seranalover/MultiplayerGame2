@@ -39,7 +39,7 @@ private:
 	FGenericDamageEffectDef DamageEffectDef; //伤害效果
 	
 	UPROPERTY(EditDefaultsOnly, Category="Cue")
-	FGameplayTag FreezeCueTag;
+	FGameplayTag FreezeCueTag; //冰山特效绑定的Gameplay Tag
 	
 	UFUNCTION()
 	void TargetConfirmed(const FGameplayAbilityTargetDataHandle& TargetDataHandle); //确认选取目标

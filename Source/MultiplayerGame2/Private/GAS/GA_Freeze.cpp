@@ -64,7 +64,7 @@ void UGA_Freeze::TargetConfirmed(const FGameplayAbilityTargetDataHandle& TargetD
 		BP_ApplyGameplayEffectToTarget(TargetDataHandle, DamageEffectDef.DamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo)); //伤害目标
 	}
 	
-	//生成特效
+	//冰山特效
 	FGameplayCueParameters FreezeCueParameters;
 	FreezeCueParameters.Location = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(TargetDataHandle, 1).ImpactPoint; //从TargetDataHandle获得特效生成位置
 	FreezeCueParameters.RawMagnitude = TargetAreaRadius; //爆炸特效范围，基于技能半径
