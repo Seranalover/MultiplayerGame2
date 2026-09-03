@@ -76,6 +76,6 @@ void UGA_GroundBlast::TargetConfirmed(const FGameplayAbilityTargetDataHandle& Ta
 
 void UGA_GroundBlast::TargetCanceled(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Target canceled"));
+	// UE_LOG(LogTemp, Warning, TEXT("Target canceled"));
 	K2_EndAbility();
 }
