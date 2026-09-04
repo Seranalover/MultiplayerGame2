@@ -1,0 +1,50 @@
+启动coordinator
+----------------------------------------------
+1. 打开 cmd
+2. 执行 wsl 或 Ubuntu 命令，运行 Linux 环境
+	>>wsl     或者    >>Ubuntu
+3. 进入 ~ 目录
+	>>cd ~
+4. 连接服务器
+	>>ssh -i <<服务器SSHKey>> root@<<服务器IP>>
+5. 进入 ServerDeploy 目录，本地windows测试启动直接从这一步开始
+	>>cd /home/MultiplayerGame/ServerDeploy/
+6. 使用 docker-compose 启动 coordinator 镜像
+	>>docker-compose up coordinator
+
+
+
+服务端打包发布
+----------------------------------------------
+1. 分别打包 GameBuild 和 ServerBuild
+2. 将 ServerBuild/LinuxServer 里的所有内容复制到 MultiplayerGame2/ServerDeploy/server/server
+3. 将 ServerDeploy/coordinator/coordinator 里的 .venv 目录剪切至别处（如有）
+4. 使用 7-zip 压缩整个 ServerDeploy 目录
+5. 在当前目录，即 MultiplayerGame2 打开第一个 cmd，运行 Linux 环境
+	>>wsl
+6. 打开第二个 cmd, 访问服务器
+	>>wsl
+	>>cd ~
+	>>ssh -i <<服务器SSHKey>> root@<<服务器IP>>
+7. 进入 /home/MultiplayerGame/ 目录
+8. 重命名原来的 ServerDeploy.zip 包（如有）
+	>>mv ServerDeploy.zip ServerDeploy_01.zip
+9. 回到第一个 cmd, 上传 ServerDeploy.zip 包
+	>>scp -i ~/<<服务器SSHKey>>  ./ServerDeploy.zip root@<<服务器IP>>:/home/MultiplayerGame
+10. 回到第二个 cmd, 删除原本的 ServerDeploy 目录（如有）
+	>>rm -rf ServerDeploy
+11. 解压缩 ServerDeploy.zip 
+	>>unzip ServerDeploy.zip
+12. 进入 ./ServerDeploy/server/server/MultiplayerGame2/Binaries/Linux 目录，修改游戏程序为可执行文件
+	>>chmod +x MultiplayerGame2Server-Linux-Shipping
+13. 回到 /home/MultiplayerGame/ServerDeploy 目录，查看 docker 镜像和容器状态
+	>>cd /home/MultiplayerGame/ServerDeploy
+	>>docker images
+	>>docker ps -a
+13. 停止和删除旧版本指定容器和镜像（如有）
+	>>docker stop e0777798aa6b （停止容器）
+	>>docker rmi multiplayergameserver:latest （删除镜像）
+14. 使用 docker-compose 构建镜像
+	>>docker-compose build
+15. 启动项目服务端
+	>>docker-compose up coordinator

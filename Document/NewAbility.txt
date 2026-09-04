@@ -25,7 +25,7 @@
     定义TargetCanceled()取消瞄准方法
         结束技能
 
-2. 导入icon资产、导入VFX自查
+2. 导入icon资产、导入VFX资产
 
 3. 在编辑器>Tools>GameplayCueEditor中
     新建GameplayCue.freeze，以创建对应GC蓝图和cue tag
@@ -37,6 +37,7 @@
     放入动画资产
     取消自动混出
     修改slot插槽为上半身upper
+    在GA_Freeze蓝图类中配置蒙太奇
     
 5. 创建GE_Freeze_Slow、GE_Freeze_Damage蓝图类
     在GE_Freeze_Damage中应用额外GE：GE_Freeze_Slow，以添加减速效果
@@ -47,7 +48,7 @@
     
 6. 创建GE_Freeze_Cost、GE_Freeze_Cooldown蓝图类
 
-7. 创建GA_Freeze_BP技能蓝图类，将所有GE应用到技能蓝图类中
+7. 创建GA_Freeze_BP技能蓝图类，配置所有GE
 
 8. 在AbilityWidgetData_DT中添加技能描述
 
