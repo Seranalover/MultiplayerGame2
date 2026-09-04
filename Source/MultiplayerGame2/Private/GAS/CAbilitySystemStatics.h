@@ -31,6 +31,7 @@ public:
 	static FGameplayTag GetHeroRoleTag(); //英雄角色标签
 	static FGameplayTag GetExperienceAttributeTag();
 	static FGameplayTag GetGoldAttributeTag();
+	static FGameplayTag GetGenericDamagePointTag();
 	/*
 	 * 按下攻击键tag
 	 * 用于按下攻击键时，发送信号触发其他事件

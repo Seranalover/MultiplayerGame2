@@ -1,0 +1,58 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "GAS/GA_Tornado.h"
+
+#include "CAbilitySystemStatics.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Abilities/Tasks/AbilityTask_WaitCancel.h"
+#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+
+
+void UGA_Tornado::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                                  const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+{
+	if (!K2_CommitAbility())
+	{
+		K2_EndAbility();
+		return;
+	}
+	
+	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
+	{
+		UAbilityTask_PlayMontageAndWait* PlayMontageAndWait = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+			this, NAME_None, TornadoMontage);
+		PlayMontageAndWait->OnBlendOut.AddDynamic(this, &UGA_Tornado::K2_EndAbility);
+		PlayMontageAndWait->OnCancelled.AddDynamic(this, &UGA_Tornado::K2_EndAbility);
+		PlayMontageAndWait->OnInterrupted.AddDynamic(this, &UGA_Tornado::K2_EndAbility);
+		PlayMontageAndWait->OnCompleted.AddDynamic(this, &UGA_Tornado::K2_EndAbility);
+		PlayMontageAndWait->ReadyForActivation();
+		
+		if (K2_HasAuthority())
+		{
+			UAbilityTask_WaitGameplayEvent* WaitGameplayEvent = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+				this, UCAbilitySystemStatics::GetGenericDamagePointTag(), nullptr, false);
+			WaitGameplayEvent->EventReceived.AddDynamic(this, &UGA_Tornado::TornadoDamageEventReceived);
+			WaitGameplayEvent->ReadyForActivation();
+		}
+		
+		UAbilityTask_WaitCancel* WaitCancel = UAbilityTask_WaitCancel::WaitCancel(this);
+		WaitCancel->OnCancel.AddDynamic(this, &UGA_Tornado::K2_EndAbility);
+		WaitCancel->ReadyForActivation();
+		
+		UAbilityTask_WaitDelay* WaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, TornadoDuration);
+		WaitDelay->OnFinish.AddDynamic(this, &UGA_Tornado::K2_EndAbility);
+		WaitDelay->ReadyForActivation();
+	}
+}
+
+void UGA_Tornado::TornadoDamageEventReceived(FGameplayEventData Payload)
+{
+	if (K2_HasAuthority())
+	{
+		FGameplayAbilityTargetDataHandle TargetDataHandle = Payload.TargetData;
+		BP_ApplyGameplayEffectToTarget(TargetDataHandle, HitDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
+		// PushTargetsFromOwnerLocation(TargetDataHandle, HitPushSpeed);
+	}
+}
