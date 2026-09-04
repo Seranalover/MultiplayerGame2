@@ -94,7 +94,7 @@ FGameplayTag UCAbilitySystemStatics::GetGoldAttributeTag()
 
 FGameplayTag UCAbilitySystemStatics::GetGenericDamagePointTag()
 {
-	return FGameplayTag::RequestGameplayTag("attribute.generic.damage");
+	return FGameplayTag::RequestGameplayTag("ability.generic.damage");
 }
 
 float UCAbilitySystemStatics::GetStaticCooldownDurationForAbility(const UGameplayAbility* Ability)

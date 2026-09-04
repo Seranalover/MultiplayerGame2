@@ -74,6 +74,7 @@ Plugins/**/Intermediate/*
 DerivedDataCache/*
 
 ServerDeploy/server/server/*
+*.zip
 
 ###############################################################################
 #                                   Python                                    #
