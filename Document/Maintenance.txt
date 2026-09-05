@@ -16,6 +16,7 @@
 
 服务端打包发布
 ----------------------------------------------
+0. 修改 DefaultGame.ini 里的 CoordinatorURL=<<服务器IP>>
 1. 分别打包 GameBuild 和 ServerBuild
 2. 将 ServerBuild/LinuxServer 里的所有内容复制到 MultiplayerGame2/ServerDeploy/server/server
 3. 将 ServerDeploy/coordinator/coordinator 里的 .venv 目录剪切至别处（如有）
