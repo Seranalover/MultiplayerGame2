@@ -38,6 +38,8 @@ protected:
 	void PushTargets(const FGameplayAbilityTargetDataHandle& TargetDataHandle, const FVector& PushVelocity); //将多个目标推向某个方向
 	void PushTargetsFromLocation(const FGameplayAbilityTargetDataHandle& TargetDataHandle, const FVector& FromLocation, float PushSpeed); //将多个目标从某个中心点炸开
 	void PushTargetsFromLocation(const TArray<AActor*>& Targets, const FVector& FromLocation, float PushSpeed); //将多个目标从某个中心点炸开
+	void PushTargetsFromOwnerLocation(const FGameplayAbilityTargetDataHandle& TargetDataHandle, float PushSpeed);
+	void PushTargetsFromOwnerLocation(const TArray<AActor*>& Targets, float PushSpeed);
 	
 	ACharacter* GetOwningAvatarCharacter();
 	

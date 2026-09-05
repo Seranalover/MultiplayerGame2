@@ -133,6 +133,21 @@ void UCGameplayAbility::PushTargetsFromLocation(const TArray<AActor*>& Targets, 
 	}
 }
 
+void UCGameplayAbility::PushTargetsFromOwnerLocation(const FGameplayAbilityTargetDataHandle& TargetDataHandle, float PushSpeed)
+{
+	TArray<AActor*> TargetActors = UAbilitySystemBlueprintLibrary::GetAllActorsFromTargetData(TargetDataHandle);
+	PushTargetsFromOwnerLocation(TargetActors, PushSpeed);
+}
+
+void UCGameplayAbility::PushTargetsFromOwnerLocation(const TArray<AActor*>& Targets, float PushSpeed)
+{
+	AActor* OwnerAvatarActor = GetAvatarActorFromActorInfo();
+	if (!OwnerAvatarActor) return;
+	
+	FVector OwnerLocation = OwnerAvatarActor->GetActorLocation();
+	PushTargetsFromLocation(Targets, OwnerLocation, PushSpeed);
+}
+
 ACharacter* UCGameplayAbility::GetOwningAvatarCharacter()
 {
 	if (!CharacterRef)
