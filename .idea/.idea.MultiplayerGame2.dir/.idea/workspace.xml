@@ -116,7 +116,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5c00c148-dff1-4a15-9ad5-b72eae448ff0" name="Changes" comment="" />
+    <list default="true" id="5c00c148-dff1-4a15-9ad5-b72eae448ff0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.MultiplayerGame2.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.MultiplayerGame2.dir/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Crunch/GameplayAbility/Dash/AM_Dash.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Crunch/GameplayAbility/Dash/AM_Dash.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Crunch/GameplayAbility/Dash/Dash.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Crunch/GameplayAbility/Dash/Dash.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Crunch/GameplayAbility/Dash/GA_Dash_BP.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Crunch/GameplayAbility/Dash/GA_Dash_BP.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Crunch/GameplayAbility/Dash/GE_Dash_Damage.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Crunch/GameplayAbility/Dash/GE_Dash_Damage.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Crunch/GameplayAbility/Dash/TA_Around_BP.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Crunch/GameplayAbility/Dash/TA_Around_BP.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Crunch/GameplayAbility/GameplayEffect/GE_Init.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Crunch/GameplayAbility/GameplayEffect/GE_Init.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Framework/CGameInstance_BP.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Framework/CGameInstance_BP.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GameplayAbilities/GamePlayEffects/GE_FullStat.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GameplayAbilities/GamePlayEffects/GE_FullStat.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/MultiplayerGame2/Private/Character/CCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/MultiplayerGame2/Private/Character/CCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/MultiplayerGame2/Private/Character/CCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/MultiplayerGame2/Private/Character/CCharacter.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/MultiplayerGame2/Private/GAS/GA_Dash.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/MultiplayerGame2/Private/GAS/GA_Dash.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/MultiplayerGame2/Private/GAS/GA_Dash.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/MultiplayerGame2/Private/GAS/GA_Dash.h" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -64329,38 +64343,7 @@
       <workItem from="1788574927636" duration="14040000" />
       <workItem from="1788600257681" duration="570000" />
       <workItem from="1788600848405" duration="1315000" />
-    </task>
-    <task id="LOCAL-00215" summary="add the Start Match Button">
-      <option name="closed" value="true" />
-      <created>1785406220154</created>
-      <option name="number" value="00215" />
-      <option name="presentableId" value="LOCAL-00215" />
-      <option name="project" value="LOCAL" />
-      <updated>1785406220154</updated>
-    </task>
-    <task id="LOCAL-00216" summary="copy the Player Selection through the CopyProperties function">
-      <option name="closed" value="true" />
-      <created>1785828033161</created>
-      <option name="number" value="00216" />
-      <option name="presentableId" value="LOCAL-00216" />
-      <option name="project" value="LOCAL" />
-      <updated>1785828033161</updated>
-    </task>
-    <task id="LOCAL-00217" summary="Configure the Character and TeamId based on Player Selection">
-      <option name="closed" value="true" />
-      <created>1785829612097</created>
-      <option name="number" value="00217" />
-      <option name="presentableId" value="LOCAL-00217" />
-      <option name="project" value="LOCAL" />
-      <updated>1785829612097</updated>
-    </task>
-    <task id="LOCAL-00218" summary="convert our game project to use the Source Build and Entry Animation">
-      <option name="closed" value="true" />
-      <created>1786084510460</created>
-      <option name="number" value="00218" />
-      <option name="presentableId" value="LOCAL-00218" />
-      <option name="project" value="LOCAL" />
-      <updated>1786084510460</updated>
+      <workItem from="1788660537831" duration="20526000" />
     </task>
     <task id="LOCAL-00219" summary="252. build the Server and Clients and try out manual Connections">
       <option name="closed" value="true" />
@@ -64722,7 +64705,39 @@
       <option name="project" value="LOCAL" />
       <updated>1788597994698</updated>
     </task>
-    <option name="localTasksCounter" value="264" />
+    <task id="LOCAL-00264" summary="update DefaultGame.ini">
+      <option name="closed" value="true" />
+      <created>1788607201898</created>
+      <option name="number" value="00264" />
+      <option name="presentableId" value="LOCAL-00264" />
+      <option name="project" value="LOCAL" />
+      <updated>1788607201898</updated>
+    </task>
+    <task id="LOCAL-00265" summary="finish Dash Ability, but Character cannot move">
+      <option name="closed" value="true" />
+      <created>1788670744292</created>
+      <option name="number" value="00265" />
+      <option name="presentableId" value="LOCAL-00265" />
+      <option name="project" value="LOCAL" />
+      <updated>1788670744293</updated>
+    </task>
+    <task id="LOCAL-00266" summary="Create a new Ability Blink">
+      <option name="closed" value="true" />
+      <created>1788672627229</created>
+      <option name="number" value="00266" />
+      <option name="presentableId" value="LOCAL-00266" />
+      <option name="project" value="LOCAL" />
+      <updated>1788672627229</updated>
+    </task>
+    <task id="LOCAL-00267" summary="commit">
+      <option name="closed" value="true" />
+      <created>1788678404578</created>
+      <option name="number" value="00267" />
+      <option name="presentableId" value="LOCAL-00267" />
+      <option name="project" value="LOCAL" />
+      <updated>1788678404578</updated>
+    </task>
+    <option name="localTasksCounter" value="268" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -64743,10 +64758,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="stop Session Search and retrieve Sesseion Name and Port" />
-    <MESSAGE value="connect to the Session Server through the Search Result" />
-    <MESSAGE value="implement the Global Session Search" />
-    <MESSAGE value="create and compose the SessionEntryWidget class" />
     <MESSAGE value="commit some uassets" />
     <MESSAGE value="populate the Session List in the Main Menu Widget" />
     <MESSAGE value="join Session with the Session ID" />
@@ -64768,7 +64779,11 @@
     <MESSAGE value="fix Tornado Ability bugs" />
     <MESSAGE value="add new Ability GA_Dash classes" />
     <MESSAGE value="delete CoordinatorURL" />
-    <option name="LAST_COMMIT_MESSAGE" value="delete CoordinatorURL" />
+    <MESSAGE value="update DefaultGame.ini" />
+    <MESSAGE value="finish Dash Ability, but Character cannot move" />
+    <MESSAGE value="Create a new Ability Blink" />
+    <MESSAGE value="commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="commit" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

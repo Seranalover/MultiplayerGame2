@@ -51,7 +51,6 @@ private:
 	FActiveGameplayEffectHandle DashEffectHandle;
 	FTimerHandle PushForwardInputTimerHandle;
 	
-	UFUNCTION()
 	void PushForward();
 	
 	UFUNCTION()
