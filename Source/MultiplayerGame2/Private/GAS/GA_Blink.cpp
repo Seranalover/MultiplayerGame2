@@ -13,7 +13,8 @@ UGA_Blink::UGA_Blink()
 	ActivationOwnedTags.AddTag(UCAbilitySystemStatics::GetAimStatTag());
 }
 
-void UGA_Blink::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+void UGA_Blink::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, 
+	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	if (!HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
 	{
@@ -21,10 +22,12 @@ void UGA_Blink::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 		return;
 	}
 
-	UAbilityTask_PlayMontageAndWait* PlayTargetingMontage = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, TargetingMontage);
+	UAbilityTask_PlayMontageAndWait* PlayTargetingMontage = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+		this, NAME_None, TargetingMontage);
 	PlayTargetingMontage->ReadyForActivation();
 
-	UAbilityTask_WaitTargetData* WaitBlinkLocationTargetData = UAbilityTask_WaitTargetData::WaitTargetData(this, NAME_None, EGameplayTargetingConfirmation::UserConfirmed, GroundPickTargetActorClass);
+	UAbilityTask_WaitTargetData* WaitBlinkLocationTargetData = UAbilityTask_WaitTargetData::WaitTargetData(
+		this, NAME_None, EGameplayTargetingConfirmation::UserConfirmed, GroundPickTargetActorClass);
 	WaitBlinkLocationTargetData->ValidData.AddDynamic(this, &UGA_Blink::GroundPickTargetReceived);
 	WaitBlinkLocationTargetData->Cancelled.AddDynamic(this, &UGA_Blink::GroundPickCancelled);
 	WaitBlinkLocationTargetData->ReadyForActivation();
@@ -59,7 +62,8 @@ void UGA_Blink::GroundPickTargetReceived(const FGameplayAbilityTargetDataHandle&
 
 	if (HasAuthorityOrPredictionKey(CurrentActorInfo, &CurrentActivationInfo))
 	{
-		UAbilityTask_PlayMontageAndWait* PlayTeleportMontage = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, TeleportMontage);
+		UAbilityTask_PlayMontageAndWait* PlayTeleportMontage = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+			this, NAME_None, TeleportMontage);
 		PlayTeleportMontage->OnBlendOut.AddDynamic(this, &UGA_Blink::K2_EndAbility);
 		PlayTeleportMontage->OnCancelled.AddDynamic(this, &UGA_Blink::K2_EndAbility);
 		PlayTeleportMontage->OnInterrupted.AddDynamic(this, &UGA_Blink::K2_EndAbility);
@@ -68,7 +72,8 @@ void UGA_Blink::GroundPickTargetReceived(const FGameplayAbilityTargetDataHandle&
 
 		if (K2_HasAuthority())
 		{
-			UAbilityTask_WaitGameplayEvent* WaitTeleportTimepoint = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, GetTeleportationTag());
+			UAbilityTask_WaitGameplayEvent* WaitTeleportTimepoint = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+				this, GetTeleportationTag());
 			WaitTeleportTimepoint->EventReceived.AddDynamic(this, &UGA_Blink::Teleport);
 			WaitTeleportTimepoint->ReadyForActivation();
 		}
