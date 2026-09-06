@@ -89,5 +89,29 @@ def CreateServer():
     port = CreateServerImpl(sessionName, sessionSearchId)
     return jsonify({"status": "success", PORT_KEY: port}), 200
 
+@app.route('/Test', methods=['GET'])
+def test():
+    return "hello！", 200
+    
+@app.route('/MultiplayerGame2/Download', methods=['GET'])
+def download_package():
+    # 固定远程信息（示例）
+    remote_user = "your_user"
+    remote_host = "your_server_ip"
+    remote_path = "/path/to/package.zip"
+    home = os.path.expanduser("~")
+    local_dir = os.path.join(home, "Downloads")
+    filename = os.path.basename(remote_path)
+    local_path = os.path.join(local_dir, filename)
+
+    scp_cmd = ["scp", f"{remote_user}@{remote_host}:{remote_path}", local_path]
+    try:
+        result = subprocess.run(scp_cmd, capture_output=True, text=True, timeout=300)
+        if result.returncode != 0:
+            return jsonify({"status": "error", "message": result.stderr}), 500
+        return jsonify({"status": "success", "downloaded_to": local_path}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=80)

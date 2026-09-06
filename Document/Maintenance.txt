@@ -49,3 +49,8 @@
 	>>docker-compose build
 15. 启动项目服务端
 	>>docker-compose up coordinator
+	
+docker命令
+----------------------------------------------	
+docker stop $(docker ps -aq)   # 先停止全部容器
+docker rm $(docker ps -aq)     # 再删除全部容器
