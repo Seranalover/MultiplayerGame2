@@ -31,7 +31,7 @@ private:
 	FGameplayTag LocalGameplayCueTag;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Targeting")
-	FName TargetActorAttachSocketName = "TargetDashCenter";
+	FName TargetActorAttachSocketName = "TargetActorCenter";
 	
 	UPROPERTY(EditDefaultsOnly, Category="Targeting")
 	TSubclassOf<class ATargetActor_Around> TargetActorClass;
@@ -41,6 +41,9 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Effect")
 	TSubclassOf<UGameplayEffect> DashEffect;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Effect")
+	TSubclassOf<UGameplayEffect> DamageEffect;
 	
 	UPROPERTY()
 	class UCharacterMovementComponent* OwnerMovementComponent;

@@ -109,7 +109,7 @@ void UGA_Dash::TargetReceived(const FGameplayAbilityTargetDataHandle& TargetData
 {
 	if (K2_HasAuthority())
 	{
-		BP_ApplyGameplayEffectToTarget(TargetDataHandle, DashEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
+		BP_ApplyGameplayEffectToTarget(TargetDataHandle, DamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 		PushTargetsFromOwnerLocation(TargetDataHandle, TargetHitPushSpeed);
 	}
 }
