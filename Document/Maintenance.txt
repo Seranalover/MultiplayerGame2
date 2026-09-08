@@ -36,8 +36,8 @@
 	>>rm -rf ServerDeploy
 11. 解压缩 ServerDeploy.zip 
 	>>unzip ServerDeploy.zip
-12. 进入 ./ServerDeploy/server/server/MultiplayerGame2/Binaries/Linux 目录，修改游戏程序为可执行文件
-	>>chmod +x MultiplayerGame2Server-Linux-Shipping
+12. 修改 ./ServerDeploy/server/server/MultiplayerGame2/Binaries/Linux 目录下的游戏程序为可执行文件
+	>>chmod +x server/server/MultiplayerGame2/Binaries/Linux/MultiplayerGame2Server-Linux-Shipping
 13. 回到 /home/MultiplayerGame/ServerDeploy 目录，查看 docker 镜像和容器状态
 	>>cd /home/MultiplayerGame/ServerDeploy
 	>>docker images
